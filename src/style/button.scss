@@ -1,0 +1,36 @@
+.button {
+  margin-left: 20px;
+  margin-top: 20px;
+
+  height: 36px;
+  width: fit-content;
+  padding: 2px 10px 0 10px;
+
+  background-color: var(--foreground);
+  border: 2px solid var(--foreground-border);
+  border-radius: 8px;
+
+  color: var(--lowlight);
+  font-family: Josefin;
+  font-weight: 700;
+  font-size: 1.2rem;
+  letter-spacing: 0.05em;
+
+  &.succes {
+    color: #72d080;
+    border-color: #3a583f;
+    background-color: #2d3a2f;
+  }
+
+  &.warning {
+    color: #d07272;
+    border-color: #583a3a;
+    background-color: #3a2d2d;
+  }
+
+  &.link {
+    color: #7295d0;
+    border-color: #3a4c58;
+    background-color: #2d333a;
+  }
+}
