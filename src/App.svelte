@@ -1,9 +1,10 @@
 <script lang="ts">
   import Home from "./pages/Home.svelte";
+  import Titlebar from "./comps/Titlebar.svelte";
 </script>
 
 <main>
-  <div class="titlebar" />
+  <!-- <Titlebar /> -->
 
   <Home />
 </main>
@@ -49,13 +50,5 @@
     flex-direction: column;
 
     background-color: var(--middleground);
-  }
-
-  .titlebar {
-    height: 48px;
-    width: 100%;
-
-    background-color: var(--background);
-    border-top: 2px solid var(--background-border);
   }
 </style>
