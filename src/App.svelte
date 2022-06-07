@@ -1,11 +1,23 @@
 <script lang="ts">
   import Home from "./pages/Home.svelte";
-  import Titlebar from "./comps/Titlebar.svelte";
+  import CommandCenter from './comps/CommandCenter.svelte';
+
+  let commandCenter: boolean = false;
+
+  document.addEventListener("keydown", function(e) {
+    console.log("keydown: ", e);
+    if (e.ctrlKey && e.shiftKey && e.code === "KeyP") {
+      e.preventDefault();
+      commandCenter = !commandCenter;
+    }
+  });
 </script>
 
 <main>
-  <!-- <Titlebar /> -->
-
+  {#if commandCenter}
+    <CommandCenter />
+  {/if}
+  
   <Home />
 </main>
 
