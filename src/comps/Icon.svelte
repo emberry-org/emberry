@@ -1,0 +1,19 @@
+<script lang="ts">
+  import Icon from 'svelte-icon/Icon.svelte';
+  import { onMount } from 'svelte';
+
+  /** The name of the icon file without file extension */
+  export let name: string;
+  export let size: string = "20px";
+  export let strokeWidth: string = "0em";
+
+  let icon: string | undefined = undefined;
+
+  onMount(async () => {
+    icon = (await import(`../assets/icons/${ name }.svg?raw`) as any).default;
+  });
+</script>
+
+{#if icon}
+  <Icon data={icon} size={size} stroke="currentColor" fill="" style="stroke-width: { strokeWidth }" />
+{/if}

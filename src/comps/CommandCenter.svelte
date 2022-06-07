@@ -4,6 +4,7 @@
   import fetch from "../core/cmd-center/CmdFetcher";
   import { onDestroy, onMount } from "svelte";
   import { commandCenterState } from "../store";
+  import Icon from './Icon.svelte';
 
   let panel: HTMLDivElement;
   let input: HTMLInputElement;
@@ -54,7 +55,7 @@
 
     if (e.key == 'Enter') {
       e.preventDefault();
-      if (selected > 0 && selected < commands.length && commands.length > 0) {
+      if (selected >= 0 && selected < commands.length && commands.length > 0) {
         executeCommand(commands[selected]);
       }
     }
@@ -86,7 +87,7 @@
   <div class="suggestions">
     {#each commands as cmd, i}
       <div class="command { selected == i ? 'selected' : '' }" on:click={() => executeCommand(cmd)}>
-        <img src="https://api.iconify.design/fluent:window-dev-tools-16-filled.svg" alt="" />
+        <div class="icon"> <Icon name="develop" size="20px" /> </div>
         <div class="title"> { cmd.title } </div>
         <div class="shortcut">
           {#each cmd.accelerator as part, j}
@@ -152,8 +153,8 @@
         &:hover, &.selected {
           background-color: #00000022;
 
-          img {
-            filter: invert(70%);
+          .icon {
+            color: #aaaaaa;
           }
 
           .title {
@@ -161,14 +162,18 @@
           }
         }
 
-        img {
+        .icon {
           width: 20px;
           height: 20px;
 
           margin-left: 14px;
           margin-right: 14px;
 
-          filter: invert(50%);
+          color: #666666;
+
+          display: flex;
+          justify-content: center;
+          align-items: center;
         }
 
         .title {

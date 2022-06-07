@@ -29,7 +29,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "com.emberry.app",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
@@ -56,10 +56,10 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 600,
+        "height": 450,
         "resizable": true,
         "title": "Emberry",
-        "width": 800,
+        "width": 670,
         "minWidth": 432,
         "minHeight": 312
       }
