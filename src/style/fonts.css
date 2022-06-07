@@ -1,8 +1,26 @@
 
-  @font-face {
-    font-family: Josefin;
-    src: url(../assets/JosefinSans.ttf);
-  }
+@font-face {
+  font-family: Inter;
+  font-weight: bolder;
+  src: url(../assets/fonts/Inter-Black.ttf);
+}
+
+@font-face {
+  font-family: Inter;
+  font-weight: bold;
+  src: url(../assets/fonts/Inter-Bold.ttf);
+}
+
+@font-face {
+  font-family: Inter;
+  font-weight: normal;
+  src: url(../assets/fonts/Inter-Regular.ttf);
+}
+
+@font-face {
+  font-family: RadioCanada;
+  src: url(../assets/fonts/RadioCanada.ttf);
+}
 
 /* @font-face {
 	font-family: Josefin;

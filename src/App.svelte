@@ -1,20 +1,19 @@
 <script lang="ts">
   import Home from "./pages/Home.svelte";
   import CommandCenter from './comps/CommandCenter.svelte';
+  import { commandCenterState } from "./store";
 
-  let commandCenter: boolean = false;
-
+  /** Check for local shortcuts */
   document.addEventListener("keydown", function(e) {
-    console.log("keydown: ", e);
     if (e.ctrlKey && e.shiftKey && e.code === "KeyP") {
       e.preventDefault();
-      commandCenter = !commandCenter;
+      commandCenterState.set(true);
     }
   });
 </script>
 
 <main>
-  {#if commandCenter}
+  {#if $commandCenterState}
     <CommandCenter />
   {/if}
   
@@ -26,25 +25,27 @@
   @import './style/button.scss';
 
   :root {
-    font-family: Josefin, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    font-family: RadioCanada, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
       Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 
-    --background: #1a1a1a;
-    --background-border: #242424;
-    --middleground: #202020;
-    --middleground-border: #292929;
-    --foreground: #2b2b2b;
-    --foreground-border: #363636;
+    --bg: #202020;
+    --bg-border: #303030;
+    --mg: #272727;
+    --mg-border: #1d1d1d;
+    --fg: #2d2d2d;
+    --fg-border: #161616;
+
+    --primary: #60cdff;
 
     --logo: #ffffff;
-    --highlight: #ececec;
-    --text: #d2c2c3;
-    --lowlight: #525252;
+    --highlight: #ffffff;
+    --text: #cccccc;
+    --lowlight: #888888;
 
     --green: #7ce38b;
     --red: #fa7970;
     --orange: #faa356;
-    --blue: #77bdfb;
+    --blue: #60cdff;
     --purple: #cea5fb;
   }
 
@@ -61,6 +62,6 @@
     display: flex;
     flex-direction: column;
 
-    background-color: var(--middleground);
+    background-color: #333333;
   }
 </style>

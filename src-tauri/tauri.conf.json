@@ -59,7 +59,9 @@
         "height": 600,
         "resizable": true,
         "title": "Emberry",
-        "width": 800
+        "width": 800,
+        "minWidth": 432,
+        "minHeight": 312
       }
     ]
   }
