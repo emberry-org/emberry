@@ -62,6 +62,6 @@
     display: flex;
     flex-direction: column;
 
-    background-color: #333333;
+    background-color: #202020;
   }
 </style>

@@ -12,5 +12,6 @@ type VoidAction = () => void;
 // type StringAction = () => string;
 
 export enum CmdType {
-  Developer
+  Developer = 'develop',
+  Window = 'window',
 }

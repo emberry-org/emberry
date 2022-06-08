@@ -87,7 +87,7 @@
   <div class="suggestions">
     {#each commands as cmd, i}
       <div class="command { selected == i ? 'selected' : '' }" on:click={() => executeCommand(cmd)}>
-        <div class="icon"> <Icon name="develop" size="20px" /> </div>
+        <div class="icon"> <Icon name={ cmd.type } size="20px" /> </div>
         <div class="title"> { cmd.title } </div>
         <div class="shortcut">
           {#each cmd.accelerator as part, j}
@@ -117,7 +117,7 @@
     transform: translateX(-50%);
 
     background-color: #1a1a1a;
-    border: 2px solid var(--bg-border);
+    border: 2px solid #333333;
     border-radius: 8px;
 
     overflow: hidden;
