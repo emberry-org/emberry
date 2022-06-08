@@ -116,8 +116,8 @@
 
     transform: translateX(-50%);
 
-    background-color: #1a1a1a;
-    border: 2px solid #333333;
+    background-color: #171717;
+    border: 1.5px solid #ffffff22;
     border-radius: 8px;
 
     overflow: hidden;
@@ -132,7 +132,7 @@
 
       outline: none;
       border: none;
-      background: #232323;
+      background: #1f1f1f;
       color: #dddddd;
 
       font-size: 0.9rem;
@@ -151,10 +151,10 @@
         cursor: pointer;
 
         &:hover, &.selected {
-          background-color: #00000022;
+          background-color: #00000033;
 
           .icon {
-            color: #aaaaaa;
+            color: #9d9d9d;
           }
 
           .title {
@@ -169,7 +169,7 @@
           margin-left: 14px;
           margin-right: 14px;
 
-          color: #666666;
+          color: #4d4d4d;
 
           display: flex;
           justify-content: center;
@@ -194,7 +194,7 @@
 
           span {
             padding: 2px 6px 2px 6px;
-            background-color: #282828;
+            background-color: #242424;
             border-radius: 6px;
             margin-left: 5px;
           }

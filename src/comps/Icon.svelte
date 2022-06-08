@@ -11,5 +11,5 @@
 </script>
 
 {#if icon}
-  <Icon data={icon} size={size} stroke="currentColor" fill="" style="stroke-width: { strokeWidth }" />
+  <Icon data={icon} size={size} stroke="currentColor" style="stroke-width: { strokeWidth }" />
 {/if}
