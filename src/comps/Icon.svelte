@@ -1,5 +1,6 @@
 <script lang="ts">
   import Icon from 'svelte-icon/Icon.svelte';
+  import { IconArchive } from '../assets/icons/Archive';
   import { onMount } from 'svelte';
 
   /** The name of the icon file without file extension */
@@ -10,7 +11,7 @@
   let icon: string | undefined = undefined;
 
   onMount(async () => {
-    icon = (await import(`../assets/icons/${ name }.svg?raw`) as any).default;
+    icon = IconArchive[name];
   });
 </script>
 
