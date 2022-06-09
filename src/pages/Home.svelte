@@ -10,10 +10,13 @@
 
   <div class="content">
     <div class="titlebar">
+      <div class="block">
+        
+      </div>
       <button>
         <Icon name="terminal" size="20px" />
       </button>
-      <button>
+      <button disabled>
         <Icon name="terminal" size="20px" />
       </button>
       <button>
@@ -21,12 +24,16 @@
       </button>
 
       <button style="margin-left: auto;">
-        <Icon name="terminal" size="20px" />
+        <Icon name="call" size="20px" />
       </button>
       <button>
-        <Icon name="terminal" size="20px" />
+        <Icon name="video" size="20px" />
       </button>
     </div>
+    <div style="display: flex;">
+      <p class="text-header" style="margin-left: 16px; margin-right: 12px;">Header</p> <p class="text-small">Some text</p>
+    </div>
+    <p class="text-normal" style="margin-left: 16px;">Some text</p>
   </div>
 </div>
 
@@ -41,8 +48,8 @@
       width: 200px;
       height: 100%;
 
-      background-color: #262626;
-      border-right: 1.5px solid #323232;
+      background-color: #1e1f20;
+      border-right: 1.5px solid #2b2d30;
     }
 
     .content {
@@ -57,36 +64,13 @@
 
         padding: 8px;
 
-        border-bottom: 1.5px solid #323232;
+        border-bottom: 1px solid #2b2d30;
 
-        button {
-          width: 30px;
-          height: 30px;
-
-          margin-right: 8px;
-          padding: 0;
-
-          display: flex;
-          justify-content: center;
-          align-items: center;
-
-          background-color: transparent;
-          color: #999999;
-          border-radius: 6px;
-          border: none;
-          outline: none;
-          cursor: pointer;
-
-          &:disabled {
-            background-color: transparent !important;
-            color: #4c4c4c;
-            cursor: default;
-          }
-
-          &:hover {
-            background-color: #ffffff11;
-            color: #cccccc;
-          }
+        .block {
+          background-image: linear-gradient(-45deg, #22ce53,#52ec7d);
+          border-radius: 4px;
+          margin-left: 4px;
+          margin-right: 20px;
         }
       }
     }

@@ -22,7 +22,7 @@
 
 <style lang="scss" global>
   @import './style/fonts.css';
-  @import './style/button.scss';
+  @import './style/global.scss';
 
   :root {
     font-family: RadioCanada, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
@@ -62,6 +62,6 @@
     display: flex;
     flex-direction: column;
 
-    background-color: #202020;
+    background-color: #121212;
   }
 </style>
