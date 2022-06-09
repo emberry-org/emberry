@@ -1,4 +1,4 @@
-import DefaultIcon from './default.svg?raw';
+import FallbackIcon from './fallback.svg?raw';
 
 import DebugIcon from './debug.svg?raw';
 import ControlIcon from './control.svg?raw';
@@ -11,7 +11,8 @@ import AddressBookIcon from './address-book.svg?raw';
  * Static archive for all the used icons.
  */
 export const IconArchive = {
-  default: DefaultIcon,
+  fallback: FallbackIcon,
+  
   debug: DebugIcon,
   control: ControlIcon,
   terminal: TerminalIcon,

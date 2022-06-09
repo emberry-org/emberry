@@ -14,7 +14,7 @@
     if (Object.keys(IconArchive).includes(name)) {
       return IconArchive[name];
     } else {
-      return IconArchive["default"];
+      return IconArchive["fallback"];
     }
   }
 </script>
