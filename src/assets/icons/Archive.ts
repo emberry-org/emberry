@@ -1,16 +1,21 @@
+import DefaultIcon from './default.svg?raw';
+
 import DebugIcon from './debug.svg?raw';
-import WindowIcon from './window.svg?raw';
+import ControlIcon from './control.svg?raw';
 import TerminalIcon from './terminal.svg?raw';
 import VideoIcon from './video.svg?raw';
 import CallIcon from './call.svg?raw';
+import AddressBookIcon from './address-book.svg?raw';
 
 /**
  * Static archive for all the used icons.
  */
 export const IconArchive = {
-    debug: DebugIcon,
-    window: WindowIcon,
-    terminal: TerminalIcon,
-    video: VideoIcon,
-    call: CallIcon,
+  default: DefaultIcon,
+  debug: DebugIcon,
+  control: ControlIcon,
+  terminal: TerminalIcon,
+  video: VideoIcon,
+  call: CallIcon,
+  addressBook: AddressBookIcon,
 }

@@ -13,5 +13,5 @@ type VoidAction = () => void;
 
 export enum CmdType {
   Debug = 'debug',
-  Window = 'window',
+  Control = 'control',
 }

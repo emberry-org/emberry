@@ -22,6 +22,16 @@
   src: url(../assets/fonts/RadioCanada.ttf);
 }
 
+@font-face {
+  font-family: Chillax;
+  src: url(../assets/fonts/Chillax-Variable.ttf);
+}
+
+@font-face {
+  font-family: Amulya;
+  src: url(../assets/fonts/Amulya-Variable.ttf);
+}
+
 /* @font-face {
 	font-family: Josefin;
 	src: url(../assets/JosefinSans-Italic.ttf);

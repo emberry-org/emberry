@@ -25,7 +25,7 @@
   @import './style/global.scss';
 
   :root {
-    font-family: RadioCanada, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    font-family: Amulya, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
       Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 
     --bg: #202020;
@@ -62,6 +62,6 @@
     display: flex;
     flex-direction: column;
 
-    background-color: #121212;
+    background-color: #1c1c1c;
   }
 </style>

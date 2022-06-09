@@ -7,7 +7,16 @@
   export let size: string = "20px";
   export let strokeWidth: string = "0em";
 
-  $: icon = IconArchive[name];
+  $: icon = fetchIcon(name);
+
+  /** Fetch the icon svg with a given name */
+  function fetchIcon(name: string): string {
+    if (Object.keys(IconArchive).includes(name)) {
+      return IconArchive[name];
+    } else {
+      return IconArchive["default"];
+    }
+  }
 </script>
 
 {#if icon}

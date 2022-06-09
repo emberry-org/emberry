@@ -1,56 +1,60 @@
 button {
-    width: 30px;
-    height: 30px;
+  width: 30px;
+  height: 30px;
 
-    margin-right: 8px;
-    padding: 0;
+  margin-right: 8px;
+  padding: 0;
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
-    background-color: transparent;
-    color: #9097a6;
-    border-radius: 6px;
-    border: none;
-    outline: none;
-    cursor: pointer;
+  background-color: transparent;
+  color: #999999;
+  border-radius: 6px;
+  border: none;
+  outline: none;
+  cursor: pointer;
 
-    &:disabled {
-        background-color: transparent !important;
-        color: #4f545d !important;
-        cursor: default;
-    }
+  &:disabled {
+    background-color: transparent !important;
+    color: #4c4c4c !important;
+    cursor: default;
+  }
 
-    &:hover {
-        background-color: #ffffff11;
-        color: #f8ffff;
-    }
+  &:hover {
+    background-color: #ffffff14;
+    color: #cccccc;
+  }
 }
 
 .block {
-    width: 24px;
-    height: 24px;
+  width: 24px;
+  height: 24px;
 
-    margin-right: 11px;
-    margin-top: 3px;
-    padding: 0;
+  margin-right: 11px;
+  margin-top: 3px;
+  padding: 0;
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
-    border-radius: 6px;
+  border-radius: 6px;
 }
 
-h1, h2, h3, .text-header {
-    color: #f8ffff;
+h1,
+h2,
+h3,
+.text-header {
+  color: #eeeeee;
 }
 
-p, .text-normal {
-    color: #9097a6;
+p,
+.text-normal {
+  color: #999999;
 }
 
 .text-small {
-    color: #606772;
+  color: #666666;
 }

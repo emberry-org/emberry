@@ -20,14 +20,14 @@
         <Icon name="terminal" size="20px" />
       </button>
       <button>
-        <Icon name="terminal" size="20px" />
+        <Icon name="" size="20px" />
       </button>
 
       <button style="margin-left: auto;">
         <Icon name="call" size="20px" />
       </button>
       <button>
-        <Icon name="video" size="20px" />
+        <Icon name="addressBook" size="20px" />
       </button>
     </div>
     <div style="display: flex;">
@@ -48,8 +48,8 @@
       width: 200px;
       height: 100%;
 
-      background-color: #1e1f20;
-      border-right: 1.5px solid #2b2d30;
+      background-color: #242424;
+      border-right: 1.5px solid #383838;
     }
 
     .content {
@@ -63,8 +63,9 @@
         display: flex;
 
         padding: 8px;
+        padding-bottom: 8px;
 
-        border-bottom: 1px solid #2b2d30;
+        border-bottom: 1.5px solid #ffffff11;
 
         .block {
           background-image: linear-gradient(-45deg, #22ce53,#52ec7d);

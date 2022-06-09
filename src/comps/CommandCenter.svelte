@@ -132,6 +132,7 @@
 
       outline: none;
       border: none;
+      border-bottom: 1.5px solid #ffffff1b;
       background: #1f1f1f;
       color: #dddddd;
 
@@ -141,24 +142,25 @@
     .suggestions {
       flex-grow: 1;
       width: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 
       .command {
         width: 100%;
-        height: 36px;
+        height: 28px;
         display: flex;
         align-items: center;
 
         cursor: pointer;
 
         &:hover, &.selected {
-          background-color: #00000033;
+          background-color: #ffffff0b;
 
           .icon {
             color: #9d9d9d;
           }
 
           .title {
-            color: #dddddd;
+            color: #bdbdbd;
           }
         }
 
@@ -166,8 +168,8 @@
           width: 20px;
           height: 20px;
 
-          margin-left: 14px;
-          margin-right: 14px;
+          margin-left: 8px;
+          margin-right: 8px;
 
           color: #4d4d4d;
 
@@ -177,25 +179,26 @@
         }
 
         .title {
-          color: #bbbbbb;
-          font-size: 0.8rem;
-          font-weight: normal;
-          font-family: Inter;
+          color: #6d6d6d;
+          font-size: 13px;
+          font-weight: 450;
           flex-grow: 1;
 
           white-space: nowrap;
         }
 
         .shortcut {
-          font-size: 0.8rem;
-          color: #888888;
+          font-size: 13px;
+          color: #555555;
           margin-right: 14px;
           min-width: fit-content;
 
           span {
+            font-size: 11px;
             padding: 2px 6px 2px 6px;
-            background-color: #242424;
-            border-radius: 6px;
+            background-color: #ffffff11;
+            color: #999999;
+            border-radius: 4px;
             margin-left: 5px;
           }
         }
