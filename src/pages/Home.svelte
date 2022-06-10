@@ -1,6 +1,10 @@
 <script lang="ts">
+  import { useNavigate } from "svelte-navigator";
+
   import Icon from "../comps/Icon.svelte";
 
+  const nav = useNavigate();
+  nav('chat/abc123');
 </script>
 
 <div class="home">
@@ -13,20 +17,20 @@
       <div class="block">
         
       </div>
-      <button>
+      <button class="icon-button">
         <Icon name="terminal" size="20px" />
       </button>
-      <button disabled>
+      <button class="icon-button" disabled>
         <Icon name="terminal" size="20px" />
       </button>
-      <button>
+      <button class="icon-button">
         <Icon name="" size="20px" />
       </button>
 
-      <button style="margin-left: auto;">
+      <button class="icon-button" style="margin-left: auto;">
         <Icon name="call" size="20px" />
       </button>
-      <button>
+      <button class="icon-button">
         <Icon name="addressBook" size="20px" />
       </button>
     </div>

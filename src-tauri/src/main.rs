@@ -3,8 +3,19 @@
   windows_subsystem = "windows"
 )]
 
+use tauri::Manager;
+
+mod window;
+use window::set_shadow;
+
 fn main() {
   tauri::Builder::default()
+    .setup(|app| {
+      let window = app.get_window("main").unwrap();
+
+      set_shadow(&window, true).expect("Unsupported platform!");
+      Ok(())
+    })
     .invoke_handler(tauri::generate_handler![toggle_devtools])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

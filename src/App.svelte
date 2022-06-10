@@ -1,5 +1,8 @@
 <script lang="ts">
+  import { Router, Route } from "svelte-navigator";
+  import Titlebar from "./comps/Titlebar.svelte";
   import Home from "./pages/Home.svelte";
+  import Chat from "./pages/Chat.svelte";
   import CommandCenter from './comps/CommandCenter.svelte';
   import { commandCenterState } from "./store";
 
@@ -16,8 +19,17 @@
   {#if $commandCenterState}
     <CommandCenter />
   {/if}
-  
-  <Home />
+
+  <Titlebar />
+
+  <Router>
+    <Route path="/">
+      <Home />
+    </Route>
+    <Route path="/chat/:id" let:params>
+      <Chat id={params.id} />
+    </Route>
+  </Router>
 </main>
 
 <style lang="scss" global>
