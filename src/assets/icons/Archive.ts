@@ -9,6 +9,7 @@ import ChatIcon from './chat.svg?raw';
 import ChatMsgIcon from './chat-msg.svg?raw';
 import SearchIcon from './search.svg?raw';
 import AddIcon from './add.svg?raw';
+import StatusIcon from './status.svg?raw';
 
 import DebugIcon from './debug.svg?raw';
 import ControlIcon from './control.svg?raw';
@@ -28,6 +29,7 @@ export const IconArchive = {
   maximize: MaximizeIcon,
   close: CloseIcon,
   
+  status: StatusIcon,
   add: AddIcon,
   search: SearchIcon,
   chat: ChatIcon,

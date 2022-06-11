@@ -7,27 +7,31 @@
 <div class="address-book" style="margin-left: { $addressBookState ? '0px' : '-300px' }">
   <div class="toolbar">
     <button class="icon-button">
-      <Icon name="search" size="16px" />
+      <Icon name="search" size="14px" />
     </button>
     <button class="icon-button float-right">
-      <Icon name="add" size="16px" />
+      <Icon name="add" size="14px" />
     </button>
   </div>
 
-  <div class="address">
-    Mjex 
+  <div class="address status-online">
+    <Icon name="status" size="64px" />
+    <span class="name">Mjex</span>
     <sup>(abcd-1234-efgh-5678)</sup>
   </div>
-  <div class="address">
-    Devensiv 
+  <div class="address status-connected">
+    <Icon name="status" size="64px" />
+    <span class="name">Devensiv</span>
     <sup>(abcd-1234-efgh-5678)</sup>
   </div>
-  <div class="address">
-    Roboolet 
+  <div class="address status-offline">
+    <Icon name="status" size="64px" />
+    <span class="name">Roboolet</span>
     <sup>(abcd-1234-efgh-5678)</sup>
   </div>
-  <div class="address">
-    Funky 
+  <div class="address status-offline">
+    <Icon name="status" size="64px" />
+    <span class="name">Funky</span>
     <sup>(abcd-1234-efgh-5678)</sup>
   </div>
 </div>
@@ -71,10 +75,12 @@
   .address {
     position: relative;
 
-    width: fit-content;
+    width: calc(100% - 22px);
     min-width: 128px;
-    height: 25px;
+    height: 30px;
 
+    display: flex;
+    align-items: center;
     margin-top: 6px;
 
     border-radius: 4px;
@@ -82,13 +88,25 @@
     border: 1.5px solid #ffffff11;
     box-shadow: 0 1px 2px 0 #00000055;
     
-    color: #bbb;
     margin-left: 6px;
-    padding-left: 3px;
-    font-size: 0.7rem;
-    font-family: Inter;
-    margin-bottom: 1px;
+    padding-left: 8px;
     user-select: none;
+    overflow: hidden;
+
+    :global(svg) {
+      position: absolute;
+      top: -32px;
+      left: -40px;
+      opacity: .2;
+    }
+
+    .name {
+      color: #aaa;
+      font-size: 14px;
+      font-family: Inter;
+      margin-left: 8px;
+      z-index: 1;
+    }
 
     sup {
       position: absolute;
@@ -99,6 +117,24 @@
       font-size: 0.5rem;
       font-style: italic;
       color: #888;
+    }
+
+    &.status {
+      &-online {
+        color: #50de59;
+      }
+
+      &-offline {
+        color: #57595c;
+
+        .name {
+          color: #777;
+        }
+      }
+
+      &-connected {
+        color: #b175eb;
+      }
     }
   }
 }

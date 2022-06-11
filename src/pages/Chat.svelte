@@ -12,7 +12,7 @@
 
   <div class="toolbar">
     <button class="icon-button" on:click={toggleAddressBook}>
-      <Icon name="addressBook" size="20px" />
+      <Icon name="addressBook" size="16px" />
     </button>
     <div class="seperator" />
     <div class="username">Roboolet</div>
@@ -51,11 +51,12 @@
     button {
       margin-left: 4px;
       margin-right: 4px;
+      padding-bottom: 1px;
     }
 
     .seperator {
       width: 0px;
-      height: 80%;
+      height: 65%;
 
       border-right: 1.5px solid #ffffff18;
     }
@@ -66,7 +67,7 @@
       font-size: 0.9rem;
       color: #aaa;
 
-      margin-left: 8px;
+      margin-left: 10px;
     }
   }
 

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" fill="currentColor">
+  <mask id="status-circle-mask">
+    <rect shape-rendering="crispEdges" width="16" height="16" x="0" y="0" fill="white" />
+    <circle cx="6" cy="6" r="3" fill="black" />
+  </mask>
+
+  <circle cx="6" cy="6" r="6" fill="currentColor" mask="url(#status-circle-mask)" />
+</svg>

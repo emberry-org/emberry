@@ -111,18 +111,19 @@
   height: fit-content;
   max-height: 60vh;
 
-  top: 64px;
+  top: 4px;
   left: 50%;
 
   transform: translateX(-50%);
 
-  background-color: #171717;
+  background-color: #212327;
   border: 1.5px solid #ffffff22;
-  border-radius: 8px;
+  border-radius: 6px;
 
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  z-index: 9999;
 
   .input {
     width: 100%;
@@ -133,7 +134,7 @@
     outline: none;
     border: none;
     border-bottom: 1.5px solid #ffffff1b;
-    background: #1f1f1f;
+    background: #212327;
     color: #dddddd;
 
     font-size: 0.9rem;
@@ -142,7 +143,7 @@
   .suggestions {
     flex-grow: 1;
     width: 100%;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: Inter;
 
     .command {
       width: 100%;
@@ -153,14 +154,14 @@
       cursor: pointer;
 
       &:hover, &.selected {
-        background-color: #ffffff0b;
+        background-color: #292b2f;
 
         .icon {
-          color: #9d9d9d;
+          color: #aaa;
         }
 
         .title {
-          color: #bdbdbd;
+          color: #aaa;
         }
       }
 
