@@ -1,14 +1,17 @@
 <script lang="ts">
   import Icon from "../comps/Icon.svelte";
+  import { addressBookState } from "../store";
 
   export let id: string;
+
+  function toggleAddressBook() { addressBookState.set(!$addressBookState); }
 
 </script>
 
 <div class="chat">
 
   <div class="toolbar">
-    <button class="icon-button">
+    <button class="icon-button" on:click={toggleAddressBook}>
       <Icon name="addressBook" size="20px" />
     </button>
     <div class="seperator" />

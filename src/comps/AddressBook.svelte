@@ -1,9 +1,10 @@
 <script lang="ts">
   import Icon from "./Icon.svelte";
+  import { addressBookState } from "../store";
 
 </script>
 
-<div class="address-book">
+<div class="address-book" style="margin-left: { $addressBookState ? '0px' : '-300px' }">
   <div class="toolbar">
     <button class="icon-button">
       <Icon name="search" size="16px" />
@@ -43,7 +44,7 @@
 
   background-color: #212327;
   border-right: 1.5px solid #434547;
-  box-shadow: 0 1px 2px 0 #00000055;
+  transition: margin-left 0.5s ease;
 
   .toolbar {
     width: 100%;

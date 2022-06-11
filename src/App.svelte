@@ -5,7 +5,7 @@
   import Chat from "./pages/Chat.svelte";
   import CommandCenter from './comps/CommandCenter.svelte';
   import { commandCenterState } from "./store";
-import AddressBook from "./comps/AddressBook.svelte";
+  import AddressBook from "./comps/AddressBook.svelte";
 
   /** Check for local shortcuts */
   document.addEventListener("keydown", function(e) {
