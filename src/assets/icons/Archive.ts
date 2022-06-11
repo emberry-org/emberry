@@ -1,4 +1,5 @@
 import FallbackIcon from './fallback.svg?raw';
+import LogoIcon from './logo.svg?raw';
 
 import MinimizeIcon from './window/minimize.svg?raw';
 import MaximizeIcon from './window/maximize.svg?raw';
@@ -23,6 +24,7 @@ import AddressBookIcon from './address-book.svg?raw';
  */
 export const IconArchive = {
   fallback: FallbackIcon,
+  logo: LogoIcon,
 
   minimize: MinimizeIcon,
   unmaximize: UnmaximizeIcon,

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Feed from "../comps/Feed.svelte";
   import Icon from "../comps/Icon.svelte";
   import { addressBookState } from "../store";
 
@@ -19,7 +20,7 @@
   </div>
 
   <div class="logs">
-
+    <Feed chat={[ { sender: 'Mjex', content: 'Hello world!' }, { sender: 'Mjex', content: 'Another Message!! :D' }, { sender: 'Roboolet', content: 'Wassup *_*' } ]} />
   </div>
 
   <div class="input">
@@ -90,12 +91,16 @@
       height: 32px; 
 
       margin-top: 8px;
+      padding: 0 12px 0 12px;
       box-shadow: 0 1px 2px 0 #00000055;
 
       background-color: #37383c;
-      border: 1.5px solid #434547;
+      border: 1.5px solid #454749;
       outline: none;
       border-radius: 4px;
+
+      color: #ccc;
+      font-size: 1rem;
     }
   }
 }
