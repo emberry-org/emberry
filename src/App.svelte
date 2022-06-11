@@ -5,6 +5,7 @@
   import Chat from "./pages/Chat.svelte";
   import CommandCenter from './comps/CommandCenter.svelte';
   import { commandCenterState } from "./store";
+import AddressBook from "./comps/AddressBook.svelte";
 
   /** Check for local shortcuts */
   document.addEventListener("keydown", function(e) {
@@ -22,14 +23,18 @@
 
   <Titlebar />
 
-  <Router>
-    <Route path="/">
-      <Home />
-    </Route>
-    <Route path="/chat/:id" let:params>
-      <Chat id={params.id} />
-    </Route>
-  </Router>
+  <div class="body">
+    <AddressBook />
+
+    <Router>
+      <Route path="/">
+        <Home />
+      </Route>
+      <Route path="/chat/:id" let:params>
+        <Chat id={params.id} />
+      </Route>
+    </Router>
+  </div>
 </main>
 
 <style lang="scss" global>
@@ -75,5 +80,11 @@
     flex-direction: column;
 
     background-color: #292b2f;
+
+    .body {
+      width: 100%;
+      height: 100%;
+      display: flex;
+    }
   }
 </style>

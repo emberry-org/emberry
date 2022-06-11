@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from "../comps/Icon.svelte";
 
   export let id: string;
 
@@ -7,7 +8,11 @@
 <div class="chat">
 
   <div class="toolbar">
-
+    <button class="icon-button">
+      <Icon name="addressBook" size="20px" />
+    </button>
+    <div class="seperator" />
+    <div class="username">Roboolet</div>
   </div>
 
   <div class="logs">
@@ -31,11 +36,35 @@
 
   .toolbar {
     width: 100%;
-    height: 24px;
+    height: 32px;
+
+    display: flex;
+    align-items: center;
 
     background-color: #37383c;
     border-bottom: 1.5px solid #434547;
     box-shadow: 0 1px 2px 0 #00000055;
+
+    button {
+      margin-left: 4px;
+      margin-right: 4px;
+    }
+
+    .seperator {
+      width: 0px;
+      height: 80%;
+
+      border-right: 1.5px solid #ffffff18;
+    }
+
+    .username {
+      font-family: Inter;
+      font-weight: 500;
+      font-size: 0.9rem;
+      color: #aaa;
+
+      margin-left: 8px;
+    }
   }
 
   .logs {
@@ -45,16 +74,18 @@
 
   .input {
     width: 100%;
-    height: 60px;
+    height: 64px;
 
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     
     input {
       width: calc(100% - 32px);
-      height: 28px; 
+      max-width: 50vw;
+      height: 32px; 
 
+      margin-top: 8px;
       box-shadow: 0 1px 2px 0 #00000055;
 
       background-color: #37383c;

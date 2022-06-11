@@ -18,21 +18,23 @@
   <!-- Makes sure you can always drag the window -->
   {#if !maximized} <div class="drag-square" /> {/if}
 
-  <div class="tab">
-    <Icon name="chat" size="16px" />
-    <span> Mjex </span>
-  </div>
-  <div class="tab">
-    <Icon name="chatMsg" size="16px" />
-    <span> Devensiv </span>
-  </div>
-  <div class="tab" selected>
-    <Icon name="chat" size="16px" />
-    <span> Roboolet </span>
-  </div>
-  <div class="tab">
-    <Icon name="chatMsg" size="16px" />
-    <span> Funky </span>
+  <div class="tabs">
+    <div class="tab">
+      <Icon name="chat" size="16px" />
+      <span> Mjex </span>
+    </div>
+    <div class="tab">
+      <Icon name="chatMsg" size="16px" />
+      <span> Devensiv </span>
+    </div>
+    <div class="tab" selected>
+      <Icon name="chat" size="16px" />
+      <span> Roboolet </span>
+    </div>
+    <div class="tab">
+      <Icon name="chatMsg" size="16px" />
+      <span> Funky </span>
+    </div>
   </div>
 
   <div class="button float-right" on:click={minimize}>
@@ -49,7 +51,7 @@
 <style lang="scss">
 
 .titlebar {
-  width: 100%;
+  width: 100vw;
   height: 44px;
   
   display: flex;
@@ -61,51 +63,69 @@
 
   .drag-square {
     width: 45.6px;
+    min-width: 45.6px;
     height: 44px;
 
     pointer-events: none;
   }
 
-  .tab {
-    // Tabs have 1 px offset when the window isn't maximized.
-    margin-top: var(--maximized);
-
-    min-width: 16px;
-    min-height: 16px;
-    height: 16px;
+  .tabs {
+    flex-grow: 1;
+    height: 44px;
 
     display: flex;
     align-items: center;
+    overflow: hidden;
+    pointer-events: none;
 
-    padding: 8px;
-    margin-left: 4px;
+    .tab {
+      // Tabs have 1 px offset when the window isn't maximized.
+      margin-top: var(--maximized);
 
-    border-radius: 4px;
-    cursor: pointer;
-    color: #737578;
+      min-width: fit-content;
+      min-height: 16px;
+      height: 16px;
 
-    span {
-      color: #bbb;
-      margin-left: 8px;
-      font-size: 0.7rem;
-      font-family: Inter;
-      margin-bottom: 1px;
-      user-select: none;
-    }
+      display: flex;
+      align-items: center;
 
-    &:hover {
-      background-color: #ffffff11;
-    }
+      padding: 8px;
+      margin-left: 4px;
 
-    &[selected] {
-      background-color: #00000044;
-      color: #636568;
-      cursor: default;
+      pointer-events: all;
+      border-radius: 4px;
+      cursor: pointer;
+      color: #737578;
+
+      :global(svg) {
+        min-width: 16px;
+        min-height: 16px;
+      }
+
+      span {
+        color: #bbb;
+        margin-left: 8px;
+        font-size: 0.7rem;
+        font-family: Inter;
+        margin-bottom: 1px;
+        user-select: none;
+      }
+
+      &:hover {
+        background-color: #ffffff11;
+      }
+
+      &[selected] {
+        background-color: #00000044;
+        color: #636568;
+        cursor: default;
+      }
     }
   }
 
   .button {
     width: 45.6px;
+    min-width: 45.6px;
     height: 44px;
 
     display: flex;
@@ -125,10 +145,6 @@
       background-color: #c42b1c;
     }
   }
-}
-
-.float-right {
-  margin-left: auto;
 }
 
 </style>

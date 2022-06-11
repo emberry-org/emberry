@@ -104,106 +104,106 @@
 <style lang="scss">
 
 .command-center {
-    position: absolute;
+  position: absolute;
 
-    width: 60vw;
-    max-width: 420px;
-    height: fit-content;
-    max-height: 60vh;
+  width: 60vw;
+  max-width: 420px;
+  height: fit-content;
+  max-height: 60vh;
 
-    top: 16px;
-    left: 50%;
+  top: 64px;
+  left: 50%;
 
-    transform: translateX(-50%);
+  transform: translateX(-50%);
 
-    background-color: #171717;
-    border: 1.5px solid #ffffff22;
-    border-radius: 8px;
+  background-color: #171717;
+  border: 1.5px solid #ffffff22;
+  border-radius: 8px;
 
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 
-    .input {
+  .input {
+    width: 100%;
+    height: 36px;
+
+    padding-left: 12px;
+
+    outline: none;
+    border: none;
+    border-bottom: 1.5px solid #ffffff1b;
+    background: #1f1f1f;
+    color: #dddddd;
+
+    font-size: 0.9rem;
+  }
+
+  .suggestions {
+    flex-grow: 1;
+    width: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+    .command {
       width: 100%;
-      height: 36px;
+      height: 28px;
+      display: flex;
+      align-items: center;
 
-      padding-left: 12px;
+      cursor: pointer;
 
-      outline: none;
-      border: none;
-      border-bottom: 1.5px solid #ffffff1b;
-      background: #1f1f1f;
-      color: #dddddd;
-
-      font-size: 0.9rem;
-    }
-
-    .suggestions {
-      flex-grow: 1;
-      width: 100%;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-
-      .command {
-        width: 100%;
-        height: 28px;
-        display: flex;
-        align-items: center;
-
-        cursor: pointer;
-
-        &:hover, &.selected {
-          background-color: #ffffff0b;
-
-          .icon {
-            color: #9d9d9d;
-          }
-
-          .title {
-            color: #bdbdbd;
-          }
-        }
+      &:hover, &.selected {
+        background-color: #ffffff0b;
 
         .icon {
-          width: 20px;
-          height: 20px;
-
-          margin-left: 8px;
-          margin-right: 8px;
-
-          color: #4d4d4d;
-
-          display: flex;
-          justify-content: center;
-          align-items: center;
+          color: #9d9d9d;
         }
 
         .title {
-          color: #6d6d6d;
-          font-size: 13px;
-          font-weight: 450;
-          flex-grow: 1;
-
-          white-space: nowrap;
+          color: #bdbdbd;
         }
+      }
 
-        .shortcut {
-          font-size: 13px;
-          color: #555555;
-          margin-right: 14px;
-          min-width: fit-content;
+      .icon {
+        width: 20px;
+        height: 20px;
 
-          span {
-            font-size: 11px;
-            padding: 2px 6px 2px 6px;
-            background-color: #ffffff11;
-            color: #999999;
-            border-radius: 4px;
-            margin-left: 5px;
-          }
+        margin-left: 8px;
+        margin-right: 8px;
+
+        color: #4d4d4d;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .title {
+        color: #6d6d6d;
+        font-size: 13px;
+        font-weight: 450;
+        flex-grow: 1;
+
+        white-space: nowrap;
+      }
+
+      .shortcut {
+        font-size: 13px;
+        color: #555555;
+        margin-right: 14px;
+        min-width: fit-content;
+
+        span {
+          font-size: 11px;
+          padding: 2px 6px 2px 6px;
+          background-color: #ffffff11;
+          color: #999999;
+          border-radius: 4px;
+          margin-left: 5px;
         }
       }
     }
+  }
 }
 
 </style>
