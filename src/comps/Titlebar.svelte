@@ -26,7 +26,7 @@
     <Icon name="chatMsg" size="16px" />
     <span> Devensiv </span>
   </div>
-  <div class="tab">
+  <div class="tab" selected>
     <Icon name="chat" size="16px" />
     <span> Roboolet </span>
   </div>
@@ -56,8 +56,8 @@
   align-items: center;
   z-index: 1;
 
-  background-color: #1c1c1c;
-  border-bottom: 1.5px solid #ffffff18;
+  background-color: #212327;
+  border-bottom: 1.5px solid #434547;
 
   .drag-square {
     width: 45.6px;
@@ -81,8 +81,8 @@
     margin-left: 4px;
 
     border-radius: 4px;
-    border: 1.5px solid #ffffff22;
-    color: #ffffff55;
+    cursor: pointer;
+    color: #737578;
 
     span {
       color: #bbb;
@@ -91,6 +91,16 @@
       font-family: Inter;
       margin-bottom: 1px;
       user-select: none;
+    }
+
+    &:hover {
+      background-color: #ffffff11;
+    }
+
+    &[selected] {
+      background-color: #00000044;
+      color: #636568;
+      cursor: default;
     }
   }
 
@@ -108,7 +118,7 @@
     color: #fff;
 
     &:hover {
-      background-color: #ffffff18;
+      background-color: #ffffff11;
     }
 
     &.close:hover {

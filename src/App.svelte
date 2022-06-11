@@ -74,6 +74,6 @@
     display: flex;
     flex-direction: column;
 
-    background-color: #1c1c1c;
+    background-color: #292b2f;
   }
 </style>
