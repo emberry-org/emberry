@@ -1,7 +1,7 @@
 <script lang="ts">
   import { useNavigate } from "svelte-navigator";
 
-  import Icon from "../comps/Icon.svelte";
+  import Icon from "@lib/Icon.svelte";
 
   const nav = useNavigate();
   nav('chat/abc123');

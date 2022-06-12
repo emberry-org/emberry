@@ -1,6 +1,6 @@
 <script lang="ts">
-  import Icon from "./Icon.svelte";
-  import { addressBookState } from "../store";
+  import Icon from "@lib/Icon.svelte";
+  import { addressBookState } from "@store";
 
 </script>
 

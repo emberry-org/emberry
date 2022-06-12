@@ -1,6 +1,6 @@
 <script lang="ts">
   import { appWindow } from '@tauri-apps/api/window'
-  import Icon from "./Icon.svelte";
+  import Icon from "@lib/Icon.svelte";
 
   let maximized: boolean = false;
 

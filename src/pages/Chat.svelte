@@ -1,7 +1,7 @@
 <script lang="ts">
-  import Feed from "../comps/Feed.svelte";
-  import Icon from "../comps/Icon.svelte";
-  import { addressBookState } from "../store";
+  import Feed from "@lib/chat/Feed.svelte";
+  import Icon from "@lib/Icon.svelte";
+  import { addressBookState } from "@store";
 
   export let id: string;
 

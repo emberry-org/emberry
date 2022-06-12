@@ -1,10 +1,10 @@
 <script lang="ts">
   import { invoke } from '@tauri-apps/api/tauri'
-  import type Cmd from "../core/cmd-center/Cmd";
-  import fetch from "../core/cmd-center/CmdFetcher";
+  import type Cmd from "@core/cmd-center/Cmd";
+  import fetch from "@core/cmd-center/CmdFetcher";
   import { onDestroy, onMount } from "svelte";
-  import { commandCenterState } from "../store";
-  import Icon from './Icon.svelte';
+  import { commandCenterState } from "@store";
+  import Icon from '@lib/Icon.svelte';
 
   let panel: HTMLDivElement;
   let input: HTMLInputElement;

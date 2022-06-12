@@ -1,11 +1,11 @@
 <script lang="ts">
   import { Router, Route } from "svelte-navigator";
-  import Titlebar from "./comps/Titlebar.svelte";
-  import Home from "./pages/Home.svelte";
-  import Chat from "./pages/Chat.svelte";
-  import CommandCenter from './comps/CommandCenter.svelte';
-  import { commandCenterState } from "./store";
-  import AddressBook from "./comps/AddressBook.svelte";
+  import Titlebar from "@lib/window/Titlebar.svelte";
+  import Home from "@page/Home.svelte";
+  import Chat from "@page/Chat.svelte";
+  import CommandCenter from '@lib/window/CommandCenter.svelte';
+  import { commandCenterState } from "@store";
+  import AddressBook from "@lib/window/AddressBook.svelte";
 
   /** Check for local shortcuts */
   document.addEventListener("keydown", function(e) {
