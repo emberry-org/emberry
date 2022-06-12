@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type Msg from "../core/messages/Msg";
+  import type Msg from "@core/messages/Msg";
 
   export let chat: Msg[] = [];
 
