@@ -32,3 +32,8 @@
 #### Phase D
 - [ ] :grapes: Encrypted messages (OTP or single AES Key)
 - [ ] :grapes: Encrypted authenticated messages (signature) (signature on username)
+
+### Ideas
+
+- [ ] Co-op networking local API
+- [ ] Controller / Keyboard / Mouse emulator for screensharing
