@@ -6,22 +6,24 @@
 #[macro_use]
 extern crate dotenv_codegen;
 
+#[cfg(not(target_os = "linux"))]
 use tauri::Manager;
 
+#[cfg(not(target_os = "linux"))]
 mod window;
-use window::set_shadow;
 
 mod network;
 use network::hole_punch;
 
 fn main() {
-  tauri::Builder::default()
-    .setup(|app| {
-      let window = app.get_window("main").unwrap();
-
-      set_shadow(&window, true).expect("Unsupported platform!");
-      Ok(())
-    })
+  let builder = tauri::Builder::default();
+  #[cfg(not(target_os = "linux"))]
+  builder.setup(|app| {
+    let window = app.get_window("main").unwrap();
+    window::set_shadow(&window, true).expect("Unsupported platform!");
+    Ok(())
+  });
+  builder
     .invoke_handler(tauri::generate_handler![toggle_devtools, hole_punch])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

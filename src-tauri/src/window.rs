@@ -1,3 +1,5 @@
+#![cfg(not(target_os = "linux"))]
+
 pub fn set_shadow(
   window: impl raw_window_handle::HasRawWindowHandle,
   enable: bool,
