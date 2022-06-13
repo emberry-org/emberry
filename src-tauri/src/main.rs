@@ -3,10 +3,16 @@
   windows_subsystem = "windows"
 )]
 
+#[macro_use]
+extern crate dotenv_codegen;
+
 use tauri::Manager;
 
 mod window;
 use window::set_shadow;
+
+mod network;
+use network::hole_punch;
 
 fn main() {
   tauri::Builder::default()
@@ -16,7 +22,7 @@ fn main() {
       set_shadow(&window, true).expect("Unsupported platform!");
       Ok(())
     })
-    .invoke_handler(tauri::generate_handler![toggle_devtools])
+    .invoke_handler(tauri::generate_handler![toggle_devtools, hole_punch])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }
