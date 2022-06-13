@@ -26,6 +26,14 @@ For the backend setup add a ``.env`` file to the ``src-tauri`` directory :
 SERVER_ADDRESS= ...
 ```
 
+Furthermore there one needs to create the folder ``dist/`` on the same level as ``src/`` and ``src-tauri/`` so that:
+.
+├─ dist/
+├─ src/
+├─ src-tauri/
+├─ public/
+└─ README.md
+
 <br>
 
 ### Running
