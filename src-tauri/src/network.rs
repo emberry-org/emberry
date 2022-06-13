@@ -3,7 +3,8 @@ use std::net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr, UdpSocket};
 
 #[derive(serde::Deserialize, Debug)]
 struct Config {
-  server_address: String
+  server_address: String,
+  public_key: String,
 }
 
 #[derive(Clone, serde::Serialize)]
@@ -12,13 +13,15 @@ struct MessageRecievedPayload {
 }
 
 #[tauri::command(async)]
-pub fn hole_punch(window: tauri::Window, ident: &[u8]) -> Result<String, String> {
+pub fn hole_punch(window: tauri::Window, peer_key: String) -> Result<String, String> {
 
   /* Get the server ip from .env */
   let env: Config = envy::from_iter([(String::from("SERVER_ADDRESS"), String::from(dotenv!("SERVER_ADDRESS")))]).unwrap();
 
+  let identity: String = format!("{}{}", env.public_key, peer_key);
+
   /* Holepunch using rhizome */
-  let socket = match punch_hole(env.server_address, ident) {
+  let socket = match punch_hole(env.server_address, identity.as_bytes()) {
     Ok(socket) => socket,
     Err(e) => return Err(e.to_string()),
   };
@@ -26,9 +29,11 @@ pub fn hole_punch(window: tauri::Window, ident: &[u8]) -> Result<String, String>
   {
     let socket = socket.try_clone().unwrap();
 
-    window.listen(format!("send_message_{}", String::from_utf8_lossy(ident)), move |e| {
+    let handle = window.listen(format!("send_message_{}", identity), move |e| {
       let _ = &socket.send(e.payload().unwrap().as_bytes()).unwrap();
     });
+
+    // SAVE THAT HANDLE
   }
 
   /* Create a buffer for recieving inputs */

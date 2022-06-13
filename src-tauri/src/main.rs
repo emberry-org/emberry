@@ -14,16 +14,20 @@ mod window;
 
 mod network;
 use network::hole_punch;
+use tauri_plugin_store::PluginBuilder;
 
 fn main() {
   let builder = tauri::Builder::default();
+  
   #[cfg(not(target_os = "linux"))]
-  builder.setup(|app| {
+  let builder = builder.setup(|app| {
     let window = app.get_window("main").unwrap();
     window::set_shadow(&window, true).expect("Unsupported platform!");
     Ok(())
   });
+
   builder
+    .plugin(PluginBuilder::default().build())
     .invoke_handler(tauri::generate_handler![toggle_devtools, hole_punch])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

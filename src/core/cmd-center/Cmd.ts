@@ -7,6 +7,8 @@ export default interface Cmd {
   action: String | VoidAction | StringAction;
   /** Whether this actions takes input */
   input: boolean;
+  /** Description of what this input is for */
+  input_desc?: string;
 }
 
 export type VoidAction = () => void;

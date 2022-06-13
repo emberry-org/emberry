@@ -10,5 +10,5 @@ export const CmdArchive: Cmd[] = [
 
   { title: 'Close Window', type: CmdType.Control, accelerator: [ 'Alt', 'F4' ], action: () => { appWindow.close(); }, input: false },
 
-  { title: 'Create / Join Room', type: CmdType.Debug, accelerator: [], action: (s: String) => { console.log('creating / joining room: ', s); invoke('hole_punch', { ident: s }).then((r) => console.log(r)); }, input: true },
+  { title: 'Attempt Connection', type: CmdType.Debug, accelerator: [], action: (s: String) => { invoke('hole_punch', { ident: s }).then((r) => console.log(r)); }, input: true, input_desc: 'Enter public key' },
 ];
