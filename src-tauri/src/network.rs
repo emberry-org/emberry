@@ -18,7 +18,13 @@ pub fn hole_punch(window: tauri::Window, peer_key: String) -> Result<String, Str
   /* Get the server ip from .env */
   let env: Config = envy::from_iter([(String::from("SERVER_ADDRESS"), String::from(dotenv!("SERVER_ADDRESS")))]).unwrap();
 
-  let identity: String = format!("{}{}", env.public_key, peer_key);
+  let identity: String;
+
+  if env.public_key.as_bytes() < peer_key.as_bytes() {
+    identity = format!("{}{}", env.public_key, peer_key);
+  } else {
+    identity = format!("{}{}", peer_key, env.public_key);
+  }
 
   /* Holepunch using rhizome */
   let socket = match punch_hole(env.server_address, identity.as_bytes()) {
