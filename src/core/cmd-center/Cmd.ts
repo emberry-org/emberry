@@ -4,12 +4,14 @@ export default interface Cmd {
   /** Also called a shortcut */
   accelerator: string[];
   /** The action to be executed */
-  action: String | VoidAction;
+  action: String | VoidAction | StringAction;
+  /** Whether this actions takes input */
+  input: boolean;
 }
 
-type VoidAction = () => void;
+export type VoidAction = () => void;
 
-// type StringAction = () => string;
+export type StringAction = (s: string) => void;
 
 export enum CmdType {
   Debug = 'debug',

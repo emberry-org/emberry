@@ -1,6 +1,7 @@
 <script lang="ts">
   import { invoke } from '@tauri-apps/api/tauri'
   import type Cmd from "@core/cmd-center/Cmd";
+  import type { StringAction,VoidAction } from "@core/cmd-center/Cmd";
   import fetch from "@core/cmd-center/CmdFetcher";
   import { onDestroy, onMount } from "svelte";
   import { commandCenterState } from "@store";
@@ -12,6 +13,9 @@
   let commands: Cmd[] = [];
   let searchString: string = "";
   let selected: number = 0;
+
+  let selectedAction: StringAction;
+  let inputMode: boolean = false;
 
   onMount(() => {
     /* Check if the user clicks outside the panel */
@@ -43,6 +47,17 @@
   /** Called when the user inputs a key */
   const onKeyDown = (e: KeyboardEvent) => {
 
+    if (inputMode) {
+      if (e.key == 'Enter') {
+        e.preventDefault();
+        selectedAction(searchString);
+        commandCenterState.set(false);
+        inputMode = false;
+      }
+
+      return;
+    }
+
     if (e.key == 'ArrowDown') {
       e.preventDefault();
       selected = Math.min(selected + 1, commands.length - 1);
@@ -63,17 +78,34 @@
 
   /** Called when the search input field is changed */
   const onInputChanged = () => {
-    commands = fetch(searchString);
+    if (!inputMode) {
+      commands = fetch(searchString);
+    }
   };
 
   /** Execute the command */
   const executeCommand = (cmd: Cmd) => {
-    if (typeof cmd.action === 'string' || cmd.action instanceof String) {
-      invoke(cmd.action as string);
+    let backendAction = cmd.action as string;
+    let stringAction = cmd.action as StringAction;
+    let voidAction = cmd.action as VoidAction;
+
+    if (typeof cmd.action == 'string') {
+      invoke(backendAction);
+      commandCenterState.set(false);
+      inputMode = false;
+    } else if (cmd.input == true) {
+      selectedAction = stringAction;
+      commands = [];
+      inputMode = true;
+    } else if (typeof cmd.action == 'function') {
+      voidAction();
+      commandCenterState.set(false);
+      inputMode = false;
     } else {
-      (cmd.action as any)();
+      console.error("Unknown command action");
+      commandCenterState.set(false);
+      inputMode = false;
     }
-    commandCenterState.set(false);
   };
 </script>
 
