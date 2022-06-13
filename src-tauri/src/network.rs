@@ -1,3 +1,4 @@
+use std::f32::consts::E;
 use std::io::{Error, ErrorKind};
 use std::net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr, UdpSocket};
 
@@ -22,6 +23,14 @@ pub fn hole_punch(window: tauri::Window, ident: &[u8]) -> Result<String, String>
     Ok(socket) => socket,
     Err(e) => return Err(e.to_string()),
   };
+
+  {
+    let socket = socket.try_clone().unwrap();
+
+    window.listen(format!("send_message_{}", String::from_utf8_lossy(ident)), move |e| {
+      &socket.send(e.payload().unwrap().as_bytes()).unwrap();
+    });
+  }
 
   /* Create a buffer for recieving inputs */
   let mut buf = [0u8; 512];
