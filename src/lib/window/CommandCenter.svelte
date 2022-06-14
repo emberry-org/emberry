@@ -16,6 +16,7 @@
 
   let selectedAction: StringAction;
   let inputMode: boolean = false;
+  let placeholderText: string = "Search commands by name (not case sensitive)";
 
   onMount(() => {
     /* Check if the user clicks outside the panel */
@@ -95,6 +96,7 @@
       inputMode = false;
     } else if (cmd.input == true) {
       selectedAction = stringAction;
+      if (cmd.input_desc) placeholderText = cmd.input_desc;
       commands = [];
       inputMode = true;
     } else if (typeof cmd.action == 'function') {
@@ -112,7 +114,7 @@
 <div class="command-center" bind:this={panel}>
 
   <input type="text" class="input" 
-    placeholder="Search commands by name (not case sensitive)" 
+    placeholder={placeholderText} 
     bind:this={input} bind:value={searchString} on:input={onInputChanged}
   >
 

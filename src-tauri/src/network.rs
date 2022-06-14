@@ -14,9 +14,18 @@ struct MessageRecievedPayload {
 
 #[tauri::command(async)]
 pub fn hole_punch(window: tauri::Window, peer_key: String) -> Result<String, String> {
-
   /* Get the server ip from .env */
-  let env: Config = envy::from_iter([(String::from("SERVER_ADDRESS"), String::from(dotenv!("SERVER_ADDRESS")))]).unwrap();
+  let env: Config = envy::from_iter([
+    (
+      String::from("SERVER_ADDRESS"),
+      String::from(dotenv!("SERVER_ADDRESS")),
+    ),
+    (
+      String::from("PUBLIC_KEY"),
+      String::from(dotenv!("PUBLIC_KEY")),
+    ),
+  ])
+  .unwrap();
 
   let identity: String;
 
@@ -47,9 +56,11 @@ pub fn hole_punch(window: tauri::Window, peer_key: String) -> Result<String, Str
   std::thread::spawn(move || loop {
     if let Ok(len) = socket.recv(&mut buf) {
       let msg = String::from_utf8_lossy(&buf[..len]).to_string();
-      
+
       /* Emit the message_recieved event when a message is recieved */
-      window.emit("message_recieved", MessageRecievedPayload { message: msg }).expect("Failed to emit event");
+      window
+        .emit("message_recieved", MessageRecievedPayload { message: msg })
+        .expect("Failed to emit event");
     }
   });
 
