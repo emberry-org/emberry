@@ -97,7 +97,7 @@
     } else if (cmd.input == true) {
       selectedAction = stringAction;
       if (cmd.input_desc) placeholderText = cmd.input_desc;
-      commands = [];
+      commands = [cmd];
       inputMode = true;
     } else if (typeof cmd.action == 'function') {
       voidAction();
