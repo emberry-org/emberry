@@ -58,7 +58,7 @@
   align-items: center;
   z-index: 1;
 
-  background-color: #212327;
+  background-color: #181a19;
   border-bottom: 1.5px solid #434547;
 
   .drag-square {

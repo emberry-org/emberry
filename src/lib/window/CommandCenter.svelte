@@ -98,6 +98,7 @@
       selectedAction = stringAction;
       if (cmd.input_desc) placeholderText = cmd.input_desc;
       commands = [cmd];
+      searchString = "";
       inputMode = true;
     } else if (typeof cmd.action == 'function') {
       voidAction();
@@ -150,7 +151,7 @@
 
   transform: translateX(-50%);
 
-  background-color: #212327;
+  background-color: #181a19;
   border: 1.5px solid #ffffff22;
   border-radius: 6px;
 
@@ -168,7 +169,7 @@
     outline: none;
     border: none;
     border-bottom: 1.5px solid #ffffff1b;
-    background: #212327;
+    background: #181a19;
     color: #dddddd;
 
     font-size: 0.9rem;
@@ -188,7 +189,7 @@
       cursor: pointer;
 
       &:hover, &.selected {
-        background-color: #292b2f;
+        background-color: #242625;
 
         .icon {
           color: #aaa;
