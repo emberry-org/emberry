@@ -46,7 +46,7 @@
   flex-direction: column;
   align-items: flex-start;
 
-  background-color: #212327;
+  background-color: #181a19;
   border-right: 1.5px solid #434547;
   transition: margin-left 0.5s ease;
 
@@ -57,7 +57,7 @@
     display: flex;
     align-items: center;
 
-    background-color: #292b2f;
+    background-color: #242625;
     border-bottom: 1.5px solid #ffffff11;
     box-shadow: 0 1px 2px 0 #00000055;
 
@@ -84,7 +84,7 @@
     margin-top: 6px;
 
     border-radius: 4px;
-    background-color: #292b2f;
+    background-color: #242625;
     border: 1.5px solid #ffffff11;
     box-shadow: 0 1px 2px 0 #00000055;
     
