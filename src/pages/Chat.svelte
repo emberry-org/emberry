@@ -2,8 +2,20 @@
   import Feed from "@lib/chat/Feed.svelte";
   import Icon from "@lib/Icon.svelte";
   import { addressBookState } from "@store";
+  import { onMount } from "svelte";
 
   export let id: string;
+
+  $: logs = [ { sender: 'Mjex', content: 'Hello world!' }, { sender: 'Mjex', content: 'Another Message!! :D' }, { sender: 'Roboolet', content: 'Wassup *_*' } ];
+
+  onMount(() => {
+    setInterval(() => {
+      if (Math.random() < 0.5)
+        logs.push({ sender: 'Mjex', content: 'Another Message!! :D' });
+      else
+        logs.push({ sender: 'Roboolet', content: 'Another Message!! :D' });
+    }, 500);
+  });
 
   function toggleAddressBook() { addressBookState.set(!$addressBookState); }
 
@@ -20,7 +32,7 @@
   </div>
 
   <div class="logs">
-    <Feed chat={[ { sender: 'Mjex', content: 'Hello world!' }, { sender: 'Mjex', content: 'Another Message!! :D' }, { sender: 'Roboolet', content: 'Wassup *_*' } ]} />
+    <Feed chat={logs} />
   </div>
 
   <div class="input">

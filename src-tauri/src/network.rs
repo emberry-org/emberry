@@ -1,5 +1,12 @@
+use std::collections::HashMap;
 use std::io::{Error, ErrorKind};
 use std::net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr, UdpSocket};
+
+use tauri::EventHandler;
+
+pub struct Networking {
+  pub chats: HashMap<String, EventHandler>
+}
 
 #[derive(serde::Deserialize, Debug)]
 struct Config {
@@ -13,7 +20,7 @@ struct MessageRecievedPayload {
 }
 
 #[tauri::command(async)]
-pub fn hole_punch(window: tauri::Window, peer_key: String) -> Result<String, String> {
+pub fn hole_punch(window: tauri::Window, state: tauri::State<Networking>, peer_key: String) -> Result<String, String> {
   /* Get the server ip from .env */
   let env: Config = envy::from_iter([
     (
@@ -25,7 +32,7 @@ pub fn hole_punch(window: tauri::Window, peer_key: String) -> Result<String, Str
       String::from(dotenv!("PUBLIC_KEY")),
     ),
   ])
-  .unwrap();
+  .expect("Failed to load environment variables");
 
   let identity: String;
 
@@ -41,19 +48,20 @@ pub fn hole_punch(window: tauri::Window, peer_key: String) -> Result<String, Str
     Err(e) => return Err(e.to_string()),
   };
 
+  /* Setup the send event for the frontend */
   {
     let socket = socket.try_clone().unwrap();
 
-    let handle = window.listen(format!("send_message_{}", identity), move |e| {
+    let send_handle = window.listen(format!("send_message_{}", identity), move |e| {
       let _ = &socket.send(e.payload().unwrap().as_bytes()).unwrap();
     });
 
-    // SAVE THAT HANDLE
+    //state.chats.insert(identity.clone(), send_handle);
   }
 
-  /* Create a buffer for recieving inputs */
+  /* Setup the receive loop */
   let mut buf = [0u8; 512];
-  std::thread::spawn(move || loop {
+  let recv_handle = std::thread::spawn(move || loop {
     if let Ok(len) = socket.recv(&mut buf) {
       let msg = String::from_utf8_lossy(&buf[..len]).to_string();
 
@@ -64,7 +72,7 @@ pub fn hole_punch(window: tauri::Window, peer_key: String) -> Result<String, Str
     }
   });
 
-  Ok("".into())
+  Ok(identity)
 }
 
 /** Create a new socket and holepunch it! */
