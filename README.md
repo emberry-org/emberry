@@ -1,5 +1,14 @@
-# Emberry
+<h1 align="center">
+    <div align="center">
+        <img width=140 src="https://github.com/emberry-org/emberry-rework/blob/main/.github/assets/icon.png"> 
+    </div>
+</h1>
 
+
+<div align="center">
+    <b>Emberry</b> - Chatting directly with friends <b>in privacy!</b><br>
+</div>
+    
 <br>
 
 ## Development
