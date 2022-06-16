@@ -11,5 +11,5 @@
     <circle cx="18" cy="6" r="3" fill="black" />
   </mask>
 
-  <circle cx="18" cy="6" r="6" fill="#5cd95b" mask="url(#chat-msg-circle-mask)" />
+  <circle cx="18" cy="6" r="6" fill="#b175eb" mask="url(#chat-msg-circle-mask)" />
 </svg>

@@ -57,7 +57,7 @@
     display: flex;
     align-items: center;
 
-    background-color: #3a3c3b;
+    background-color: #37383c;
     border-bottom: 1.5px solid #434547;
     box-shadow: 0 1px 2px 0 #00000055;
 
@@ -106,7 +106,7 @@
       padding: 0 12px 0 12px;
       box-shadow: 0 1px 2px 0 #00000055;
 
-      background-color: #3a3c3b;
+      background-color: #37383c;
       border: 1.5px solid #454749;
       outline: none;
       border-radius: 4px;

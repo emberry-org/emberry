@@ -146,12 +146,12 @@
   height: fit-content;
   max-height: 60vh;
 
-  top: 4px;
+  top: 52px;
   left: 50%;
 
   transform: translateX(-50%);
 
-  background-color: #181a19;
+  background-color: #212327;
   border: 1.5px solid #ffffff22;
   border-radius: 6px;
 
@@ -169,7 +169,7 @@
     outline: none;
     border: none;
     border-bottom: 1.5px solid #ffffff1b;
-    background: #181a19;
+    background: #212327;
     color: #dddddd;
 
     font-size: 0.9rem;
@@ -189,7 +189,7 @@
       cursor: pointer;
 
       &:hover, &.selected {
-        background-color: #242625;
+        background-color: #292b2f;
 
         .icon {
           color: #aaa;

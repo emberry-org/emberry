@@ -1,11 +1,27 @@
 <script lang="ts">
   import { appWindow } from '@tauri-apps/api/window'
   import Icon from "@lib/Icon.svelte";
+  import { applicationTabs } from '@store';
+  import { navigate } from "svelte-navigator";
+  import { onMount } from 'svelte';
 
   let maximized: boolean = false;
 
+  let tabs = $applicationTabs;
+
+  applicationTabs.subscribe((new_tabs) => {
+    tabs = new_tabs;
+  });
+
   appWindow.listen('tauri://resize', async () => {
     maximized = await appWindow.isMaximized();
+  });
+
+  onMount(() => {
+    applicationTabs.update((tabs) => {
+      tabs.push({ icon: 'add', title: 'New room', path: 'chat/1234', keep_open: false });
+      return tabs;
+    });
   });
 
   function minimize() { appWindow.minimize(); }
@@ -19,22 +35,12 @@
   {#if !maximized} <div class="drag-square" /> {/if}
 
   <div class="tabs">
-    <div class="tab">
-      <Icon name="chat" size="16px" />
-      <span> Mjex </span>
-    </div>
-    <div class="tab">
-      <Icon name="chatMsg" size="16px" />
-      <span> Devensiv </span>
-    </div>
-    <div class="tab" selected>
-      <Icon name="chat" size="16px" />
-      <span> Roboolet </span>
-    </div>
-    <div class="tab">
-      <Icon name="chatMsg" size="16px" />
-      <span> Funky </span>
-    </div>
+    {#each tabs as tab}
+      <div class="tab" on:click={() => navigate(tab.path)}>
+        <Icon name={tab.icon} size="16px" />
+        <span style="font-style: { tab.keep_open ? '' : 'italic' };"> { tab.title } </span>
+      </div>
+    {/each}
   </div>
 
   <div class="button float-right" on:click={minimize}>
@@ -58,7 +64,7 @@
   align-items: center;
   z-index: 1;
 
-  background-color: #181a19;
+  background-color: #1e2024;
   border-bottom: 1.5px solid #434547;
 
   .drag-square {
@@ -107,7 +113,6 @@
         margin-left: 8px;
         font-size: 0.7rem;
         font-family: Inter;
-        margin-bottom: 1px;
         user-select: none;
       }
 

@@ -70,7 +70,7 @@
         width: 20px;
         height: 20px;
         border: 1.5px solid #ffffff22;
-        background-color: #181a19;
+        background-color: #212327;
         border-radius: 4px;
       }
 

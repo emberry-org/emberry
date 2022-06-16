@@ -1,82 +1,78 @@
 <script lang="ts">
-  import { useNavigate } from "svelte-navigator";
+  //import { useNavigate } from "svelte-navigator";
 
-  import Icon from "@lib/Icon.svelte";
+import Icon from "@lib/Icon.svelte";
 
-  const nav = useNavigate();
-  nav('chat/abc123');
+  //const nav = useNavigate();
+  //nav('chat/abc123');
 </script>
 
 <div class="home">
-  <div class="sidebar">
-
-  </div>
-
-  <div class="content">
-    <div class="titlebar">
-      <div class="block">
-        
-      </div>
-      <button class="icon-button">
-        <Icon name="terminal" size="20px" />
-      </button>
-      <button class="icon-button" disabled>
-        <Icon name="terminal" size="20px" />
-      </button>
-      <button class="icon-button">
-        <Icon name="" size="20px" />
-      </button>
-
-      <button class="icon-button" style="margin-left: auto;">
-        <Icon name="call" size="20px" />
-      </button>
-      <button class="icon-button">
-        <Icon name="addressBook" size="20px" />
-      </button>
+  <div class="card">
+    <Icon name="logo" size="50vh" />
+    <div class="buttons">
+      <button class="card-button start">New Chat</button>
     </div>
-    <div style="display: flex;">
-      <p class="text-header" style="margin-left: 16px; margin-right: 12px;">Header</p> <p class="text-small">Some text</p>
-    </div>
-    <p class="text-normal" style="margin-left: 16px;">Some text</p>
   </div>
 </div>
 
 <style lang="scss">
   .home {
-    display: flex;
     width: 100%;
-    height: 100vh; // calc(100vh - 44px);
-    overflow: hidden;
+    height: 100%;
 
-    .sidebar {
-      width: 200px;
-      height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-      background-color: #242424;
-      border-right: 1.5px solid #383838;
-    }
+    color: #212327;
 
-    .content {
-      flex-grow: 1;
-      height: 100%;
+    .card {
+      height: fit-content;
+      display: flex;
+      flex-direction: column;
 
-      .titlebar {
-        width: calc(100% - 8px);
-        height: calc(46px - 16px);
+      .buttons {
+        width: 100%;
+        height: 36px;
+
+        margin-top: 24px;
 
         display: flex;
+        justify-content: space-around;
 
-        padding: 8px;
-        padding-bottom: 8px;
+        .card-button {
+          width: 30%;
+          height: 36px;
 
-        border-bottom: 1.5px solid #ffffff11;
+          background-color: #37383c;
+          border: 1.5px solid #ffffff18;
+          box-shadow: 0 1px 2px 0 #00000055;
+          border-radius: 6px;
 
-        .block {
-          background-image: linear-gradient(-45deg, #22ce53,#52ec7d);
-          border-radius: 4px;
-          margin-left: 4px;
-          margin-right: 20px;
+          padding: 0 12px 0 12px;
+
+          font-family: Inter;
+          font-size: 0.85em;
+          color: #bbb;
+
+          user-select: none;
+          cursor: pointer;
+
+          &.start {
+            width: 40%;
+            min-width: fit-content;
+          }
+
+          &:hover {
+            border: 1.5px solid #ffffff33;
+          }
         }
+      }
+
+      :global(svg) {
+        max-width: 200px;
+        max-height: 200px;
       }
     }
   }

@@ -79,7 +79,7 @@
     display: flex;
     flex-direction: column;
 
-    background-color: #242625;
+    background-color: #292b2f;
 
     .body {
       width: 100%;
