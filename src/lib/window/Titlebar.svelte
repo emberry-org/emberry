@@ -1,11 +1,12 @@
 <script lang="ts">
   import { appWindow } from '@tauri-apps/api/window'
   import Icon from "@lib/Icon.svelte";
-  import { applicationTabs } from '@store';
+  import { applicationTabs, oppSys } from '@store';
   import { navigate } from "svelte-navigator";
   import { onMount } from 'svelte';
 
   let maximized: boolean = false;
+  let hideDecorations = $oppSys == 'linux' || $oppSys == 'darwin';
 
   let tabs = $applicationTabs;
 
@@ -30,7 +31,7 @@
 
 </script>
 
-<div class="titlebar" style="--maximized: { maximized ? '0px' : '1px' }" data-tauri-drag-region>
+<div class="titlebar" style="--maximized: { maximized ? '0px' : '1px' }" hidden={hideDecorations} data-tauri-drag-region>
   <!-- Makes sure you can always drag the window -->
   {#if !maximized} <div class="drag-square" /> {/if}
 
@@ -148,6 +149,12 @@
 
     &.close:hover {
       background-color: #c42b1c;
+    }
+  }
+
+  &[hidden] {
+    .button {
+      display: none;
     }
   }
 }

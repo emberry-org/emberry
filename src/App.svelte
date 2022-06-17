@@ -24,7 +24,7 @@
   <Titlebar />
 
   <div class="body">
-    <AddressBook />
+    <!-- <AddressBook /> -->
 
     <Router>
       <Route path="/">
