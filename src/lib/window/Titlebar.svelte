@@ -129,8 +129,8 @@
   }
 
   .button {
-    width: 45.6px;
-    min-width: 45.6px;
+    width: 46.5px;
+    min-width: 46.5px;
     height: 44px;
 
     display: flex;
