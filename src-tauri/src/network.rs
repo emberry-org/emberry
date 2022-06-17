@@ -5,7 +5,7 @@ use std::net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr, UdpSocket};
 use tauri::EventHandler;
 
 pub struct Networking {
-  pub chats: HashMap<String, EventHandler>
+  pub chats: HashMap<String, EventHandler>,
 }
 
 #[derive(serde::Deserialize, Debug)]
@@ -31,13 +31,11 @@ pub fn hole_punch(
     server_address: dotenv!("SERVER_ADDRESS").into(),
   };
 
-  let identity: String;
-
-  if env.public_key.as_bytes() < peer_key.as_bytes() {
-    identity = format!("{}{}", env.public_key, peer_key);
+  let identity = if env.public_key.as_bytes() < peer_key.as_bytes() {
+    format!("{}{}", env.public_key, peer_key)
   } else {
-    identity = format!("{}{}", peer_key, env.public_key);
-  }
+    format!("{}{}", peer_key, env.public_key)
+  };
 
   /* Holepunch using rhizome */
   let socket = match punch_hole(env.server_address, identity.as_bytes()) {
