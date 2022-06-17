@@ -20,19 +20,16 @@ struct MessageRecievedPayload {
 }
 
 #[tauri::command(async)]
-pub fn hole_punch(window: tauri::Window, state: tauri::State<Networking>, peer_key: String) -> Result<String, String> {
+pub fn hole_punch(
+  window: tauri::Window,
+  state: tauri::State<Networking>,
+  peer_key: String,
+) -> Result<String, String> {
   /* Get the server ip from .env */
-  let env: Config = envy::from_iter([
-    (
-      String::from("SERVER_ADDRESS"),
-      String::from(dotenv!("SERVER_ADDRESS")),
-    ),
-    (
-      String::from("PUBLIC_KEY"),
-      String::from(dotenv!("PUBLIC_KEY")),
-    ),
-  ])
-  .expect("Failed to load environment variables");
+  let env = Config {
+    public_key: dotenv!("PUBLIC_KEY").into(),
+    server_address: dotenv!("SERVER_ADDRESS").into(),
+  };
 
   let identity: String;
 

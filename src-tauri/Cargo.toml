@@ -22,7 +22,6 @@ tauri = { version = "1.0.0-rc.14", features = ["api-all", "devtools"] }
 raw-window-handle = "0.4"
 # Used for the environment variables
 dotenv_codegen = "0.15.0"
-envy = "0.4.2"
 # Tauri persistent store
 tauri-plugin-store = { git = "https://github.com/tauri-apps/tauri-plugin-store", branch = "dev" }
 
