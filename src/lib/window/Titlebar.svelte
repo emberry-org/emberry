@@ -19,7 +19,7 @@
 
   onMount(() => {
     applicationTabs.update((tabs) => {
-      tabs.push({ icon: 'add', title: 'New room', path: 'chat/1234', keep_open: false });
+      tabs.push({ icon: 'chat', title: 'New room', path: 'chat/1234', keep_open: false });
       return tabs;
     });
   });

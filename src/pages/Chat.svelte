@@ -6,14 +6,20 @@
 
   export let id: string;
 
-  $: logs = [ { sender: 'Mjex', content: 'Hello world!' }, { sender: 'Mjex', content: 'Another Message!! :D' }, { sender: 'Roboolet', content: 'Wassup *_*' } ];
+  let messages = [ { sender: 'Mjex', content: 'Hello world!' }, { sender: 'Mjex', content: 'Another Message!! :D' }, { sender: 'Roboolet', content: 'Wassup *_*' } ];
 
   onMount(() => {
     setInterval(() => {
       if (Math.random() < 0.5)
-        logs.push({ sender: 'Mjex', content: 'Another Message!! :D' });
+        messages.push({ sender: 'Mjex', content: 'Another Message!! :D' });
       else
-        logs.push({ sender: 'Roboolet', content: 'Another Message!! :D' });
+        messages.push({ sender: 'Roboolet', content: 'Another Message!! :D' });
+
+      if (messages.length > 50) {
+        messages.pop();
+      }
+
+      messages = [...messages];
     }, 500);
   });
 
@@ -32,7 +38,7 @@
   </div>
 
   <div class="logs">
-    <Feed chat={logs} />
+    <Feed chat={messages} />
   </div>
 
   <div class="input">
