@@ -24,6 +24,8 @@ raw-window-handle = "0.4"
 dotenv_codegen = "0.15.0"
 # Tauri persistent store
 tauri-plugin-store = { git = "https://github.com/tauri-apps/tauri-plugin-store", branch = "dev" }
+# Async
+tokio = { version = "1.18.2", features = ["net", "macros", "rt", "sync"] }
 
 [target."cfg(target_os = \"windows\")".dependencies]
 windows-sys = { version = "0.36.1", features = [
