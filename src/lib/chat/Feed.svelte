@@ -6,11 +6,11 @@
   /**
  * Returns if the message is from a different user then the one before it.
  */
-  const isFirst = (index: number): boolean => {
-    if (index == 0) {
-      return true; // True if this is the first message in the chat.
-    } else if (chat[index].sender != chat[index - 1].sender) {
-      return true; // True if the message before is from another sender.
+  function isFirst(index: number): boolean {
+    if (index == 0 || chat[index].sender != chat[index - 1].sender) {
+      // True if this is the first message in the chat.
+      // True if the message before is from another sender.
+      return true; 
     }
     return false;
   }
@@ -19,7 +19,7 @@
 
 <div class="feed">
   {#each chat as msg, i}
-    <div class="item { isFirst(i) ? 'first' : '' }" style="{ `--content:${'\'00:00\''}` }">
+    <div class="item { isFirst(i) ? '' : 'no-decorations' }" style="{ `--content:${'\'00:00\''}` }">
 
       <div class="avatar" />
 
@@ -116,7 +116,7 @@
       }
     }
 
-    &.first {
+    &.no-decorations {
       height: 14px;
       margin-top: 6px;
       .avatar { opacity: 0; }
