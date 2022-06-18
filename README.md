@@ -11,11 +11,11 @@
     
 <br>
 
-## Development
+<h1><samp>Development</samp></h1>
 
 <br>
 
-### Frontend
+<h3><samp>Frontend</samp></h3>
 
 For the frontend setup install the node packages using the following command :
 
@@ -25,7 +25,7 @@ $ npm i
 
 <br>
 
-### Backend
+<h3><samp>Backend</samp></h3>
 
 For the backend setup add a ``.env`` file to the ``src-tauri`` directory :
 
@@ -49,7 +49,7 @@ Then add a ``dist/`` directory on the same level as ``src/`` and ``src-tauri/`` 
 
 <br>
 
-### Running
+<h3><samp>Running</samp></h3>
 
 To run Emberry in developer mode use the following command :
 
