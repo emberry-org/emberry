@@ -3,6 +3,7 @@ import { invoke } from '@tauri-apps/api/tauri'
 
 import type Cmd from "./Cmd";
 import { CmdType } from "./Cmd";
+import { navigate } from 'svelte-navigator';
 
 /** Collection of all the executable commands */
 export const CmdArchive: Cmd[] = [
@@ -10,5 +11,5 @@ export const CmdArchive: Cmd[] = [
 
   { title: 'Close Window', type: CmdType.Control, accelerator: [ 'Alt', 'F4' ], action: () => { appWindow.close(); }, input: false },
 
-  { title: 'Attempt Connection', type: CmdType.Debug, accelerator: [], action: (s: String) => { invoke('hole_punch', { peerKey: s }).then((r) => console.log(r)); }, input: true, input_desc: 'Enter peer public key...' },
+  { title: 'Attempt Connection', type: CmdType.Debug, accelerator: [], action: (s: String) => { invoke('hole_punch', { peerKey: s }).then((id) => navigate('/chat/' + id)); }, input: true, input_desc: 'Enter peer public key...' },
 ];
