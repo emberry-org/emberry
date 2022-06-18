@@ -7,6 +7,7 @@
   import { commandCenterState } from "@store";
   import setupOS from "@core/OppSys";
   import { onMount } from "svelte";
+import NewChat from "@page/NewChat.svelte";
   //import AddressBook from "@lib/window/AddressBook.svelte";
 
   onMount(() => {
@@ -35,6 +36,9 @@
     <Router>
       <Route path="/">
         <Home />
+      </Route>
+      <Route path="/chat/new">
+        <NewChat />
       </Route>
       <Route path="/chat/:id" let:params>
         <Chat id={params.id} />

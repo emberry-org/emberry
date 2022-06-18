@@ -1,39 +1,44 @@
 <script lang="ts">
+  import { emit, listen } from '@tauri-apps/api/event'
   import Feed from "@lib/chat/Feed.svelte";
-  import Icon from "@lib/Icon.svelte";
-  import { addressBookState } from "@store";
+  //import Icon from "@lib/Icon.svelte";
+  //import { addressBookState } from "@store";
   //import { onMount } from "svelte";
 
   export let id: string;
 
-  let messages = [ { sender: 'Mjex', content: 'Hello world!' }, { sender: 'Mjex', content: 'Another Message!! :D' }, { sender: 'Roboolet', content: 'Wassup *_*' } ];
+  let message = '';
 
-  // onMount(() => {
-  //   setInterval(() => {
-  //     if (Math.random() < 0.5)
-  //       messages.push({ sender: 'Mjex', content: 'Another Message!! :D' });
-  //     else
-  //       messages.push({ sender: 'Roboolet', content: 'Another Message!! :D' });
+  $: messages = [] as { sender: String, content: String }[];
 
-  //     if (messages.length > 50) {
-  //       messages.pop();
-  //     }
+  listen(`message_recieved_${id}`, (event) => {
+    let message = (event.payload as any).message as string;
+    messages.push({ sender: 'Peer', content: message });
+  });
 
-  //     messages = [...messages];
-  //   }, 500);
-  // });
+  function keyPressed(e: KeyboardEvent) {
+    if (e.key == 'Enter') {
+      sendMessage();
+    }
+  }
 
-  function toggleAddressBook() { addressBookState.set(!$addressBookState); }
+  function sendMessage() {
+    messages.push({ sender: 'Me', content: message });
+    emit(`send_message_${id}`, message);
+    message = '';
+  }
+
+  //function toggleAddressBook() { addressBookState.set(!$addressBookState); }
 
 </script>
 
 <div class="chat">
 
   <div class="toolbar">
-    <button class="icon-button" on:click={toggleAddressBook}>
+    <!-- <button class="icon-button" on:click={toggleAddressBook}>
       <Icon name="addressBook" size="16px" />
     </button>
-    <div class="seperator" />
+    <div class="seperator" /> -->
     <div class="username">Roboolet</div>
   </div>
 
@@ -42,7 +47,7 @@
   </div>
 
   <div class="input">
-    <input type="text">
+    <input type="text" bind:value={message} on:keypress={keyPressed}>
   </div>
 
 </div>

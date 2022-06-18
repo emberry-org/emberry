@@ -67,6 +67,7 @@ pub async fn hole_punch(
   /* Setup the receive loop */
   let (recv_handle, mut rx) = oneshot::channel::<()>();
   let mut buf = [0u8; 512];
+  let emit_identity = identity.clone();
   tokio::spawn(async move {
     loop {
       select! {
@@ -75,7 +76,7 @@ pub async fn hole_punch(
 
         /* Emit the message_recieved event when a message is recieved */
         window
-          .emit("message_recieved", MessageRecievedPayload { message: msg })
+          .emit(format!("message_recieved_{}", &emit_identity).as_str(), MessageRecievedPayload { message: msg })
           .expect("Failed to emit event");
 
         },
