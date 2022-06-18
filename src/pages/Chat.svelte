@@ -14,6 +14,7 @@
   listen(`message_recieved_${id}`, (event) => {
     let message = (event.payload as any).message as string;
     messages.push({ sender: 'Peer', content: message });
+    console.log('received message: ', message);
   });
 
   function keyPressed(e: KeyboardEvent) {
@@ -25,7 +26,7 @@
   function sendMessage() {
     messages.push({ sender: 'Me', content: message });
     emit(`send_message_${id}`, message);
-    message = '';
+    console.log('send message: ', message);
   }
 
   //function toggleAddressBook() { addressBookState.set(!$addressBookState); }

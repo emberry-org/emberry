@@ -33,7 +33,7 @@ import NewChat from "@page/NewChat.svelte";
   <div class="body">
     <!-- <AddressBook /> -->
 
-    <Router>
+    <Router primary={false}>
       <Route path="/">
         <Home />
       </Route>

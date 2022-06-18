@@ -63,7 +63,6 @@ pub async fn hole_punch(
     tokio::spawn(async move { sender.send(e.payload().unwrap().as_bytes()).await });
   });
 
-  //state.chats.insert(identity.clone(), send_handle);
   /* Setup the receive loop */
   let (recv_handle, mut rx) = oneshot::channel::<()>();
   let mut buf = [0u8; 512];
