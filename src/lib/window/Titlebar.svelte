@@ -3,7 +3,6 @@
   import Icon from "@lib/Icon.svelte";
   import { applicationTabs, oppSys } from '@store';
   import { navigate } from "svelte-navigator";
-  import { onMount } from 'svelte';
 
   $: maximized = false;
   $: hideDecorations = $oppSys == 'linux' || $oppSys == 'darwin';
@@ -16,13 +15,6 @@
 
   appWindow.listen('tauri://resize', async () => {
     maximized = await appWindow.isMaximized();
-  });
-
-  onMount(() => {
-    applicationTabs.update((tabs) => {
-      tabs.push({ icon: 'chat', title: 'New room', path: 'chat/1234', keep_open: false });
-      return tabs;
-    });
   });
 
   function minimize() { appWindow.minimize(); }
@@ -122,11 +114,11 @@
         background-color: #ffffff11;
       }
 
-      &[selected] {
-        background-color: #00000044;
-        color: #636568;
-        cursor: default;
-      }
+      // &[selected] {
+      //   background-color: #00000044;
+      //   color: #636568;
+      //   cursor: default;
+      // }
     }
   }
 
