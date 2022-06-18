@@ -66,7 +66,7 @@
       <Icon name="addressBook" size="16px" />
     </button>
     <div class="seperator" /> -->
-    <div class="username">Roboolet</div>
+    <div class="username">Peer</div>
   </div>
 
   <div class="logs">

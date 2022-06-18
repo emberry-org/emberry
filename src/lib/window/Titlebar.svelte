@@ -1,16 +1,23 @@
 <script lang="ts">
   import { appWindow } from '@tauri-apps/api/window'
   import Icon from "@lib/Icon.svelte";
-  import { applicationTabs, oppSys } from '@store';
+  import { getTabs, onTabsChange, oppSys } from '@store';
   import { navigate } from "svelte-navigator";
+  import { onMount } from 'svelte';
+  import type AppTab from '@core/AppTab';
 
   $: maximized = false;
   $: hideDecorations = $oppSys == 'linux' || $oppSys == 'darwin';
 
-  let tabs = $applicationTabs;
+  $: tabs = [] as AppTab[];
 
-  applicationTabs.subscribe((new_tabs) => {
-    tabs = new_tabs;
+  onMount(async () => {
+    const storedTabs = await getTabs();
+    if (storedTabs) tabs = storedTabs; else tabs = [];
+
+    onTabsChange((storedTabs) => {
+      tabs = storedTabs;
+    });
   });
 
   appWindow.listen('tauri://resize', async () => {

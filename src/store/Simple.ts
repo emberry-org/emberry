@@ -9,9 +9,3 @@ export const commandCenterState = writable<boolean>(false);
 
 /** State of the address book (Whether its open or not) */
 export const addressBookState = writable<boolean>(false);
-
-/** Application tabs array displayed in the titlebar */
-export const applicationTabs = writable<Array<AppTab>>([]);
-
-/** Dictionary that holds all the chat histories */
-export const chatHistories = writable<any>({});

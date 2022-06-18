@@ -1,6 +1,5 @@
 <script lang="ts">
-import { applicationTabs } from '@store';
-
+  import { insertTab } from '@store';
   import { invoke } from '@tauri-apps/api/tauri'
   import { navigate } from "svelte-navigator";
 
@@ -16,7 +15,7 @@ import { applicationTabs } from '@store';
   function attemptConnect() {
     invoke('hole_punch', { peerKey: id }).then((id: string) => {
       // Create a new tab once the chat has been created.
-      applicationTabs.update((tabs) => { tabs.push({ icon: 'chat', title: id.substring(0, 6), path: '/chat/' + id, keep_open: true }); return tabs; });
+      insertTab({ icon: 'chat', title: id.substring(0, 6), path: '/chat/' + id, keep_open: true });
       // Navigate to the chat tab.
       navigate('/chat/' + id, { replace: true });
     }).catch((err) => {
