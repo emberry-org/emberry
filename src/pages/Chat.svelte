@@ -16,7 +16,6 @@
     messages.push({ sender: 'Peer', content: message });
     if (messages.length > 50) { messages.shift(); }
     messages = [...messages];
-    console.log('received message: ', message);
   });
 
   function keyPressed(e: KeyboardEvent) {
@@ -30,7 +29,7 @@
     if (messages.length > 50) { messages.shift(); }
     emit(`send_message_${id}`, message);
     messages = [...messages];
-    console.log('send message: ', message);
+    message = '';
   }
 
   //function toggleAddressBook() { addressBookState.set(!$addressBookState); }
