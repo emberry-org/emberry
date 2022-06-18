@@ -2,26 +2,26 @@
   import Feed from "@lib/chat/Feed.svelte";
   import Icon from "@lib/Icon.svelte";
   import { addressBookState } from "@store";
-  import { onMount } from "svelte";
+  //import { onMount } from "svelte";
 
   export let id: string;
 
   let messages = [ { sender: 'Mjex', content: 'Hello world!' }, { sender: 'Mjex', content: 'Another Message!! :D' }, { sender: 'Roboolet', content: 'Wassup *_*' } ];
 
-  onMount(() => {
-    setInterval(() => {
-      if (Math.random() < 0.5)
-        messages.push({ sender: 'Mjex', content: 'Another Message!! :D' });
-      else
-        messages.push({ sender: 'Roboolet', content: 'Another Message!! :D' });
+  // onMount(() => {
+  //   setInterval(() => {
+  //     if (Math.random() < 0.5)
+  //       messages.push({ sender: 'Mjex', content: 'Another Message!! :D' });
+  //     else
+  //       messages.push({ sender: 'Roboolet', content: 'Another Message!! :D' });
 
-      if (messages.length > 50) {
-        messages.pop();
-      }
+  //     if (messages.length > 50) {
+  //       messages.pop();
+  //     }
 
-      messages = [...messages];
-    }, 500);
-  });
+  //     messages = [...messages];
+  //   }, 500);
+  // });
 
   function toggleAddressBook() { addressBookState.set(!$addressBookState); }
 

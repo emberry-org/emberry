@@ -5,7 +5,13 @@
   import Chat from "@page/Chat.svelte";
   import CommandCenter from '@lib/window/CommandCenter.svelte';
   import { commandCenterState } from "@store";
-  import AddressBook from "@lib/window/AddressBook.svelte";
+  import setupOS from "@core/OppSys";
+  import { onMount } from "svelte";
+  //import AddressBook from "@lib/window/AddressBook.svelte";
+
+  onMount(() => {
+    setupOS();
+  });
 
   /** Check for local shortcuts */
   document.addEventListener("keydown", function(e) {
@@ -24,7 +30,7 @@
   <Titlebar />
 
   <div class="body">
-    <AddressBook />
+    <!-- <AddressBook /> -->
 
     <Router>
       <Route path="/">
