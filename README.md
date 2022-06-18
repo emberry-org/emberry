@@ -1,6 +1,6 @@
 <h1 align="center">
     <div align="center">
-        <img width=140 src="https://github.com/emberry-org/emberry-rework/blob/main/.github/assets/icon.png"> 
+        <img width=140 src="https://github.com/emberry-org/emberry-rework/blob/main/.github/assets/logo.png"> 
     </div>
 </h1>
 
