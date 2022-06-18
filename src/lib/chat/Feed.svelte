@@ -1,11 +1,26 @@
 <script lang="ts">
   import type Msg from "@core/messages/Msg";
+  import { onMount } from "svelte";
 
   export let chat: Msg[] = [];
 
+  $: chat, scrollToBottom();
+
+  let element: HTMLDivElement;
+
+  onMount(() => {
+    element.scrollTop = element.scrollHeight;
+  });
+
+  function scrollToBottom() {
+    if (element) {
+      element.scrollTo({ top: element.scrollHeight });
+    }
+  }
+
   /**
- * Returns if the message is from a different user then the one before it.
- */
+   * Returns if the message is from a different user then the one before it.
+   */
   function isFirst(index: number): boolean {
     if (index == 0 || chat[index].sender != chat[index - 1].sender) {
       // True if this is the first message in the chat.
@@ -17,22 +32,38 @@
 
 </script>
 
-<div class="feed">
+<div class="feed" bind:this={element}>
   {#each chat as msg, i}
-    <div class="item { isFirst(i) ? '' : 'no-decorations' }" style="{ `--content:${'\'00:00\''}` }">
 
-      <div class="avatar" />
+    {#if isFirst(i)} <!-- If this item needs an avatar and username -->
 
-      <div class="content">
-        <div class="user">
-          <div class="username">{msg.sender}</div>
-          <div class="dot">·</div>
-          <div class="timestamp">11:34</div>
+      <div class="head-item">
+
+        <div class="avatar" />
+
+        <div class="content">
+          <div class="user">
+            <div class="username">{ msg.sender }</div>
+            <div class="dot">·</div>
+            <div class="timestamp">11:34</div>
+          </div>
+          <div class="message">{ msg.content }</div>
         </div>
-        <div class="message">{msg.content}</div>
+
       </div>
 
-    </div>
+    {:else} <!-- If this item is from the same user as the previous one -->
+      
+      <div class="body-item">
+
+        <div class="message">
+          { msg.content }
+        </div>
+
+      </div>
+
+    {/if}
+
   {/each}
 </div>
 
@@ -44,16 +75,18 @@
 
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: flex-start;
 
   padding: 16px;
 
-  font-family: Inter;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+      Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   overflow-y: auto;
+  overflow-x: hidden;
 
-  .item {
+  .head-item {
     width: 100%;
-    height: 32px;
+    height: fit-content;
     margin-top: 20px;
     color: #444444;
     display: flex;
@@ -111,38 +144,31 @@
       }
 
       .message {
-        width: 100%;
-        height: 14px;
+        inline-size: calc(100% - 42px);
         margin-left: 16px;
+        margin-top: 4px;
         font-size: 14px;
         color: #ddd;
+        overflow-wrap: break-word;
+        word-break: keep-all; 
       }
     }
+  }
 
-    &.no-decorations {
-      height: 14px;
-      margin-top: 6px;
-      .avatar { opacity: 0; }
-      .content .user { display: none; }
-      .content { height: 14px; }
+  .body-item {
+    padding-left: 51px;
+
+    .message {
+      inline-size: calc(100% - 42px);
+      font-size: 14px;
+      color: #ddd;
+      overflow-wrap: break-word;
+      word-break: keep-all; 
     }
   }
 
   &::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background-color: #00000022;
-    border-radius: 100px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    border-radius: 100px;
-    background: #00000022;
-    &:hover {
-      background: #ffffff22;
-    }
+    width: 0px;
   }
 }
 
