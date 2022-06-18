@@ -32,7 +32,8 @@ For the backend setup add a ``.env`` file to the ``src-tauri`` directory :
 ```js
 /src-tauri/.env
 
-SERVER_ADDRESS= ...
+SERVER_ADDRESS=<server_ip>:<udp_port>
+PUBLIC_KEY=<32 byte string>
 ```
 
 <br>
