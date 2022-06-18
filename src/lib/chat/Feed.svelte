@@ -91,12 +91,14 @@
           font-size: 14px;
           color: #fff;
           user-select: none;
+          -webkit-user-select: none;
         }
 
         .dot {
           margin: 0 8px 0 10px;
           color: #ffffff33;
           user-select: none;
+          -webkit-user-select: none;
         }
 
         .timestamp {
@@ -104,6 +106,7 @@
           margin-top: 1px;
           color: #ffffff44;
           user-select: none;
+          -webkit-user-select: none;
         }
       }
 

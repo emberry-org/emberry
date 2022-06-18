@@ -115,6 +115,7 @@
         font-size: 0.7rem;
         font-family: Inter;
         user-select: none;
+        -webkit-user-select: none;
       }
 
       &:hover {
