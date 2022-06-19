@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Router, Route } from "svelte-navigator";
+  import { Router, Route, NavigatorHistory, createHistory, createMemorySource } from "svelte-navigator";
   import Titlebar from "@lib/window/Titlebar.svelte";
   import Home from "@page/Home.svelte";
   import Chat from "@page/Chat.svelte";

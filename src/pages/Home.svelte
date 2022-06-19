@@ -1,13 +1,13 @@
 <script lang="ts">
   import Icon from "@lib/Icon.svelte";
-  import { navigate } from "svelte-navigator";
+  import { navigateTo } from "@store";
 </script>
 
 <div class="home">
   <div class="card">
     <Icon name="logo" size="50vh" />
     <div class="buttons">
-      <button class="card-button start" on:click={() => navigate('/chat/new', { replace: true })}>New Chat</button>
+      <button class="card-button start" on:click={() => navigateTo('/chat/new')}>New Chat</button>
     </div>
   </div>
 </div>

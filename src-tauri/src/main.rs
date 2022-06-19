@@ -13,7 +13,7 @@ use tauri::Manager;
 mod window;
 
 mod network;
-use network::{hole_punch, Networking};
+use network::{hole_punch, chat_exists, Networking};
 use tauri_plugin_store::PluginBuilder;
 
 fn main() {
@@ -31,7 +31,7 @@ fn main() {
       chats: Default::default(),
     })
     .plugin(PluginBuilder::default().build())
-    .invoke_handler(tauri::generate_handler![toggle_devtools, hole_punch])
+    .invoke_handler(tauri::generate_handler![toggle_devtools, hole_punch, chat_exists])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }

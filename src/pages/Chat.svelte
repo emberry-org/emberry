@@ -12,12 +12,19 @@
   let inputBox = '';
 
   $: messages = [] as { sender: String, content: String }[];
+  $: id, updateHistory();
 
   onMount(async () => {
     // Retrieve the history for this chat.
     const history = await getChatHistory(id);
     if (history) messages = history; else messages = [];
   });
+
+  async function updateHistory() {
+    // Retrieve the history for this chat.
+    const history = await getChatHistory(id);
+    if (history) messages = history; else messages = [];
+  }
 
   /* Listen for incoming messages from the peer */
   listen(`message_recieved_${id}`, (event) => {
@@ -66,15 +73,15 @@
       <Icon name="addressBook" size="16px" />
     </button>
     <div class="seperator" /> -->
-    <div class="username">Peer</div>
+    <div class="username"> { id } </div>
   </div>
 
   <div class="logs">
-    <Feed chat={messages} />
+    <Feed chat={ messages } />
   </div>
 
   <div class="input">
-    <input type="text" bind:value={inputBox} on:keypress={keyPressed}>
+    <input type="text" bind:value={ inputBox } on:keypress={ keyPressed }>
   </div>
 
 </div>
@@ -119,6 +126,7 @@
       color: #aaa;
 
       margin-left: 10px;
+      overflow: hidden;
     }
   }
 

@@ -30,7 +30,7 @@ struct MessageRecievedPayload {
   message: String,
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 pub async fn hole_punch(
   window: tauri::Window,
   state: tauri::State<'_, Networking>,
@@ -41,6 +41,10 @@ pub async fn hole_punch(
     public_key: dotenv!("PUBLIC_KEY").into(),
     server_address: dotenv!("SERVER_ADDRESS").into(),
   };
+
+  if env.public_key == peer_key {
+    return Err("Cannot connect to oneself".into());
+  }
 
   let identity = if env.public_key.as_bytes() < peer_key.as_bytes() {
     format!("{}{}", env.public_key, peer_key)
@@ -93,6 +97,15 @@ pub async fn hole_punch(
   state.chats.lock().unwrap().insert(identity.clone(), con);
 
   Ok(identity)
+}
+
+#[tauri::command]
+pub fn chat_exists(state: tauri::State<'_, Networking>, id: String) -> bool {
+  // Check if the store contains the key for this chat.
+  match state.chats.lock() {
+    Ok(chats) => chats.contains_key(&id),
+    Err(_) => false
+  }
 }
 
 /** Create a new socket and holepunch it! */

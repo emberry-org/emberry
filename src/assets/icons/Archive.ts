@@ -11,6 +11,7 @@ import ChatMsgIcon from './chat-msg.svg?raw';
 import SearchIcon from './search.svg?raw';
 import AddIcon from './add.svg?raw';
 import StatusIcon from './status.svg?raw';
+import HomeIcon from './home.svg?raw';
 
 import DebugIcon from './debug.svg?raw';
 import ControlIcon from './control.svg?raw';
@@ -31,6 +32,7 @@ export const IconArchive = {
   maximize: MaximizeIcon,
   close: CloseIcon,
   
+  home: HomeIcon,
   status: StatusIcon,
   add: AddIcon,
   search: SearchIcon,

@@ -1,7 +1,6 @@
 <script lang="ts">
-  import { insertTab } from '@store';
-  import { invoke } from '@tauri-apps/api/tauri'
-  import { navigate } from "svelte-navigator";
+  import { insertTab, navigateTo } from '@store';
+  import { invoke } from '@tauri-apps/api/tauri';
 
   let id = '';
   let error = '';
@@ -17,10 +16,9 @@
       // Create a new tab once the chat has been created.
       insertTab({ icon: 'chat', title: id.substring(0, 6), path: '/chat/' + id, keep_open: true });
       // Navigate to the chat tab.
-      navigate('/chat/' + id, { replace: true });
+      navigateTo('/chat/' + id);
     }).catch((err) => {
       error = err;
-      console.error('Failed to holepunch!', id, err);
     });
   }
 </script>
