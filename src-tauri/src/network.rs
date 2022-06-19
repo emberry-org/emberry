@@ -53,42 +53,42 @@ pub async fn hole_punch(
   };
 
   /* Holepunch using rhizome */
-  // let socket = match punch_hole(env.server_address, identity.as_bytes()).await {
-  //   Ok(socket) => socket,
-  //   Err(e) => return Err(e.to_string()),
-  // };
+  let socket = match punch_hole(env.server_address, identity.as_bytes()).await {
+    Ok(socket) => socket,
+    Err(e) => return Err(e.to_string()),
+  };
 
-  //let arc_sock = Arc::new(socket);
+  let arc_sock = Arc::new(socket);
 
   /* Setup the send event for the frontend */
-  //let sender = arc_sock.clone();
+  let sender = arc_sock.clone();
   let send_handle = window.listen(format!("send_message_{}", identity), move |e| {
-    //let sender = sender.clone();
-    //tokio::spawn(async move { sender.send(e.payload().unwrap().as_bytes()).await });
+    let sender = sender.clone();
+    tokio::spawn(async move { sender.send(e.payload().unwrap().as_bytes()).await });
   });
 
   /* Setup the receive loop */
   let (recv_handle, mut rx) = oneshot::channel::<()>();
-  // let mut buf = [0u8; 512];
-  // let emit_identity = identity.clone();
-  // tokio::spawn(async move {
-  //   loop {
-  //     select! {
-  //       Ok(len) = arc_sock.recv(&mut buf) => {
-  //       let msg = String::from_utf8_lossy(&buf[..len]).to_string();
+  let mut buf = [0u8; 512];
+  let emit_identity = identity.clone();
+  tokio::spawn(async move {
+    loop {
+      select! {
+        Ok(len) = arc_sock.recv(&mut buf) => {
+        let msg = String::from_utf8_lossy(&buf[..len]).to_string();
 
-  //       /* Emit the message_recieved event when a message is recieved */
-  //       window
-  //         .emit(format!("message_recieved_{}", &emit_identity).as_str(), MessageRecievedPayload { message: msg })
-  //         .expect("Failed to emit event");
+        /* Emit the message_recieved event when a message is recieved */
+        window
+          .emit(format!("message_recieved_{}", &emit_identity).as_str(), MessageRecievedPayload { message: msg })
+          .expect("Failed to emit event");
 
-  //       },
-  //       Ok(_) = &mut rx => {
-  //         break;
-  //       }
-  //     }
-  //   }
-  // });
+        },
+        Ok(_) = &mut rx => {
+          break;
+        }
+      }
+    }
+  });
 
   let con = Connection {
     recv_handle,
