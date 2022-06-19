@@ -1,10 +1,9 @@
 <script lang="ts">
   import { appWindow } from '@tauri-apps/api/window'
   import Icon from "@lib/Icon.svelte";
-  import { closeTab, getSelectedTab, getTabs, navigateTo, onTabsChange, onTabSelected, oppSys } from '@store';
+  import { getSelectedTab, getTabs, navigateTo, onTabsChange, onTabSelected, oppSys } from '@store';
   import { onMount } from 'svelte';
   import type AppTab from '@core/AppTab';
-  import { invoke } from '@tauri-apps/api/tauri';
 
   $: maximized = false;
   $: hideDecorations = $oppSys == 'linux' || $oppSys == 'darwin';
@@ -16,7 +15,7 @@
 
   onMount(async () => {
     // Setup the tabs:
-    const storedTabs = await getTabs();
+    const storedTabs = getTabs();
     if (storedTabs) tabs = storedTabs; else tabs = [];
 
     onTabsChange((storedTabs) => {
@@ -30,21 +29,6 @@
     onTabSelected((path: string) => {
       selected = path;
     });
-
-    // Close any chat tabs that no longer exist:
-    ready = false;
-
-    for (let i = 0; i < tabs.length; i++) {
-      const tab = tabs[i];
-
-      // If this tab is a chat, check if it's still open:
-      if (tab.path.startsWith('/chat/')) {
-        if (!await invoke('chat_exists', { id: tab.path.substring(6, tab.path.length) })) {
-          if (selected == tab.path) navigateTo('/');
-          await closeTab(tab.path);
-        }
-      }
-    }
 
     ready = true;
   });
