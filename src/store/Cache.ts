@@ -2,11 +2,9 @@ import type Msg from '@core/messages/Msg';
 import { Store } from 'tauri-plugin-store-api';
 
 let chatHistory: Store;
-let appTabs: Store;
 
 export function setupPersistentStore() {
   chatHistory = new Store('.chat-history.dat');
-  appTabs = new Store('.app-tabs.dat');
 }
 
 /**
