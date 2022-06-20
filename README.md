@@ -1,6 +1,6 @@
 <h1 align="center">
     <div align="center">
-        <img width=140 src="https://github.com/emberry-org/emberry-rework/blob/main/.github/assets/icon.png"> 
+        <img width=140 src="https://github.com/emberry-org/emberry-rework/blob/main/.github/assets/logo.png"> 
     </div>
 </h1>
 
@@ -11,11 +11,11 @@
     
 <br>
 
-## Development
+<h1><samp>Development</samp></h1>
 
 <br>
 
-### Frontend
+<h3><samp>Frontend</samp></h3>
 
 For the frontend setup install the node packages using the following command :
 
@@ -25,14 +25,15 @@ $ npm i
 
 <br>
 
-### Backend
+<h3><samp>Backend</samp></h3>
 
 For the backend setup add a ``.env`` file to the ``src-tauri`` directory :
 
 ```js
 /src-tauri/.env
 
-SERVER_ADDRESS= ...
+SERVER_ADDRESS=<server_ip>:<udp_port>
+PUBLIC_KEY=<32 byte string>
 ```
 
 <br>
@@ -49,7 +50,7 @@ Then add a ``dist/`` directory on the same level as ``src/`` and ``src-tauri/`` 
 
 <br>
 
-### Running
+<h3><samp>Running</samp></h3>
 
 To run Emberry in developer mode use the following command :
 
