@@ -74,7 +74,7 @@
 
 .titlebar {
   width: 100vw;
-  height: 32px;
+  height: 44px;
   
   display: flex;
   align-items: center;
@@ -159,7 +159,7 @@
   .button {
     width: 46.5px;
     min-width: 46.5px;
-    height: 32px;
+    height: 44px;
 
     display: flex;
     justify-content: center;

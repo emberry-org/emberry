@@ -16,8 +16,6 @@
   background-color: #343233;
   border-top: 1.5px solid #efdab928;
   border-right: 1.5px solid #efdab911;
-  z-index: 2;
-  box-shadow: 0 2px 4px 0 #00000055;
 }
 
 </style>

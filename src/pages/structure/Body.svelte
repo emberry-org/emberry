@@ -9,7 +9,7 @@
 
   <Content />
 
-  <Pub />
+  <!-- <Pub /> -->
 
 </div>
 

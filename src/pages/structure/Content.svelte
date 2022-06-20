@@ -27,9 +27,6 @@
   
   border-top: 1.5px solid #efdab928;
   border-right: 1.5px solid #efdab928;
-  border-top-right-radius: 12px;
-  z-index: 1;
-  box-shadow: 0 2px 4px 0 #00000055;
 }
 
 </style>
