@@ -9,6 +9,8 @@ use tokio::net::UdpSocket;
 use tokio::select;
 use tokio::sync::oneshot;
 
+pub mod message;
+
 type ConnectionMap = HashMap<String, Connection>;
 pub struct Connection {
   pub send_handle: EventHandler,
