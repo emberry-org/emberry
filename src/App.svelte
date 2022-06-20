@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Router, Route } from "svelte-navigator";
+  import { Router, Route, NavigatorHistory, createHistory, createMemorySource } from "svelte-navigator";
   import Titlebar from "@lib/window/Titlebar.svelte";
   import Home from "@page/Home.svelte";
   import Chat from "@page/Chat.svelte";
@@ -7,6 +7,7 @@
   import { commandCenterState } from "@store";
   import setupOS from "@core/OppSys";
   import { onMount } from "svelte";
+  import NewChat from "@page/NewChat.svelte";
   //import AddressBook from "@lib/window/AddressBook.svelte";
 
   onMount(() => {
@@ -32,9 +33,12 @@
   <div class="body">
     <!-- <AddressBook /> -->
 
-    <Router>
+    <Router primary={false}>
       <Route path="/">
         <Home />
+      </Route>
+      <Route path="/chat/new">
+        <NewChat />
       </Route>
       <Route path="/chat/:id" let:params>
         <Chat id={params.id} />

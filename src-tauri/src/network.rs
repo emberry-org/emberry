@@ -1,11 +1,22 @@
 use std::collections::HashMap;
 use std::io::{Error, ErrorKind};
-use std::net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr, UdpSocket};
+use std::net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr};
+use std::sync::{Arc, Mutex};
 
 use tauri::EventHandler;
 
+use tokio::net::UdpSocket;
+use tokio::select;
+use tokio::sync::oneshot;
+
+type ConnectionMap = HashMap<String, Connection>;
+pub struct Connection {
+  pub send_handle: EventHandler,
+  pub recv_handle: oneshot::Sender<()>,
+}
+
 pub struct Networking {
-  pub chats: HashMap<String, EventHandler>,
+  pub chats: Mutex<ConnectionMap>,
 }
 
 #[derive(serde::Deserialize, Debug)]
@@ -20,9 +31,9 @@ struct MessageRecievedPayload {
 }
 
 #[tauri::command(async)]
-pub fn hole_punch(
+pub async fn hole_punch(
   window: tauri::Window,
-  state: tauri::State<Networking>,
+  state: tauri::State<'_, Networking>,
   peer_key: String,
 ) -> Result<String, String> {
   /* Get the server ip from .env */
@@ -31,6 +42,10 @@ pub fn hole_punch(
     server_address: dotenv!("SERVER_ADDRESS").into(),
   };
 
+  if env.public_key == peer_key {
+    return Err("Cannot connect to oneself".into());
+  }
+
   let identity = if env.public_key.as_bytes() < peer_key.as_bytes() {
     format!("{}{}", env.public_key, peer_key)
   } else {
@@ -38,59 +53,82 @@ pub fn hole_punch(
   };
 
   /* Holepunch using rhizome */
-  let socket = match punch_hole(env.server_address, identity.as_bytes()) {
+  let socket = match punch_hole(env.server_address, identity.as_bytes()).await {
     Ok(socket) => socket,
     Err(e) => return Err(e.to_string()),
   };
 
+  let arc_sock = Arc::new(socket);
+
   /* Setup the send event for the frontend */
-  {
-    let socket = socket.try_clone().unwrap();
-
-    let send_handle = window.listen(format!("send_message_{}", identity), move |e| {
-      let _ = &socket.send(e.payload().unwrap().as_bytes()).unwrap();
-    });
-
-    //state.chats.insert(identity.clone(), send_handle);
-  }
+  let sender = arc_sock.clone();
+  let send_handle = window.listen(format!("send_message_{}", identity), move |e| {
+    let sender = sender.clone();
+    tokio::spawn(async move { sender.send(e.payload().unwrap().as_bytes()).await });
+  });
 
   /* Setup the receive loop */
+  let (recv_handle, mut rx) = oneshot::channel::<()>();
   let mut buf = [0u8; 512];
-  let recv_handle = std::thread::spawn(move || loop {
-    if let Ok(len) = socket.recv(&mut buf) {
-      let msg = String::from_utf8_lossy(&buf[..len]).to_string();
+  let emit_identity = identity.clone();
+  tokio::spawn(async move {
+    loop {
+      select! {
+        Ok(len) = arc_sock.recv(&mut buf) => {
+        let msg = String::from_utf8_lossy(&buf[..len]).to_string();
 
-      /* Emit the message_recieved event when a message is recieved */
-      window
-        .emit("message_recieved", MessageRecievedPayload { message: msg })
-        .expect("Failed to emit event");
+        /* Emit the message_recieved event when a message is recieved */
+        window
+          .emit(format!("message_recieved_{}", &emit_identity).as_str(), MessageRecievedPayload { message: msg })
+          .expect("Failed to emit event");
+
+        },
+        Ok(_) = &mut rx => {
+          break;
+        }
+      }
     }
   });
+
+  let con = Connection {
+    recv_handle,
+    send_handle,
+  };
+  state.chats.lock().unwrap().insert(identity.clone(), con);
 
   Ok(identity)
 }
 
+#[tauri::command]
+pub fn chat_exists(state: tauri::State<'_, Networking>, id: String) -> bool {
+  // Check if the store contains the key for this chat.
+  match state.chats.lock() {
+    Ok(chats) => chats.contains_key(&id),
+    Err(_) => false
+  }
+}
+
 /** Create a new socket and holepunch it! */
-fn punch_hole<A>(server_addr: A, ident: &[u8]) -> Result<UdpSocket, Error>
+async fn punch_hole<A>(server_addr: A, ident: &[u8]) -> Result<UdpSocket, Error>
 where
-  A: std::net::ToSocketAddrs,
+  A: tokio::net::ToSocketAddrs,
 {
   // Create, bind, and connect the socket:
-  let socket = UdpSocket::bind("0.0.0.0:0")?;
-  socket.connect(server_addr)?;
+  let socket = UdpSocket::bind("0.0.0.0:0").await?;
+  socket.connect(server_addr).await?;
 
   // Send the server our identity (Used to match us with a peer)
-  socket.send(ident)?;
+  socket.send(ident).await?;
 
   // Wait for the server to send us a peer:
   let mut b = [0u8; 512];
-  let size = socket.recv(&mut b)?;
+  let size = socket.recv(&mut b).await?;
 
   // Try parse the recieved peer address.
   let addr = parse_addr(&b, size).expect("Failed to parse address");
 
   // Swap the connection from the server to the peer.
-  socket.connect(addr)?;
+  socket.connect(addr).await?;
 
   Ok(socket)
 }

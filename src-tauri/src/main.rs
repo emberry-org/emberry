@@ -6,8 +6,6 @@
 #[macro_use]
 extern crate dotenv_codegen;
 
-use std::collections::HashMap;
-
 #[cfg(not(target_os = "linux"))]
 use tauri::Manager;
 
@@ -15,12 +13,12 @@ use tauri::Manager;
 mod window;
 
 mod network;
-use network::{hole_punch, Networking};
+use network::{hole_punch, chat_exists, Networking};
 use tauri_plugin_store::PluginBuilder;
 
 fn main() {
   let builder = tauri::Builder::default();
-  
+
   #[cfg(not(target_os = "linux"))]
   let builder = builder.setup(|app| {
     let window = app.get_window("main").unwrap();
@@ -29,9 +27,11 @@ fn main() {
   });
 
   builder
-    .manage(Networking { chats: HashMap::new() })
+    .manage(Networking {
+      chats: Default::default(),
+    })
     .plugin(PluginBuilder::default().build())
-    .invoke_handler(tauri::generate_handler![toggle_devtools, hole_punch])
+    .invoke_handler(tauri::generate_handler![toggle_devtools, hole_punch, chat_exists])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }

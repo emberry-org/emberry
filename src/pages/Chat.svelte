@@ -1,48 +1,87 @@
 <script lang="ts">
+  import { emit, listen } from '@tauri-apps/api/event'
   import Feed from "@lib/chat/Feed.svelte";
-  import Icon from "@lib/Icon.svelte";
-  import { addressBookState } from "@store";
+  import { onMount } from 'svelte';
+  import { getChatHistory, insertChatHistory } from '@store';
+  //import Icon from "@lib/Icon.svelte";
+  //import { addressBookState } from "@store";
   //import { onMount } from "svelte";
 
   export let id: string;
 
-  let messages = [ { sender: 'Mjex', content: 'Hello world!' }, { sender: 'Mjex', content: 'Another Message!! :D' }, { sender: 'Roboolet', content: 'Wassup *_*' } ];
+  let inputBox = '';
 
-  // onMount(() => {
-  //   setInterval(() => {
-  //     if (Math.random() < 0.5)
-  //       messages.push({ sender: 'Mjex', content: 'Another Message!! :D' });
-  //     else
-  //       messages.push({ sender: 'Roboolet', content: 'Another Message!! :D' });
+  $: messages = [] as { sender: String, content: String }[];
+  $: id, updateHistory();
 
-  //     if (messages.length > 50) {
-  //       messages.pop();
-  //     }
+  onMount(async () => {
+    // Retrieve the history for this chat.
+    const history = await getChatHistory(id);
+    if (history) messages = history; else messages = [];
+  });
 
-  //     messages = [...messages];
-  //   }, 500);
-  // });
+  async function updateHistory() {
+    // Retrieve the history for this chat.
+    const history = await getChatHistory(id);
+    if (history) messages = history; else messages = [];
+  }
 
-  function toggleAddressBook() { addressBookState.set(!$addressBookState); }
+  /* Listen for incoming messages from the peer */
+  listen(`message_recieved_${id}`, (event) => {
+    // Push the message into the messages array.
+    let message = (event.payload as any).message as string;
+    messages.push({ sender: 'Peer', content: message });
+
+    // Update the persistent store.
+    insertChatHistory(id, { sender: 'Peer', content: message });
+
+    // Force update the Feed.
+    messages = [...messages];
+  });
+
+  /** Listen for the user to press the enter key */
+  function keyPressed(e: KeyboardEvent) {
+    if (e.key == 'Enter') { sendMessage(); }
+  }
+
+  /** Send a message to the peer */
+  function sendMessage() {
+    // Push the message into the messages array.
+    messages.push({ sender: 'Me', content: inputBox });
+
+    // Update the persistent store.
+    insertChatHistory(id, { sender: 'Me', content: inputBox });
+
+    // Tell the backend to send the message.
+    emit(`send_message_${id}`, inputBox);
+
+    // Force update the Feed.
+    messages = [...messages];
+
+    // Empty the input box.
+    inputBox = '';
+  }
+
+  //function toggleAddressBook() { addressBookState.set(!$addressBookState); }
 
 </script>
 
 <div class="chat">
 
   <div class="toolbar">
-    <button class="icon-button" on:click={toggleAddressBook}>
+    <!-- <button class="icon-button" on:click={toggleAddressBook}>
       <Icon name="addressBook" size="16px" />
     </button>
-    <div class="seperator" />
-    <div class="username">Roboolet</div>
+    <div class="seperator" /> -->
+    <div class="username"> { id } </div>
   </div>
 
   <div class="logs">
-    <Feed chat={messages} />
+    <Feed chat={ messages } />
   </div>
 
   <div class="input">
-    <input type="text">
+    <input type="text" bind:value={ inputBox } on:keypress={ keyPressed }>
   </div>
 
 </div>
@@ -67,18 +106,18 @@
     border-bottom: 1.5px solid #434547;
     box-shadow: 0 1px 2px 0 #00000055;
 
-    button {
-      margin-left: 4px;
-      margin-right: 4px;
-      padding-bottom: 1px;
-    }
+    // button {
+    //   margin-left: 4px;
+    //   margin-right: 4px;
+    //   padding-bottom: 1px;
+    // }
 
-    .seperator {
-      width: 0px;
-      height: 65%;
+    // .seperator {
+    //   width: 0px;
+    //   height: 65%;
 
-      border-right: 1.5px solid #ffffff18;
-    }
+    //   border-right: 1.5px solid #ffffff18;
+    // }
 
     .username {
       font-family: Inter;
@@ -87,6 +126,7 @@
       color: #aaa;
 
       margin-left: 10px;
+      overflow: hidden;
     }
   }
 

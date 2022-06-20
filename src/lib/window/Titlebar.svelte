@@ -1,28 +1,40 @@
 <script lang="ts">
   import { appWindow } from '@tauri-apps/api/window'
   import Icon from "@lib/Icon.svelte";
-  import { applicationTabs, oppSys } from '@store';
-  import { navigate } from "svelte-navigator";
+  import { getSelectedTab, getTabs, navigateTo, onTabsChange, onTabSelected, oppSys } from '@store';
   import { onMount } from 'svelte';
+  import type AppTab from '@core/AppTab';
 
   $: maximized = false;
   $: hideDecorations = $oppSys == 'linux' || $oppSys == 'darwin';
 
-  let tabs = $applicationTabs;
+  $: tabs = [] as AppTab[];
+  $: selected = '/';
 
-  applicationTabs.subscribe((new_tabs) => {
-    tabs = new_tabs;
+  let ready = false;
+
+  onMount(async () => {
+    // Setup the tabs:
+    const storedTabs = getTabs();
+    if (storedTabs) tabs = storedTabs; else tabs = [];
+
+    onTabsChange((storedTabs) => {
+      tabs = storedTabs;
+    });
+
+    // Setup the selected tab:
+    const selectedTab = await getSelectedTab();
+    if (selectedTab) selected = selectedTab; else selected = '/';
+
+    onTabSelected((path: string) => {
+      selected = path;
+    });
+
+    ready = true;
   });
 
   appWindow.listen('tauri://resize', async () => {
     maximized = await appWindow.isMaximized();
-  });
-
-  onMount(() => {
-    applicationTabs.update((tabs) => {
-      tabs.push({ icon: 'chat', title: 'New room', path: 'chat/1234', keep_open: false });
-      return tabs;
-    });
   });
 
   function minimize() { appWindow.minimize(); }
@@ -35,9 +47,12 @@
   <!-- Makes sure you can always drag the window -->
   {#if !maximized && !hideDecorations} <div class="drag-square" /> {/if}
 
-  <div class="tabs">
+  <div class="tabs { ready ? '' : 'hidden' }">
+    <div class="tab home" on:click={() => navigateTo('/')} selected={selected == '/' ? true : null}>
+      <Icon name="home" size="16px" />
+    </div>
     {#each tabs as tab}
-      <div class="tab" on:click={() => navigate(tab.path)}>
+      <div class="tab" on:click={() => navigateTo(tab.path)} selected={selected == tab.path ? true : null}>
         <Icon name={tab.icon} size="16px" />
         <span style="font-style: { tab.keep_open ? '' : 'italic' };"> { tab.title } </span>
       </div>
@@ -85,6 +100,10 @@
     overflow: hidden;
     pointer-events: none;
 
+    &.hidden {
+      display: none;
+    }
+
     .tab {
       // Tabs have 1 px offset when the window isn't maximized.
       margin-top: var(--maximized);
@@ -115,10 +134,19 @@
         font-size: 0.7rem;
         font-family: Inter;
         user-select: none;
+        -webkit-user-select: none;
       }
 
       &:hover {
         background-color: #ffffff11;
+      }
+
+      &.home {
+        margin-left: 8px;
+
+        :global(svg) {
+          margin-bottom: 2px;
+        }
       }
 
       &[selected] {

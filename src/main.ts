@@ -1,6 +1,8 @@
-import setupOS from '@core/OppSys'
-import App from './App.svelte'
+import setupOS from '@core/OppSys';
+import { setupPersistentStore } from '@store';
+import App from './App.svelte';
 
+setupPersistentStore();
 setupOS();
 
 const app = new App({
