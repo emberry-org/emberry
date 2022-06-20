@@ -47,7 +47,7 @@
   <!-- Makes sure you can always drag the window -->
   {#if !maximized && !hideDecorations} <div class="drag-square" /> {/if}
 
-  <div class="tabs { ready ? '' : 'hidden' }">
+  <!-- <div class="tabs { ready ? '' : 'hidden' }">
     <div class="tab home" on:click={() => navigateTo('/')} selected={selected == '/' ? true : null}>
       <Icon name="home" size="16px" />
     </div>
@@ -57,7 +57,7 @@
         <span style="font-style: { tab.keep_open ? '' : 'italic' };"> { tab.title } </span>
       </div>
     {/each}
-  </div>
+  </div> -->
 
   <div class="button float-right" on:click={minimize}>
     <Icon name="minimize" />
@@ -74,14 +74,13 @@
 
 .titlebar {
   width: 100vw;
-  height: 44px;
+  height: 32px;
   
   display: flex;
   align-items: center;
   z-index: 1;
 
-  background-color: #1e2024;
-  border-bottom: 1.5px solid #434547;
+  background-color: #2c2a2b;
 
   .drag-square {
     width: 45.6px;
@@ -91,76 +90,76 @@
     pointer-events: none;
   }
 
-  .tabs {
-    flex-grow: 1;
-    height: 44px;
+  // .tabs {
+  //   flex-grow: 1;
+  //   height: 44px;
 
-    display: flex;
-    align-items: center;
-    overflow: hidden;
-    pointer-events: none;
+  //   display: flex;
+  //   align-items: center;
+  //   overflow: hidden;
+  //   pointer-events: none;
 
-    &.hidden {
-      display: none;
-    }
+  //   &.hidden {
+  //     display: none;
+  //   }
 
-    .tab {
-      // Tabs have 1 px offset when the window isn't maximized.
-      margin-top: var(--maximized);
+  //   .tab {
+  //     // Tabs have 1 px offset when the window isn't maximized.
+  //     margin-top: var(--maximized);
 
-      min-width: fit-content;
-      min-height: 16px;
-      height: 16px;
+  //     min-width: fit-content;
+  //     min-height: 16px;
+  //     height: 16px;
 
-      display: flex;
-      align-items: center;
+  //     display: flex;
+  //     align-items: center;
 
-      padding: 8px;
-      margin-left: 4px;
+  //     padding: 8px;
+  //     margin-left: 4px;
 
-      pointer-events: all;
-      border-radius: 4px;
-      cursor: pointer;
-      color: #737578;
+  //     pointer-events: all;
+  //     border-radius: 4px;
+  //     cursor: pointer;
+  //     color: #efdab9;
 
-      :global(svg) {
-        min-width: 16px;
-        min-height: 16px;
-      }
+  //     :global(svg) {
+  //       min-width: 16px;
+  //       min-height: 16px;
+  //     }
 
-      span {
-        color: #bbb;
-        margin-left: 8px;
-        font-size: 0.7rem;
-        font-family: Inter;
-        user-select: none;
-        -webkit-user-select: none;
-      }
+  //     span {
+  //       color: #bbb;
+  //       margin-left: 8px;
+  //       font-size: 0.7rem;
+  //       font-family: Inter;
+  //       user-select: none;
+  //       -webkit-user-select: none;
+  //     }
 
-      &:hover {
-        background-color: #ffffff11;
-      }
+  //     &:hover {
+  //       background-color: #ffffff11;
+  //     }
 
-      &.home {
-        margin-left: 8px;
+  //     &.home {
+  //       margin-left: 8px;
 
-        :global(svg) {
-          margin-bottom: 2px;
-        }
-      }
+  //       :global(svg) {
+  //         margin-bottom: 2px;
+  //       }
+  //     }
 
-      &[selected] {
-        background-color: #00000044;
-        color: #636568;
-        cursor: default;
-      }
-    }
-  }
+  //     &[selected] {
+  //       background-color: #00000033;
+  //       color: #efdab988;
+  //       cursor: default;
+  //     }
+  //   }
+  // }
 
   .button {
     width: 46.5px;
     min-width: 46.5px;
-    height: 44px;
+    height: 32px;
 
     display: flex;
     justify-content: center;
@@ -169,14 +168,14 @@
     outline: none;
     border: none;
 
-    color: #fff;
+    color: #efdab9;
 
     &:hover {
-      background-color: #ffffff11;
+      background-color: #3d3a3a;
     }
 
     &.close:hover {
-      background-color: #c42b1c;
+      background-color: #c13f21;
     }
   }
 

@@ -3,9 +3,6 @@
   import Feed from "@lib/chat/Feed.svelte";
   import { onMount } from 'svelte';
   import { getChatHistory, insertChatHistory } from '@store';
-  //import Icon from "@lib/Icon.svelte";
-  //import { addressBookState } from "@store";
-  //import { onMount } from "svelte";
 
   export let id: string;
 
@@ -62,17 +59,11 @@
     inputBox = '';
   }
 
-  //function toggleAddressBook() { addressBookState.set(!$addressBookState); }
-
 </script>
 
 <div class="chat">
 
   <div class="toolbar">
-    <!-- <button class="icon-button" on:click={toggleAddressBook}>
-      <Icon name="addressBook" size="16px" />
-    </button>
-    <div class="seperator" /> -->
     <div class="username"> { id } </div>
   </div>
 
@@ -105,19 +96,6 @@
     background-color: #37383c;
     border-bottom: 1.5px solid #434547;
     box-shadow: 0 1px 2px 0 #00000055;
-
-    // button {
-    //   margin-left: 4px;
-    //   margin-right: 4px;
-    //   padding-bottom: 1px;
-    // }
-
-    // .seperator {
-    //   width: 0px;
-    //   height: 65%;
-
-    //   border-right: 1.5px solid #ffffff18;
-    // }
 
     .username {
       font-family: Inter;
