@@ -67,7 +67,9 @@ pub async fn hole_punch(
   let sender = arc_sock.clone();
   let send_handle = window.listen(format!("send_message_{}", identity), move |e| {
     let sender = sender.clone();
-    tokio::spawn(async move { sender.send(e.payload().unwrap().as_bytes()).await });
+    if let Ok(msg) = serde_json::from_str::<Message>(e.payload().unwrap_or("")) {
+      tokio::spawn(async move { msg.send_with(&sender).await });
+    }
   });
 
   /* Setup the receive loop */
@@ -106,7 +108,7 @@ pub fn chat_exists(state: tauri::State<'_, Networking>, id: String) -> bool {
   // Check if the store contains the key for this chat.
   match state.chats.lock() {
     Ok(chats) => chats.contains_key(&id),
-    Err(_) => false
+    Err(_) => false,
   }
 }
 
