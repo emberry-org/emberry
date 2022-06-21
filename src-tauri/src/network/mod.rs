@@ -10,6 +10,7 @@ use tokio::select;
 use tokio::sync::oneshot;
 
 pub mod message;
+use message::Message;
 
 type ConnectionMap = HashMap<String, Connection>;
 pub struct Connection {
@@ -29,7 +30,7 @@ struct Config {
 
 #[derive(Clone, serde::Serialize)]
 struct MessageRecievedPayload {
-  message: String,
+  message: Message,
 }
 
 #[tauri::command(async)]
@@ -76,8 +77,7 @@ pub async fn hole_punch(
   tokio::spawn(async move {
     loop {
       select! {
-        Ok(len) = arc_sock.recv(&mut buf) => {
-        let msg = String::from_utf8_lossy(&buf[..len]).to_string();
+          Ok(msg) = Message::recv_from(&arc_sock, &mut buf) => {
 
         /* Emit the message_recieved event when a message is recieved */
         window

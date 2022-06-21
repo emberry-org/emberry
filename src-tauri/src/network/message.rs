@@ -3,6 +3,7 @@ use std::io::{self, ErrorKind};
 use tokio::net::UdpSocket;
 use Message::*;
 
+#[derive(Clone, serde::Serialize)]
 pub enum Message {
   Kap,               // &[]
   Username(String),  // 2
