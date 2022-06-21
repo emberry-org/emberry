@@ -74,7 +74,7 @@
           width: 30%;
           height: 36px;
 
-          background-color: #3d3a3a;
+          background-color: #303030;
           border: 1.5px solid #ffffff18;
           box-shadow: 0 1px 2px 0 #00000055;
           border-radius: 6px;
@@ -83,7 +83,7 @@
 
           font-family: Inter;
           font-size: 0.85em;
-          color: #efdab9;
+          color: #ccc;
 
           user-select: none;
           cursor: pointer;
@@ -104,11 +104,11 @@
         }
 
         input {
-          background-color: #3d3a3a;
+          background-color: #303030;
           border: 1.5px solid #ffffff18;
           box-shadow: 0 1px 2px 0 #00000055;
           border-radius: 6px;
-          color: #efdab9;
+          color: #ccc;
           padding: 0 12px 0 12px;
           margin-right: 12px;
           font-family: Inter;

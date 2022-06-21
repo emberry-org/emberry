@@ -4,6 +4,7 @@ use tokio::net::UdpSocket;
 use Message::*;
 
 #[derive(Clone, serde::Serialize, serde::Deserialize)]
+#[serde(tag = "type", content = "content")]
 pub enum Message {
   Kap,               // &[]
   Username(String),  // 2

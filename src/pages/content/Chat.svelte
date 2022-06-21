@@ -3,6 +3,7 @@
   import Feed from "@lib/chat/Feed.svelte";
   import { onMount } from 'svelte';
   import { getChatHistory, insertChatHistory } from '@store';
+import { toPacket } from '@core/messages/Packet';
 
   export let id: string;
 
@@ -26,14 +27,18 @@
   /* Listen for incoming messages from the peer */
   listen(`message_recieved_${id}`, (event) => {
     // Push the message into the messages array.
-    let message = (event.payload as any).message as string;
-    messages.push({ sender: 'Peer', content: message });
+    let packet = toPacket(event.payload as any);
 
-    // Update the persistent store.
-    insertChatHistory(id, { sender: 'Peer', content: message });
+    if (packet.type == 'Chat') {
 
-    // Force update the Feed.
-    messages = [...messages];
+      messages.push({ sender: 'Peer', content: packet.content });
+
+      // Update the persistent store.
+      insertChatHistory(id, { sender: 'Peer', content: packet.content });
+
+      // Force update the Feed.
+      messages = [...messages];
+    }
   });
 
   /** Listen for the user to press the enter key */
@@ -50,7 +55,7 @@
     insertChatHistory(id, { sender: 'Me', content: inputBox });
 
     // Tell the backend to send the message.
-    emit(`send_message_${id}`, inputBox);
+    emit(`send_message_${id}`, { type: 'Chat', content: inputBox });
 
     // Force update the Feed.
     messages = [...messages];

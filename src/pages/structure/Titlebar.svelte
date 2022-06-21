@@ -80,7 +80,7 @@
   align-items: center;
   z-index: 1;
 
-  background-color: #2c2a2b;
+  background-color: #222222;
 
   .drag-square {
     width: 45.6px;
@@ -168,10 +168,10 @@
     outline: none;
     border: none;
 
-    color: #efdab9;
+    color: #fff;
 
     &:hover {
-      background-color: #3d3a3a;
+      background-color: #ffffff11;
     }
 
     &.close:hover {

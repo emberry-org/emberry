@@ -12,7 +12,7 @@
   width: 64px;
   height: calc(100% - 1.5px);
 
-  background-color: #2c2a2b;
+  background-color: #222222;
 }
 
 </style>

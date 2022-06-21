@@ -21,12 +21,13 @@
 
 .content {
   flex-grow: 1;
-  height: calc(100% - 1.5px);
+  height: calc(100% - 2px);
 
-  background-color: #343233;
+  background-color: #333333;
   
-  border-top: 1.5px solid #efdab928;
-  border-right: 1.5px solid #efdab928;
+  border-top: 2px solid #343434;
+  border-left: 2px solid #343434;
+  border-top-left-radius: 12px;
 }
 
 </style>
