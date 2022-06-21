@@ -67,9 +67,8 @@ pub async fn hole_punch(
   let sender = arc_sock.clone();
   let send_handle = window.listen(format!("send_message_{}", identity), move |e| {
     let sender = sender.clone();
-    if let Ok(msg) = serde_json::from_str::<Message>(e.payload().unwrap_or("")) {
-      tokio::spawn(async move { msg.send_with(&sender).await });
-    }
+    let msg = serde_json::from_str::<Message>(e.payload().unwrap()).unwrap();
+    tokio::spawn(async move { msg.send_with(&sender).await });
   });
 
   /* Setup the receive loop */
