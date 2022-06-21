@@ -5,11 +5,11 @@
 
 <div class="body">
   
-  <Pub />
+  <!-- <Pub /> -->
 
   <Content />
 
-  <Explorer />
+  <!-- <Explorer /> -->
 
 </div>
 

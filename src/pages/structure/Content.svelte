@@ -27,7 +27,6 @@
   
   border-top: 2px solid #343434;
   border-left: 2px solid #343434;
-  border-top-left-radius: 12px;
 }
 
 </style>
