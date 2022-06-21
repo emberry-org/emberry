@@ -23,10 +23,9 @@
   flex-grow: 1;
   height: calc(100% - 2px);
 
-  background-color: #333333;
+  background-color: #282828;
   
-  border-top: 2px solid #343434;
-  border-left: 2px solid #343434;
+  border-top: 1px solid #545454;
 }
 
 </style>

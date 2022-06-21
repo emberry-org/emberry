@@ -46,7 +46,7 @@
     justify-content: center;
     align-items: center;
 
-    color: #00000028;
+    color: #222222;
 
     .card {
       height: fit-content;
@@ -74,9 +74,8 @@
           width: 30%;
           height: 36px;
 
-          background-color: #303030;
-          border: 1.5px solid #ffffff18;
-          box-shadow: 0 1px 2px 0 #00000055;
+          background-color: #3f3f3f;
+          border: 1px solid #545454;
           border-radius: 6px;
 
           padding: 0 12px 0 12px;
@@ -94,7 +93,7 @@
           }
 
           &:hover {
-            border: 1.5px solid #ffffff28;
+            border: 1px solid #5a5a5a;
           }
 
           &[disabled] {
@@ -104,9 +103,8 @@
         }
 
         input {
-          background-color: #303030;
-          border: 1.5px solid #ffffff18;
-          box-shadow: 0 1px 2px 0 #00000055;
+          background-color: #222222;
+          border: 1px solid #545454;
           border-radius: 6px;
           color: #ccc;
           padding: 0 12px 0 12px;
@@ -116,7 +114,7 @@
           outline: none;
 
           &:hover {
-            border: 1.5px solid #ffffff28;
+            border: 1px solid #5a5a5a;
           }
         }
       }
