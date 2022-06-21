@@ -5,7 +5,7 @@
 
 <div class="body">
   
-  <!-- <Pub /> -->
+  <Pub />
 
   <Content />
 

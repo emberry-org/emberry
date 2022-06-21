@@ -15,7 +15,7 @@ import HomeIcon from './home.svg?raw';
 
 import DebugIcon from './debug.svg?raw';
 import ControlIcon from './control.svg?raw';
-import TerminalIcon from './terminal.svg?raw';
+import SproutIcon from './sprout.svg?raw';
 import VideoIcon from './video.svg?raw';
 import CallIcon from './call.svg?raw';
 import AddressBookIcon from './address-book.svg?raw';
@@ -40,7 +40,7 @@ export const IconArchive = {
   chatMsg: ChatMsgIcon,
   debug: DebugIcon,
   control: ControlIcon,
-  terminal: TerminalIcon,
+  sprout: SproutIcon,
   video: VideoIcon,
   call: CallIcon,
   addressBook: AddressBookIcon,
