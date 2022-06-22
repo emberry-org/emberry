@@ -9,7 +9,7 @@
   onMount(() => {
     setupOS();
 
-    navigate('/chat/1234');
+    //navigate('/chat/1234');
   });
 
   /** Check for local shortcuts */
