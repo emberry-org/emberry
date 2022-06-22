@@ -123,6 +123,8 @@ where
   // Send the server our identity (Used to match us with a peer)
   socket.send(ident).await?;
 
+  #[cfg(feature = "debug")]
+  println!("HolePunching: Waiting on response from server");
   // Wait for the server to send us a peer:
   let mut b = [0u8; 512];
   let size = socket.recv(&mut b).await?;
@@ -130,8 +132,14 @@ where
   // Try parse the recieved peer address.
   let addr = parse_addr(&b, size).expect("Failed to parse address");
 
+  #[cfg(feature = "debug")]
+  println!("HolePunching: connect to {}", &addr);
+
   // Swap the connection from the server to the peer.
   socket.connect(addr).await?;
+
+  #[cfg(feature = "debug")]
+  println!("HolePunching: connected");
 
   Ok(socket)
 }

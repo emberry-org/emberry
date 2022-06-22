@@ -39,9 +39,11 @@ cocoa = "0.24"
 objc = "0.2"
 
 [features]
+# Debug code
+debug = []
 # by default Tauri runs in production mode
 # when `tauri dev` runs it is executed with `cargo run --no-default-features` if `devPath` is an URL
-default = [ "custom-protocol" ]
+default = [ "custom-protocol", "debug"]
 # this feature is used used for production builds where `devPath` points to the filesystem
 # DO NOT remove this
 custom-protocol = [ "tauri/custom-protocol" ]
