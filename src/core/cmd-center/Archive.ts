@@ -3,7 +3,7 @@ import { invoke } from '@tauri-apps/api/tauri'
 
 import type Cmd from "./Cmd";
 import { CmdType } from "./Cmd";
-import { insertTab, navigateTo } from '@store';
+import { clearChatHistory, insertTab, navigateTo } from '@store';
 
 /** Collection of all the executable commands */
 export const CmdArchive: Cmd[] = [
@@ -24,4 +24,6 @@ export const CmdArchive: Cmd[] = [
 
     input: true, input_desc: 'Enter peer public key...'
   },
+
+  { title: 'Clear Chat History', type: CmdType.Debug, accelerator: [], action: () => { clearChatHistory(); }, input: false }
 ];

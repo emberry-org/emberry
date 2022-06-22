@@ -29,3 +29,10 @@ export async function insertChatHistory(chatId: string, msg: Msg) {
 export async function getChatHistory(chatId: string): Promise<Array<Msg>> {
   return await chatHistory.get(chatId);
 }
+
+/**
+ * Clear all chat history from the store.
+ */
+export async function clearChatHistory() {
+  await chatHistory.clear();
+}

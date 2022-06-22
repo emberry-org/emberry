@@ -1,6 +1,7 @@
 <script lang="ts">
   import type Msg from "@core/messages/Msg";
   import { onMount } from "svelte";
+import { merge_ssr_styles } from "svelte/internal";
 
   export let chat: Msg[] = [];
 
@@ -47,7 +48,7 @@
           <div class="user">
             <div class="username">{ msg.sender }</div>
             <div class="dot">·</div>
-            <div class="timestamp">11:34</div>
+            <div class="timestamp">{ msg.time ?? '--:--' }</div>
           </div>
           <div class="message">{ msg.content }</div>
         </div>
@@ -72,37 +73,58 @@
 <style lang="scss">
 
 .feed {
-  width: calc(100% - 32px);
-  height: calc(100vh - 150px);
+  width: 100%;
+  height: calc(100vh - 116px);
 
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
 
-  padding: 16px;
-
-  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-      Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  font-family: Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji"; 
   overflow-y: auto;
   overflow-x: hidden;
 
   .head-item {
     width: 100%;
     height: fit-content;
-    margin-top: 20px;
+    margin-top: 16px;
     color: #444444;
     display: flex;
     flex-direction: row;
     align-items: flex-start;
     z-index: 1;
 
+    &:hover {
+      background-color: #222222;
+    }
+
     .avatar {
-      width: 32px;
-      min-width: 32px;
-      height: 32px;
-      border: 1.5px solid #ffffff22;
+      width: 38px;
+      min-width: 38px;
+      height: 38px;
+      
+      margin-left: 16px;
       background-color: #222222;
       border-radius: 6px;
+
+      background-image: url("../../assets/secret.jpg");
+      background-size: cover;
+      background-repeat: no-repeat;
+      position: relative;
+
+      &::after {
+        content: "";
+        position: absolute;
+
+        top: 0;
+        left: 0;
+
+        width: 36px;
+        height: 36px;
+
+        border: 1px solid #ffffff33;
+        border-radius: 6px;
+      }
     }
 
     .content {
@@ -149,6 +171,7 @@
         inline-size: calc(100% - 42px);
         margin-left: 16px;
         margin-top: 4px;
+        line-height: 20px;
         font-size: 14px;
         color: #ddd;
         overflow-wrap: break-word;
@@ -158,9 +181,15 @@
   }
 
   .body-item {
-    padding-left: 51px;
+    padding-left: 70px;
+    padding-top: 4px;
+
+    &:hover {
+      background-color: #222222;
+    }
 
     .message {
+      line-height: 20px;
       inline-size: calc(100% - 42px);
       font-size: 14px;
       color: #ddd;

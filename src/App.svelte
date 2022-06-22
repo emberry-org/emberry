@@ -4,9 +4,12 @@
   import { commandCenterState } from "@store";
   import setupOS from "@core/OppSys";
   import { onMount } from "svelte";
+  import { navigate } from "svelte-navigator";
 
   onMount(() => {
     setupOS();
+
+    navigate('/chat/1234');
   });
 
   /** Check for local shortcuts */
