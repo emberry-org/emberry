@@ -3,7 +3,7 @@
   import Feed from "@lib/chat/Feed.svelte";
   import { onMount } from 'svelte';
   import { getChatHistory, insertChatHistory } from '@store';
-import { toPacket } from '@core/messages/Packet';
+  import { toPacket } from '@core/messages/Packet';
 
   export let id: string;
 
@@ -27,7 +27,9 @@ import { toPacket } from '@core/messages/Packet';
   /* Listen for incoming messages from the peer */
   listen(`message_recieved_${id}`, (event) => {
     // Push the message into the messages array.
-    let packet = toPacket(event.payload as any);
+    let packet = toPacket(event as any);
+
+    console.log('received packet: ', packet);
 
     if (packet.type == 'Chat') {
 

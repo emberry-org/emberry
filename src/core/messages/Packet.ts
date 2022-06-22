@@ -3,6 +3,6 @@ export interface Packet {
   content: any,
 }
 
-export function toPacket(packet: string): Packet {
-  return JSON.parse(packet) as Packet;
+export function toPacket(event: any): Packet {
+  return event.payload.message as Packet;
 }

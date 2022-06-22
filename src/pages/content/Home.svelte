@@ -46,7 +46,7 @@
     justify-content: center;
     align-items: center;
 
-    color: #222222;
+    color: #00000033;
 
     .card {
       height: fit-content;
