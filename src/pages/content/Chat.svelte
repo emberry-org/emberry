@@ -92,17 +92,21 @@
 
   display: flex;
   flex-direction: column;
+  position: relative;
 
   .toolbar {
+    position: absolute;
+
+    top: 0;
+    left: 0;
+    z-index: 2;
+
     width: 100%;
     height: 32px;
 
     display: flex;
     align-items: center;
-
-    background-color: #383838;
-    border-bottom: 1.5px solid #ffffff11;
-    box-shadow: 0 1px 2px 0 #00000055;
+    justify-content: flex-end;
 
     .username {
       font-family: Inter;
@@ -110,7 +114,7 @@
       font-size: 0.9rem;
       color: #aaa;
 
-      margin-left: 10px;
+      margin-right: 10px;
       overflow: hidden;
     }
   }

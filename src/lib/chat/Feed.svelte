@@ -14,7 +14,9 @@
 
   function scrollToBottom() {
     if (element) {
-      element.scrollTo({ top: element.scrollHeight });
+      setTimeout(() => {
+        element.scrollTo({ top: element.scrollHeight });
+      }, 200);
     }
   }
 
@@ -71,7 +73,7 @@
 
 .feed {
   width: calc(100% - 32px);
-  height: calc(100vh - 175px);
+  height: calc(100vh - 150px);
 
   display: flex;
   flex-direction: column;
@@ -91,21 +93,21 @@
     color: #444444;
     display: flex;
     flex-direction: row;
-    align-items: center;
+    align-items: flex-start;
     z-index: 1;
 
     .avatar {
       width: 32px;
+      min-width: 32px;
       height: 32px;
-      margin-top: 2px;
       border: 1.5px solid #ffffff22;
-      background-color: #212327;
+      background-color: #222222;
       border-radius: 6px;
     }
 
     .content {
       flex-grow: 1;
-      height: 32px;
+      height: fit-content;
 
       display: flex;
       flex-direction: column;
