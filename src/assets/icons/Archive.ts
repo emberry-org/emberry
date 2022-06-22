@@ -19,6 +19,8 @@ import SproutIcon from './sprout.svg?raw';
 import VideoIcon from './video.svg?raw';
 import CallIcon from './call.svg?raw';
 import AddressBookIcon from './address-book.svg?raw';
+import BellIcon from './bell.svg?raw';
+import ConnectIcon from './connect.svg?raw';
 
 /**
  * Static archive for all the used icons.
@@ -32,6 +34,8 @@ export const IconArchive = {
   maximize: MaximizeIcon,
   close: CloseIcon,
   
+  connect: ConnectIcon,
+  bell: BellIcon,
   home: HomeIcon,
   status: StatusIcon,
   add: AddIcon,
