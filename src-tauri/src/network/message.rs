@@ -54,8 +54,5 @@ fn to_string(buf: &[u8]) -> String {
 
 fn to_packet(buf: &mut Vec<u8>, text: &str, msg_type: u8) {
   buf.push(msg_type);
-  let len = text.as_bytes().len();
-  buf.reserve(len);
-  let dst = &mut buf[1..len + 1];
-  dst.copy_from_slice(text.as_bytes());
+  buf.extend_from_slice(text.as_bytes());
 }
