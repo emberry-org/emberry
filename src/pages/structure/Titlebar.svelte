@@ -60,13 +60,13 @@
   </div> -->
 
   <div class="button float-right" on:click={minimize}>
-    <Icon name="minimize" />
+    <Icon name="window/minimize" />
   </div>
   <div class="button" on:click={maximize}>
-    <Icon name="{ maximized ? 'unmaximize' : 'maximize' }" />
+    <Icon name="{ maximized ? 'window/unmaximize' : 'window/maximize' }" />
   </div>
   <div class="button close" on:click={close}>
-    <Icon name="close" />
+    <Icon name="window/close" />
   </div>
 </div>
 
