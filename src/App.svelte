@@ -65,6 +65,7 @@
   body {
     padding: 0;
     margin: 0;
+    background-color: transparent !important;
   }
 
   main {
@@ -73,8 +74,6 @@
 
     display: flex;
     flex-direction: column;
-
-    background-color: #222222;
 
     .body {
       width: 100%;

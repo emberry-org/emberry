@@ -74,13 +74,13 @@
 
 .titlebar {
   width: 100vw;
-  height: 44px;
+  height: 66px;
   
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   z-index: 1;
 
-  background-color: #343434;
+  // background-color: #343434;
 
   .drag-square {
     width: 45.6px;
@@ -159,7 +159,7 @@
   .button {
     width: 46.5px;
     min-width: 46.5px;
-    height: 44px;
+    height: 30px;
 
     display: flex;
     justify-content: center;
@@ -180,6 +180,8 @@
   }
 
   &[hidden] {
+    background-color: #343434;
+
     .button {
       display: none;
     }
