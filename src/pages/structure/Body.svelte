@@ -5,7 +5,9 @@
 
 <div class="body">
   
-  <Pub />
+  <!-- <Pub /> -->
+
+  <Explorer />
 
   <Content />
 

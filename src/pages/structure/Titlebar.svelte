@@ -4,6 +4,7 @@
   import { getSelectedTab, getTabs, navigateTo, onTabsChange, onTabSelected, oppSys } from '@store';
   import { onMount } from 'svelte';
   import type AppTab from '@core/AppTab';
+  import Pub from './Pub.svelte';
 
   $: maximized = false;
   $: hideDecorations = $oppSys == 'linux' || $oppSys == 'darwin';
@@ -43,38 +44,37 @@
 
 </script>
 
-<div class="titlebar" style="--maximized: { maximized || hideDecorations ? '0px' : '1px' }" hidden={hideDecorations} data-tauri-drag-region={!hideDecorations || null}>
-  <!-- Makes sure you can always drag the window -->
-  {#if !maximized && !hideDecorations} <div class="drag-square" /> {/if}
+<div class="titlebar" style="--maximized: { maximized || hideDecorations ? '0px' : '1px' }" hidden={hideDecorations}>
+  
+  <div class="left" data-tauri-drag-region={!hideDecorations || null}>
+    <!-- Makes sure you can always drag the window -->
+    {#if !maximized && !hideDecorations} <div class="drag-square" /> {/if}
+  </div>
 
-  <!-- <div class="tabs { ready ? '' : 'hidden' }">
-    <div class="tab home" on:click={() => navigateTo('/')} selected={selected == '/' ? true : null}>
-      <Icon name="home" size="16px" />
+  <div class="right" data-tauri-drag-region={!hideDecorations || null}>
+
+    <Pub />
+
+    <div class="button float-right" on:click={minimize}>
+      <Icon name="window/minimize" />
     </div>
-    {#each tabs as tab}
-      <div class="tab" on:click={() => navigateTo(tab.path)} selected={selected == tab.path ? true : null}>
-        <Icon name={tab.icon} size="16px" />
-        <span style="font-style: { tab.keep_open ? '' : 'italic' };"> { tab.title } </span>
-      </div>
-    {/each}
-  </div> -->
+    <div class="button" on:click={maximize}>
+      <Icon name="{ maximized ? 'window/unmaximize' : 'window/maximize' }" />
+    </div>
+    <div class="button close" on:click={close}>
+      <Icon name="window/close" />
+    </div>
 
-  <div class="button float-right" on:click={minimize}>
-    <Icon name="window/minimize" />
   </div>
-  <div class="button" on:click={maximize}>
-    <Icon name="{ maximized ? 'window/unmaximize' : 'window/maximize' }" />
-  </div>
-  <div class="button close" on:click={close}>
-    <Icon name="window/close" />
-  </div>
+
 </div>
 
 <style lang="scss">
 
 .titlebar {
   width: 100vw;
-  height: 66px;
+  height: 46px;
+  min-height: 46px;
   
   display: flex;
   align-items: flex-start;
@@ -82,84 +82,36 @@
 
   // background-color: #343434;
 
-  .drag-square {
-    width: 45.6px;
-    min-width: 45.6px;
-    height: 44px;
+  .left {
+    width: 200px;
+    min-width: 200px;
+    height: calc(100% - 1.5px);
 
-    pointer-events: none;
+    display: flex;
+
+    border-bottom: 1.5px solid #ffffff18;
+
+    .drag-square {
+      width: 45.6px;
+      min-width: 45.6px;
+      height: 46px;
+
+      pointer-events: none;
+    }
   }
 
-  // .tabs {
-  //   flex-grow: 1;
-  //   height: 44px;
+  .right {
+    flex-grow: 1;
+    height: 100%;
 
-  //   display: flex;
-  //   align-items: center;
-  //   overflow: hidden;
-  //   pointer-events: none;
-
-  //   &.hidden {
-  //     display: none;
-  //   }
-
-  //   .tab {
-  //     // Tabs have 1 px offset when the window isn't maximized.
-  //     margin-top: var(--maximized);
-
-  //     min-width: fit-content;
-  //     min-height: 16px;
-  //     height: 16px;
-
-  //     display: flex;
-  //     align-items: center;
-
-  //     padding: 8px;
-  //     margin-left: 4px;
-
-  //     pointer-events: all;
-  //     border-radius: 4px;
-  //     cursor: pointer;
-  //     color: #efdab9;
-
-  //     :global(svg) {
-  //       min-width: 16px;
-  //       min-height: 16px;
-  //     }
-
-  //     span {
-  //       color: #bbb;
-  //       margin-left: 8px;
-  //       font-size: 0.7rem;
-  //       font-family: Inter;
-  //       user-select: none;
-  //       -webkit-user-select: none;
-  //     }
-
-  //     &:hover {
-  //       background-color: #ffffff11;
-  //     }
-
-  //     &.home {
-  //       margin-left: 8px;
-
-  //       :global(svg) {
-  //         margin-bottom: 2px;
-  //       }
-  //     }
-
-  //     &[selected] {
-  //       background-color: #00000033;
-  //       color: #efdab988;
-  //       cursor: default;
-  //     }
-  //   }
-  // }
+    display: flex;
+    background-color: #363636;
+  }
 
   .button {
     width: 46.5px;
     min-width: 46.5px;
-    height: 30px;
+    height: 46px;
 
     display: flex;
     justify-content: center;

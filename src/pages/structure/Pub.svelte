@@ -16,18 +16,16 @@
 
 <style lang="scss">
   .pub {
-    width: 66px;
-    height: calc(100% - 1px);
-
-    background-color: #222222;
-    border-top: 1px solid #545454;
+    flex-grow: 1;
+    height: 100%;
+    pointer-events: none;
 
     .bar {
       width: 100%;
       height: 100%;
 
       display: flex;
-      flex-direction: column;
+      padding: 0 0 0 4px;
     }
   }
 </style>
