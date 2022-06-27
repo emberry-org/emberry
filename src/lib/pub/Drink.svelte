@@ -16,8 +16,8 @@
 <style lang="scss">
 
 .drink {
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
 
   margin: 6px 8px 0 8px;
 

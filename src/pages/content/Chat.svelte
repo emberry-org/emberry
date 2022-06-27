@@ -9,6 +9,9 @@
   export let id: string;
 
   let inputBox = '';
+  
+  let myName = 'Me';
+  let peerName = 'Peer';
 
   $: messages = [] as Msg[];
   $: id, updateHistory();
@@ -36,13 +39,17 @@
       let time = getTime();
       
       // Push the message into the messages array.
-      messages.push({ sender: 'Peer', content: packet.content, time });
+      messages.push({ sender: peerName, content: packet.content, time });
 
       // Update the persistent store.
-      insertChatHistory(id, { sender: 'Peer', content: packet.content, time });
+      insertChatHistory(id, { sender: peerName, content: packet.content, time });
 
       // Force update the Feed.
       messages = [...messages];
+    }
+
+    if (packet.type == 'Username') {
+      peerName = packet.content;
     }
   });
 
@@ -56,10 +63,10 @@
     let time = getTime();
 
     // Push the message into the messages array.
-    messages.push({ sender: 'Me', content: inputBox, time });
+    messages.push({ sender: myName, content: inputBox, time });
 
     // Update the persistent store.
-    insertChatHistory(id, { sender: 'Me', content: inputBox, time });
+    insertChatHistory(id, { sender: myName, content: inputBox, time });
 
     // Tell the backend to send the message.
     emit(`send_message_${id}`, { type: 'Chat', content: inputBox });
@@ -69,6 +76,11 @@
 
     // Empty the input box.
     inputBox = '';
+  }
+
+  /** Send a new username to the peer */
+  function sendUsername() {
+    emit(`send_message_${id}`, { type: 'Username', content: myName });
   }
 
   function getTime(): String {
@@ -82,7 +94,7 @@
 <div class="chat">
 
   <div class="toolbar">
-    <div class="username"> { id } </div>
+    <input type="text" class="username" name="Username" bind:value={myName} on:change={sendUsername}>
   </div>
 
   <div class="logs">
@@ -129,6 +141,9 @@
       margin-right: 10px;
       overflow: hidden;
       pointer-events: all;
+      background-color: transparent;
+      outline: none;
+      border: none;
     }
   }
 

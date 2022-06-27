@@ -8,6 +8,10 @@
   let connecting: boolean = false;
 
   function attemptConnect() {
+
+    navigateTo('/chat/1234');
+    return;
+
     connecting = true;
     invoke('hole_punch', { peerKey: chatId }).then((id: string) => {
       // Create a new tab once the chat has been created.

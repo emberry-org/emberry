@@ -146,14 +146,14 @@ import { merge_ssr_styles } from "svelte/internal";
         .username {
           margin-left: 16px;
           font-size: 14px;
-          color: #fff;
+          color: #f7f7f7;
           user-select: none;
           -webkit-user-select: none;
         }
 
         .dot {
           margin: 0 8px 0 10px;
-          color: #ffffff33;
+          color: #6e6e6e;
           user-select: none;
           -webkit-user-select: none;
         }
@@ -161,7 +161,7 @@ import { merge_ssr_styles } from "svelte/internal";
         .timestamp {
           font-size: 10px;
           margin-top: 1px;
-          color: #ffffff44;
+          color: #6e6e6e;
           user-select: none;
           -webkit-user-select: none;
         }

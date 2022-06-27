@@ -73,8 +73,8 @@
 
 .titlebar {
   width: 100vw;
-  height: 46px;
-  min-height: 46px;
+  height: 44px;
+  min-height: 44px;
   
   display: flex;
   align-items: flex-start;
@@ -94,7 +94,7 @@
     .drag-square {
       width: 45.6px;
       min-width: 45.6px;
-      height: 46px;
+      height: 44px;
 
       pointer-events: none;
     }
@@ -111,7 +111,7 @@
   .button {
     width: 46.5px;
     min-width: 46.5px;
-    height: 46px;
+    height: 44px;
 
     display: flex;
     justify-content: center;

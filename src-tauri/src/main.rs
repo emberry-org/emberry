@@ -27,7 +27,7 @@ fn main() {
 
     #[cfg(target_os = "windows")]
     if let Err(_) = window_vibrancy::apply_mica(&window) {
-      window_vibrancy::apply_acrylic(&window, Some((0, 0, 0, 165))).unwrap();
+      window_vibrancy::apply_blur(&window, Some((32, 32, 32, 255))).unwrap();
     }
 
     Ok(())
