@@ -66,6 +66,7 @@
     padding: 0;
     margin: 0;
     background-color: transparent !important;
+    overflow: hidden;
   }
 
   main {
