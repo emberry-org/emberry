@@ -5,11 +5,17 @@
   import setupOS from "@core/OppSys";
   import { onMount } from "svelte";
   import { oppSys } from "@store";
+  import { invoke } from "@tauri-apps/api/tauri";
 
   $: noBlur = $oppSys != 'win32' && $oppSys != 'darwin';
 
   onMount(() => {
     setupOS();
+  });
+
+  let wallpaper = '';
+  invoke('get_wallpaper').then((path: string) => {
+    wallpaper = 'data:image/jpg;base64,' + path;
   });
 
   /** Check for local shortcuts */
@@ -21,14 +27,17 @@
   });
 </script>
 
-<main class="{ noBlur ? 'solid' : '' }">
-  {#if $commandCenterState}
-    <CommandCenter />
-  {/if}
+<main class="{ noBlur ? 'solid' : '' }" style="background-image: url('{ wallpaper }');">
+  
+  <div class="contents">
+    {#if $commandCenterState}
+      <CommandCenter />
+    {/if}
 
-  <Titlebar />
+    <Titlebar />
 
-  <Body />
+    <Body />
+  </div>
 
 </main>
 
@@ -73,11 +82,15 @@
     width: 100vw;
     height: 100vh;
 
-    display: flex;
-    flex-direction: column;
+    background-size: cover;
+    
+    .contents {
+      width: 100vw;
+      height: 100vh;
 
-    &.solid {
-      background: linear-gradient(0deg, #2d1a1f 0%, #2a1a23 50%, #231e24 100%);
+      display: flex;
+      flex-direction: column;
+      backdrop-filter: blur(128px) contrast(40%) saturate(300%) brightness(30%);
     }
 
     .body {

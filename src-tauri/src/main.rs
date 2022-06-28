@@ -19,6 +19,8 @@ use tauri_plugin_store::PluginBuilder;
 fn main() {
   let builder = tauri::Builder::default();
 
+  println!("{:?}", wallpaper::get());
+
   #[cfg(not(target_os = "linux"))]
   let builder = builder.setup(|app| {
     let window = app.get_window("main").unwrap();
@@ -38,9 +40,24 @@ fn main() {
       chats: Default::default(),
     })
     .plugin(PluginBuilder::default().build())
-    .invoke_handler(tauri::generate_handler![toggle_devtools, hole_punch, chat_exists])
+    .invoke_handler(tauri::generate_handler![toggle_devtools, hole_punch, chat_exists, get_wallpaper])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
+}
+
+#[tauri::command]
+fn get_wallpaper() -> Result<String, String> {
+  match wallpaper::get() {
+    Ok(path) => {
+
+      let bin = std::fs::read(&path).expect("Failed to read wallpaper file");
+
+      let encoded = base64::encode(bin);
+
+      return Ok(encoded);
+    },
+    Err(_) => Err("Failed to get wallpaper".into())
+  }
 }
 
 #[tauri::command]
