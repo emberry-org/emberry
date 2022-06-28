@@ -77,7 +77,7 @@
     flex-direction: column;
 
     &.solid {
-      background: linear-gradient(90deg, #2d1a1f 0%, #2a1a23 50%, #231e24 100%);;
+      background: linear-gradient(0deg, #2d1a1f 0%, #2a1a23 50%, #231e24 100%);
     }
 
     .body {
