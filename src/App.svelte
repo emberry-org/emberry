@@ -82,7 +82,8 @@
     width: 100vw;
     height: 100vh;
 
-    background-size: cover;
+    background-size: auto 200%;
+    background-position: center;
     
     .contents {
       width: 100vw;
@@ -90,7 +91,7 @@
 
       display: flex;
       flex-direction: column;
-      backdrop-filter: blur(128px) contrast(40%) saturate(300%) brightness(30%);
+      backdrop-filter: blur(256px) contrast(50%) saturate(300%) brightness(30%);
     }
 
     .body {
