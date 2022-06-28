@@ -16,17 +16,48 @@
 <style lang="scss">
 
 .drink {
-  width: 30px;
-  height: 30px;
+  width: 34px;
+  height: 34px;
 
-  margin: 6px 8px 0 8px;
+  margin: 0 6px 0 6px;
 
-  background-color: #282828;
-  border: 1px solid #545454;
-  border-radius: 4px;
+  //background-color: #ddd;
+  //background-image: url('https://cdn.discordapp.com/avatars/274954769846501376/ce8cedc7e70deedda89d8b17643e8647.webp?size=48');
+  background-size: contain;
+  border-radius: 8px;
 
   position: relative;
   pointer-events: all;
+
+  &::after {
+    content: "";
+    
+    width: 30px;
+    height: 30px;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    border: 2px solid #ffffff10;
+    border-radius: 8px;
+  }
+
+  &:nth-child(1) {
+    background-image: url('https://cdn.discordapp.com/avatars/274954769846501376/ce8cedc7e70deedda89d8b17643e8647.webp?size=48');
+  }
+
+  &:nth-child(2) {
+    background-image: url('https://cdn.discordapp.com/avatars/323181630070063114/22665cff3a55bef4a5bcb3f555589321.webp?size=48');
+  }
+
+  &:nth-child(3) {
+    background-image: url('https://cdn.discordapp.com/avatars/253216176778248192/2fe0c93cc3361114d268e7e16acc7c97.webp?size=48');
+  }
+
+  &:nth-child(4) {
+    background-image: url('https://cdn.discordapp.com/avatars/414175361522204672/ffd6f9efede7dba824e4adf3f6916621.webp?size=48');
+  }
 
   // .foam {
   //   position: absolute;

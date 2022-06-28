@@ -4,12 +4,12 @@
   import { commandCenterState } from "@store";
   import setupOS from "@core/OppSys";
   import { onMount } from "svelte";
-  import { navigate } from "svelte-navigator";
+  import { oppSys } from "@store";
+
+  $: noBlur = $oppSys != 'win32' && $oppSys != 'darwin';
 
   onMount(() => {
     setupOS();
-
-    //navigate('/chat/1234');
   });
 
   /** Check for local shortcuts */
@@ -21,7 +21,7 @@
   });
 </script>
 
-<main>
+<main class="{ noBlur ? 'solid' : '' }">
   {#if $commandCenterState}
     <CommandCenter />
   {/if}
@@ -75,6 +75,10 @@
 
     display: flex;
     flex-direction: column;
+
+    &.solid {
+      background: linear-gradient(90deg, #2d1a1f 0%, #2a1a23 50%, #231e24 100%);;
+    }
 
     .body {
       width: 100%;

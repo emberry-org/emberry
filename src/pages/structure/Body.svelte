@@ -1,11 +1,14 @@
 <script lang="ts">
   import { Content, Explorer, Pub } from "@page/structure";
+  import NavBar from "./Navbar.svelte";
 
 </script>
 
 <div class="body">
   
   <!-- <Pub /> -->
+
+  <NavBar />
 
   <Explorer />
 

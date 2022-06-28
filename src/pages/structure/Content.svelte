@@ -23,7 +23,8 @@
   flex-grow: 1;
   height: calc(100% - 1px);
 
-  background-color: #282828;
+  background-color: #292b2f;
+  border-left: 1.5px solid #ffffff16;
 }
 
 </style>

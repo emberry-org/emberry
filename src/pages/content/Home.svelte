@@ -78,7 +78,7 @@
           width: 30%;
           height: 36px;
 
-          background-color: #3f3f3f;
+          background-color: #37383c;
           border: 1px solid #545454;
           border-radius: 6px;
 
@@ -107,7 +107,7 @@
         }
 
         input {
-          background-color: #222222;
+          background-color: #37383c;
           border: 1px solid #545454;
           border-radius: 6px;
           color: #ccc;

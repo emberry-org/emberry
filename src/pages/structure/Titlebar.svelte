@@ -8,7 +8,6 @@
 
   $: maximized = false;
   $: hideDecorations = $oppSys == 'linux' || $oppSys == 'darwin';
-  $: noBlur = $oppSys != 'windows' && $oppSys != 'darwin';
 
   $: tabs = [] as AppTab[];
   $: selected = '/';
@@ -47,7 +46,7 @@
 
 <div class="titlebar" style="--maximized: { maximized || hideDecorations ? '0px' : '1px' }" hidden={hideDecorations}>
   
-  <div class="left { noBlur ? 'solid' : '' }" data-tauri-drag-region={!hideDecorations || null}>
+  <div class="left" data-tauri-drag-region={!hideDecorations || null}>
     <!-- Makes sure you can always drag the window -->
     {#if !maximized && !hideDecorations} <div class="drag-square" /> {/if}
   </div>
@@ -82,17 +81,11 @@
   z-index: 1;
 
   .left {
-    width: 200px;
-    min-width: 200px;
-    height: calc(100% - 1.5px);
+    width: 248px;
+    min-width: 248px;
+    height: 100%;
 
     display: flex;
-
-    border-bottom: 1.5px solid #ffffff18;
-
-    &.solid {
-      background-color: #1a2320;
-    }
 
     .drag-square {
       width: 45.6px;
@@ -108,13 +101,14 @@
     height: 100%;
 
     display: flex;
-    background-color: #333333;
+    background-color: #1e2024;
+    border-left: 1.5px solid #ffffff16;
   }
 
   .button {
     width: 46.5px;
     min-width: 46.5px;
-    height: 44px;
+    height: 28px;
 
     display: flex;
     justify-content: center;

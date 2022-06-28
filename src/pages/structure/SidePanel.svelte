@@ -1,24 +1,20 @@
 <script lang="ts">
-  import { oppSys } from "@store";
-
-  $: noBlur = $oppSys != 'windows' && $oppSys != 'darwin';
-
+  
 </script>
 
-<div class="side-panel { noBlur ? 'solid' : '' }">
+<div class="side-panel">
 
 </div>
 
 <style lang="scss">
 
 .side-panel {
-  width: 200px;
-  min-width: 200px;
-  height: calc(100% - 2px);
+  width: calc(200px - 1.5px);
+  min-width: calc(200px - 1.5px);
+  height: calc(100% - 1.5px);
 
-  &.solid {
-    background-color: #1a2320;
-  }
+  border-top: 1.5px solid #ffffff10;
+  border-left: 1.5px solid #ffffff10;
 }
 
 </style>
