@@ -13,11 +13,6 @@
     setupOS();
   });
 
-  let wallpaper = '';
-  invoke('get_wallpaper').then((path: string) => {
-    wallpaper = 'data:image/jpg;base64,' + path;
-  });
-
   /** Check for local shortcuts */
   document.addEventListener("keydown", function(e) {
     if (e.ctrlKey && e.shiftKey && e.code === "KeyP") {
@@ -27,7 +22,7 @@
   });
 </script>
 
-<main class="{ noBlur ? 'solid' : '' }" style="background-image: url('{ wallpaper }');">
+<main class="{ noBlur ? 'solid' : '' }">
   
   <div class="contents">
     {#if $commandCenterState}
@@ -82,8 +77,9 @@
     width: 100vw;
     height: 100vh;
 
-    background-size: auto 200%;
-    background-position: center;
+    &.solid {
+      background-color: #202020;
+    }
     
     .contents {
       width: 100vw;
@@ -91,7 +87,6 @@
 
       display: flex;
       flex-direction: column;
-      backdrop-filter: blur(256px) contrast(50%) saturate(300%) brightness(30%);
     }
 
     .body {
