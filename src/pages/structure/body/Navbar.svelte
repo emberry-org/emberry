@@ -15,6 +15,7 @@
 
   background-color: #212327;
   border-top: 1.5px solid #ffffff10;
+  border-bottom: 1.5px solid #ffffff10;
 }
 
 </style>

@@ -14,7 +14,7 @@
 <style lang="scss">
 
 .side-panel {
-  width: calc(248px - 1.5px);
+  width: 248px;
   min-width: calc(248px - 1.5px);
   flex-grow: 1;
 

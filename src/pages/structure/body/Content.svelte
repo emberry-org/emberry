@@ -26,7 +26,6 @@
   background-color: #292b2f;
   border-left: 1.5px solid #37393d;
   border-bottom: 1.5px solid #37393d;
-  border-bottom-left-radius: 9px;
 }
 
 </style>
