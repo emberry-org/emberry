@@ -26,7 +26,7 @@
 
   .toolbar {
     width: 100%;
-    height: 32px;
+    height: 29px;
 
     border-bottom: 1.5px solid #ffffff10;
   }

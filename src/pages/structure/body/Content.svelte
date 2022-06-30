@@ -26,13 +26,13 @@
 
 .content {
   flex-grow: 1;
-  height: calc(100% - 1px);
 
   display: flex;
   flex-direction: column;
 
   .router {
     width: 100%;
+    max-height: calc(100vh - 76px);
     flex-grow: 1;
 
     background-color: #292b2f;

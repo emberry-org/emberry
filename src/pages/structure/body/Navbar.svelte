@@ -3,7 +3,7 @@
 </script>
 
 <div class="navbar">
-
+  
 </div>
 
 <style lang="scss">

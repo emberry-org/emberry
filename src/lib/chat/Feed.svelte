@@ -74,7 +74,7 @@ import { merge_ssr_styles } from "svelte/internal";
 
 .feed {
   width: 100%;
-  height: calc(100vh - 116px);
+  height: calc(100vh - 164px);
 
   display: flex;
   flex-direction: column;
@@ -83,6 +83,8 @@ import { merge_ssr_styles } from "svelte/internal";
   font-family: Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji"; 
   overflow-y: auto;
   overflow-x: hidden;
+
+  padding-top: 32px;
 
   .head-item {
     width: 100%;

@@ -49,6 +49,14 @@
   <div class="left" data-tauri-drag-region={!hideDecorations || null}>
     <!-- Makes sure you can always drag the window -->
     {#if !maximized && !hideDecorations} <div class="drag-square" /> {/if}
+
+    <div class="profile">
+      <div class="img" style="background-image: url(https://cdn.discordapp.com/avatars/274954769846501376/ce8cedc7e70deedda89d8b17643e8647.webp?size=48)" />
+      <div class="info">
+        <h3>Username</h3>
+        <p>#1234</p>
+      </div>
+    </div>
   </div>
 
   <div class="right" data-tauri-drag-region={!hideDecorations || null}>
@@ -93,6 +101,60 @@
       height: 44px;
 
       pointer-events: none;
+    }
+
+    .profile {
+      width: 128px;
+      height: 100%;
+
+      margin-left: 8px;
+
+      display: flex;
+      align-items: center;
+
+      .img {
+        width: 34px;
+        height: 34px;
+
+        margin-right: 8px;
+        position: relative;
+
+        background-size: contain;
+        border-radius: 8px;
+
+        &::after {
+          content: "";
+          
+          width: 30px;
+          height: 30px;
+
+          position: absolute;
+          top: 0;
+          left: 0;
+
+          border: 2px solid #ffffff10;
+          border-radius: 8px;
+        }
+      }
+
+      .info {
+        flex-grow: 1;
+        height: 100%;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
+        h3 {
+          margin: 0;
+          font-size: 0.9em;
+        }
+
+        p {
+          margin: 0;
+          font-size: 0.7em;
+        }
+      }
     }
   }
 
