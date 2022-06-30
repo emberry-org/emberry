@@ -58,12 +58,12 @@
         "fullscreen": false,
         "decorations": false,
         "transparent": true,
-        "height": 450,
+        "height": 600,
         "resizable": true,
         "title": "Emberry",
-        "width": 670,
-        "minWidth": 432,
-        "minHeight": 312
+        "width": 800,
+        "minWidth": 600,
+        "minHeight": 375
       }
     ]
   }

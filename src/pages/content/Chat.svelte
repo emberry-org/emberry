@@ -126,7 +126,7 @@
     z-index: 2;
 
     width: 100%;
-    height: calc(32px - 3px);
+    height: 30.5px;
 
     display: flex;
     align-items: center;

@@ -81,8 +81,8 @@
 
 .titlebar {
   width: 100vw;
-  height: 52px;
-  min-height: 52px;
+  height: 44px;
+  min-height: 44px;
   
   display: flex;
   align-items: flex-start;
@@ -134,7 +134,7 @@
           top: 0;
           left: 0;
 
-          border: 2px solid #ffffff10;
+          border: 2px solid #ffffff20;
           border-radius: 8px;
         }
       }
@@ -171,7 +171,7 @@
   .button {
     width: 46.5px;
     min-width: 46.5px;
-    height: 28px;
+    height: 44px;
 
     display: flex;
     justify-content: center;

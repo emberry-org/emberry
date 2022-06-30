@@ -8,7 +8,7 @@
   <div class="left-side">
     <SidePanel />
     
-    <Navbar />
+    <!-- <Navbar /> -->
   </div>
 
   <Content />
@@ -26,10 +26,12 @@
 
   .left-side {
     width: 248px;
-    height: 100%;
+    height: calc(100% - 1.5px);
 
     display: flex;
     flex-direction: column;
+
+    border-bottom: 1.5px solid #ffffff10;
   }
 }
 

@@ -23,7 +23,7 @@
 
   .toolbar {
     width: 100%;
-    height: 29px;
+    height: 30.5px;
 
     background-color: #292b2f;
     border-top: 1.5px solid #434547;

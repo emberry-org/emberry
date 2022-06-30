@@ -29,7 +29,7 @@
 
   <div class="card">
 
-    <Icon name="app/logo" size="50vh" />
+    <Icon name="app/logo" size="40vh" />
     
     {#if error !== ''}
       <div class="error">{ error }</div>
@@ -64,7 +64,7 @@
       z-index: 2;
 
       width: 100%;
-      height: calc(32px - 3px);
+      height: 30.5px;
 
       background-color: #37383c;
       border-top: 1.5px solid #434547;
@@ -88,7 +88,7 @@
         width: 100%;
         height: 36px;
 
-        margin-top: 48px;
+        margin-top: 24px;
 
         display: flex;
         justify-content: space-around;

@@ -39,7 +39,7 @@
     top: 0;
     left: 0;
 
-    border: 2px solid #ffffff10;
+    border: 2px solid #ffffff20;
     border-radius: 8px;
   }
 
