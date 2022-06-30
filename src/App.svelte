@@ -1,13 +1,9 @@
 <script lang="ts">
-  import { Body, Titlebar } from "@page/structure";
+  import { Body, Footer, Titlebar } from "@page/structure";
   import CommandCenter from '@lib/window/CommandCenter.svelte';
   import { commandCenterState } from "@store";
   import setupOS from "@core/OppSys";
   import { onMount } from "svelte";
-  import { oppSys } from "@store";
-  import { invoke } from "@tauri-apps/api/tauri";
-
-  $: noBlur = $oppSys != 'win32' && $oppSys != 'darwin';
 
   onMount(() => {
     setupOS();
@@ -22,7 +18,7 @@
   });
 </script>
 
-<main class="{ noBlur ? 'solid' : '' }">
+<main>
   
   <div class="contents">
     {#if $commandCenterState}
@@ -32,6 +28,8 @@
     <Titlebar />
 
     <Body />
+
+    <Footer />
   </div>
 
 </main>
@@ -69,7 +67,7 @@
   body {
     padding: 0;
     margin: 0;
-    background-color: transparent !important;
+    background-color: #212327 !important;
     overflow: hidden;
   }
 
@@ -77,10 +75,6 @@
     width: 100vw;
     height: 100vh;
 
-    &.solid {
-      background-color: #202020;
-    }
-    
     .contents {
       width: 100vw;
       height: 100vh;

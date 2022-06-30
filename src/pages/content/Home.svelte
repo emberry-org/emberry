@@ -25,9 +25,11 @@
 </script>
 
 <div class="home">
+  <div class="toolbar" />
+
   <div class="card">
 
-    <Icon name="logo" size="50vh" />
+    <Icon name="app/logo" size="50vh" />
     
     {#if error !== ''}
       <div class="error">{ error }</div>
@@ -51,6 +53,23 @@
     align-items: center;
 
     color: #00000033;
+    position: relative;
+
+    .toolbar {
+      position: absolute;
+      pointer-events: none;
+
+      top: 0;
+      left: 0;
+      z-index: 2;
+
+      width: 100%;
+      height: calc(32px - 3px);
+
+      background-color: #37383c;
+      border-top: 1.5px solid #434547;
+      border-bottom: 1.5px solid #434547;
+    }
 
     .card {
       height: fit-content;
@@ -69,7 +88,7 @@
         width: 100%;
         height: 36px;
 
-        margin-top: 24px;
+        margin-top: 48px;
 
         display: flex;
         justify-content: space-around;

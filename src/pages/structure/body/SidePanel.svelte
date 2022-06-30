@@ -21,19 +21,22 @@
   display: flex;
   flex-direction: column;
 
-  border-top: 1.5px solid #ffffff10;
   border-left: 1.5px solid #ffffff10;
 
   .toolbar {
     width: 100%;
     height: 29px;
 
-    border-bottom: 1.5px solid #ffffff10;
+    background-color: #292b2f;
+    border-top: 1.5px solid #434547;
+    border-bottom: 1.5px solid #37393d;
   }
 
   .panel {
     width: 100%;
     flex-grow: 1;
+
+    background-color: #212327;
   }
 }
 

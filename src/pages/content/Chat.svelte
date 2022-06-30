@@ -126,13 +126,15 @@
     z-index: 2;
 
     width: 100%;
-    height: 32px;
+    height: calc(32px - 3px);
 
     display: flex;
     align-items: center;
     justify-content: flex-end;
 
     background-color: #37383c;
+    border-top: 1.5px solid #434547;
+    border-bottom: 1.5px solid #434547;
 
     .username {
       font-family: Inter;

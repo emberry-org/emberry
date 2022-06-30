@@ -88,6 +88,8 @@
   align-items: flex-start;
   z-index: 1;
 
+  background-color: #212327;
+
   .left {
     width: 248px;
     min-width: 248px;
@@ -147,6 +149,7 @@
 
         h3 {
           margin: 0;
+          font-weight: normal;
           font-size: 0.9em;
         }
 
@@ -163,8 +166,6 @@
     height: 100%;
 
     display: flex;
-    background-color: #1e2024;
-    border-left: 1.5px solid #ffffff16;
   }
 
   .button {
