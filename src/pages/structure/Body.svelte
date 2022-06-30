@@ -1,20 +1,17 @@
 <script lang="ts">
-  import { Content, Explorer, Pub } from "@page/structure";
-  import NavBar from "./Navbar.svelte";
+  import { Content, SidePanel, Navbar } from "@page/structure";
 
 </script>
 
 <div class="body">
   
-  <!-- <Pub /> -->
-
-  <NavBar />
-
-  <Explorer />
+  <div class="left-side">
+    <SidePanel />
+    
+    <Navbar />
+  </div>
 
   <Content />
-
-  <!-- <Explorer /> -->
 
 </div>
 
@@ -26,6 +23,14 @@
 
   display: flex;
   flex-direction: row;
+
+  .left-side {
+    width: 248px;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+  }
 }
 
 </style>

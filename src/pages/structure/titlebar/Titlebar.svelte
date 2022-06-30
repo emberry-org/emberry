@@ -73,8 +73,8 @@
 
 .titlebar {
   width: 100vw;
-  height: 44px;
-  min-height: 44px;
+  height: 52px;
+  min-height: 52px;
   
   display: flex;
   align-items: flex-start;
