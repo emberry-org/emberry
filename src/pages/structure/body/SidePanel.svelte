@@ -21,8 +21,6 @@
   display: flex;
   flex-direction: column;
 
-  border-left: 1.5px solid #ffffff10;
-
   .toolbar {
     width: 100%;
     height: 29px;

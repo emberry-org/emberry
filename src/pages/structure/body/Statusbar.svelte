@@ -46,7 +46,6 @@
   display: flex;
 
   background-color: #212327;
-  border-left: 1.5px solid #ffffff16;
 
   user-select: none;
   -webkit-user-select: none;
@@ -54,6 +53,8 @@
   .left-side {
     width: 50%;
     height: 100%;
+
+    padding-left: 3px;
 
     display: flex;
   }
