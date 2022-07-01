@@ -18,20 +18,20 @@
 
 <footer class="statusbar">
   <div class="left-side">
-    <div class="item">
-      <Icon name="app/version" size="16px" />
-      <p>v{ appVersion }</p>
+    <div class="item purple">
+      <p>Emberry v{ appVersion }</p>
     </div>
 
     <div class="item">
       <Icon name="brand/tauri" size="12px" />
-      <p>v{ tauriVersion }</p>
+      <p>Tauri v{ tauriVersion }</p>
     </div>
   </div>
 
   <div class="right-side">
     <div class="item">
-      <p>{ platformName }</p>
+      <Icon name="app/network" size="14px" />
+      <p>12ms</p>
     </div>
   </div>
 </footer>
@@ -54,16 +54,12 @@
     width: 50%;
     height: 100%;
 
-    padding-left: 3px;
-
     display: flex;
   }
 
   .right-side {
     width: 50%;
     height: 100%;
-
-    padding-right: 7px;
 
     display: flex;
     justify-content: flex-end;
@@ -72,20 +68,29 @@
 
   .item {
     width: fit-content;
-    height: 100%;
+    height: calc(100% - 1px);
 
     display: flex;
     align-items: center;
 
-    margin: 0 6px 1px 6px;
-    color: #888;
+    padding: 0 12px 1px 12px;
+    color: #fff6;
+
+    :global(svg) {
+      margin-right: 6px;
+      margin-bottom: 2px;
+    }
 
     p {
-      color: #888;
+      color: #fff6;
       font-size: 12px;
 
-      margin-left: 3px;
+      line-height: 12px;
     }
+  }
+
+  .purple {
+    background-color: #66479b44;
   }
 }
 

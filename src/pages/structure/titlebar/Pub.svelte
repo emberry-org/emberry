@@ -10,6 +10,7 @@
     <Drink notification={{ type: NotificationType.ConnectionRequest, user: { id: '1234', status: PeerStatus.Online } }} />
     <Drink notification={{ type: NotificationType.FriendRequest, user: { id: '1234', status: PeerStatus.Online } }} />
     <Drink notification={{ type: NotificationType.UnreadMessage, user: { id: '1234', status: PeerStatus.Online } }} />
+    <Drink notification={{ type: NotificationType.IdleChat, user: { id: '1234', status: PeerStatus.Online } }} />
     <Drink notification={{ type: NotificationType.UnreadPing, user: { id: '1234', status: PeerStatus.Online } }} />
   </div>
 </div>

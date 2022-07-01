@@ -48,9 +48,9 @@
   
   <div class="left" data-tauri-drag-region={!hideDecorations || null}>
     <!-- Makes sure you can always drag the window -->
-    {#if !maximized && !hideDecorations} <div class="drag-square" /> {/if}
+    {#if !maximized && !hideDecorations} <div class="drag-square"> <Icon name="app/logo" size="24px" /> </div> {/if}
 
-    <div class="profile">
+    <div class="profile { maximized || hideDecorations ? 'ml' : '' }">
       <div class="img" style="background-image: url(https://cdn.discordapp.com/avatars/274954769846501376/ce8cedc7e70deedda89d8b17643e8647.webp?size=48)" />
       <div class="info">
         <h3>Username</h3>
@@ -98,21 +98,29 @@
     display: flex;
 
     .drag-square {
-      width: 45.6px;
-      min-width: 45.6px;
+      width: 44px;
+      min-width: 44px;
       height: 44px;
 
       pointer-events: none;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      color: #fff1;
     }
 
     .profile {
-      width: 128px;
+      width: fit-content;
       height: 100%;
-
-      margin-left: 8px;
 
       display: flex;
       align-items: center;
+
+      &.ml {
+        margin-left: 6px;
+      }
 
       .img {
         width: 34px;
