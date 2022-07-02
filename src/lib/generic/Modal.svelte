@@ -1,18 +1,11 @@
 <script lang="ts">
-  let details: HTMLDetailsElement;
-  let isopen = '';
-
-  function onToggle() {
-    isopen = details.open ? 'open' : '';
-  }
+  export let details: HTMLDetailsElement = undefined;
 
 </script>
 
 <details
   bind:this={details}
-  on:toggle={onToggle}
-  data-view-component="true"
-  class="details { isopen }"
+  class="details"
 >
   <summary class="summary">
     <slot name="summary">
@@ -31,7 +24,7 @@
   .details {
     position: relative !important;
 
-    &.open .summary::before {
+    &[open] > .summary::before {
       position: fixed;
       top: 0;
       right: 0;
@@ -42,6 +35,10 @@
       cursor: default;
       content: "";
       background: #0000;
+    }
+
+    &:not([open]) > :not(summary) {
+      display: none !important;
     }
 
     // Placeholder summary class
@@ -76,6 +73,15 @@
       display: flex;
       padding: 12px 0 12px 12px;
       flex-direction: column;
+
+      animation: modal-animation 0.12s cubic-bezier(0, 0.1, 0.1, 1) backwards;
+
+      @keyframes modal-animation {
+        0% {
+          opacity: 0;
+          transform: translateY(-16px);
+        }
+      }
     }
   }
 </style>

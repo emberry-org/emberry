@@ -2,10 +2,12 @@
   import Modal from "@lib/generic/Modal.svelte";
   import Icon from "@lib/Icon.svelte";
 
+  let details: HTMLDetailsElement;
+
 </script>
 
 <div class="room-request-modal">
-  <Modal>
+  <Modal bind:details>
     <div class="invis-btn" slot="summary">
       
     </div>
@@ -14,7 +16,7 @@
       <div class="header">
         <h3> Username </h3>
         <p> #1234 </p>
-        <button class="close-btn">
+        <button class="close-btn" on:click={() => details.open = false}>
           <Icon name="window/close" size="20px" />
         </button>
       </div>
@@ -42,13 +44,37 @@
       width: 260px;
       height: 128px;
 
-      margin-right: 8px;
+      margin-right: 5px;
 
       background-color: #37383c;
       border: 1.5px solid #535557;
       border-radius: 6px;
       box-shadow: 0 8px 24px #1c2128;
 
+      &::before {
+        content: "";
+        position: absolute;
+
+        top: -4px;
+        right: 18.5px;
+        left: auto;
+
+        border: 8px solid #0000;
+        border-bottom-color: #535557;
+      }
+
+      &::after {
+        content: "";
+        position: absolute;
+
+        top: -2px;
+        right: 19.25px;
+        left: auto;
+
+        border: 7.5px solid #0000;
+        border-bottom-color: #37383c;
+      }
+      
       .header {
         width: 100%;
         height: 32px;
@@ -88,6 +114,10 @@
           color: #888;
 
           cursor: pointer;
+
+          &:hover {
+            color: #ddd;
+          }
         }
       }
     }
