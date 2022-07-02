@@ -1,5 +1,6 @@
 <script lang="ts">
   import { getNotificationIcon, getNotificationStyle, Notification } from "@core/messages/Notification";
+  import RoomRequestModal from "@lib/generic/modals/RoomRequest.svelte";
   import Icon from "@lib/Icon.svelte";
 
   export let notification: Notification;
@@ -7,7 +8,7 @@
 </script>
 
 <div class="drink">
-
+  
   <div class="picture">
     <svg width="0" height="0">
       <defs>
@@ -23,6 +24,8 @@
   <div class="foam" style="{ getNotificationStyle(notification.type) }">
     <Icon name={ getNotificationIcon(notification.type) } size="16px" />
   </div>
+
+  <RoomRequestModal />
 
 </div>
 
