@@ -13,11 +13,11 @@
     </slot>
   </summary>
 
-  <details-menu class="menu" role="menu">
+  <div class="menu" role="menu">
     <slot name="details-menu">
 
     </slot>
-  </details-menu>
+  </div>
 </details>
 
 <style lang="scss" global>
@@ -33,15 +33,15 @@
       z-index: 80;
       display: block;
       cursor: default;
-      content: "";
-      background: #0000;
+      content: " ";
+      background: transparent;
     }
 
     &:not([open]) > :not(summary) {
       display: none !important;
     }
 
-    // Placeholder summary class
+    // Summary class
     .summary {
       width: 24px;
       height: 24px;
@@ -51,13 +51,14 @@
 
       user-select: none;
       -webkit-user-select: none;
+      list-style: none;
 
       &::marker {
         content: "";
       }
     }
 
-    // Placeholder menu class
+    // Menu class
     .menu {
       width: fit-content;
       height: fit-content;
@@ -73,6 +74,7 @@
       display: flex;
       padding: 12px 0 12px 12px;
       flex-direction: column;
+      list-style: none;
 
       animation: modal-animation 0.12s cubic-bezier(0, 0.1, 0.1, 1) backwards;
 
