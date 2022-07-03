@@ -45,7 +45,7 @@
 
   display: flex;
 
-  background-color: #212327;
+  background-color: #1f2125;
 
   user-select: none;
   -webkit-user-select: none;
@@ -82,7 +82,7 @@
     }
 
     p {
-      color: #fff6;
+      color: #6b6d71;
       font-size: 12px;
 
       line-height: 12px;
@@ -91,6 +91,10 @@
 
   .purple {
     background-color: #66479b44;
+
+    p {
+      color: #9a82c2dd;
+    }
   }
 }
 

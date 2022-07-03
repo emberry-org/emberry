@@ -88,7 +88,7 @@
   align-items: flex-start;
   z-index: 1;
 
-  background-color: #212327;
+  background-color: #1f2125;
 
   .left {
     width: 248px;

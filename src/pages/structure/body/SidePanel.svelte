@@ -25,7 +25,7 @@
     width: 100%;
     height: 30.5px;
 
-    background-color: #292b2f;
+    background-color: #26282c;
     border-top: 1.5px solid #434547;
     border-bottom: 1.5px solid #37393d;
   }
@@ -34,7 +34,7 @@
     width: 100%;
     flex-grow: 1;
 
-    background-color: #212327;
+    background-color: #1f2125;
   }
 }
 
