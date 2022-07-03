@@ -23,7 +23,7 @@
   display: flex;
   flex-direction: column;
 
-  background-color: #26282c;
+  background-color: #262729;
   border-bottom: 1.5px solid #37393d;
 }
 

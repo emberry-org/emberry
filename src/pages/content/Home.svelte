@@ -66,9 +66,9 @@
       width: 100%;
       height: 30.5px;
 
-      background-color: #37383c;
-      border-top: 1.5px solid #434547;
-      border-bottom: 1.5px solid #434547;
+      background-color: #373937;
+      border-top: 1.5px solid #fff2;
+      border-bottom: 1.5px solid #fff1;
     }
 
     .card {
@@ -97,7 +97,7 @@
           width: 30%;
           height: 36px;
 
-          background-color: #37383c;
+          background-color: #373739;
           border: 1px solid #545454;
           border-radius: 6px;
 
@@ -126,7 +126,7 @@
         }
 
         input {
-          background-color: #37383c;
+          background-color: #373739;
           border: 1px solid #545454;
           border-radius: 6px;
           color: #ccc;
