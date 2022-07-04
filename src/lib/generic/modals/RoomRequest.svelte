@@ -1,62 +1,106 @@
 <script lang="ts">
-  import Modal from "@lib/generic/Modal.svelte";
   import Icon from "@lib/Icon.svelte";
 
-  let details: HTMLDetailsElement;
+  let modal: HTMLDivElement;
+  let isopen: boolean = false;
+
+  $: isopen, onToggle();
+
+  const onToggle = () => {
+    if (isopen == true) {
+      /* Check if the user clicks outside the panel */
+      document.addEventListener("mousedown", onMouseDown, true);
+    } else {
+      /* Remove the event listener after the element is destroyed */
+      document.removeEventListener("mousedown", onMouseDown, true);
+    }
+  };
+
+  /** Called when the user clicks somewhere in the app */
+  const onMouseDown = (e: MouseEvent) => {
+    if (isopen == false) return;
+
+    const bounds: DOMRect = modal.getBoundingClientRect();
+
+    /* Close the command center if the users clicks outside of its bounds */
+    if (e.x <= bounds.left || e.x >= bounds.right || e.y <= bounds.top || e.y >= bounds.bottom) {
+      isopen = false;
+    }
+  };
 
 </script>
 
 <div class="room-request-modal">
-  <Modal bind:details>
-    <div class="invis-btn" slot="summary">
-      
-    </div>
-  
-    <div class="modal" slot="details-menu">
+  <div class="invis-btn" on:mousedown={() => isopen = true} />
+
+  {#if isopen}
+    <div class="modal" bind:this={modal}>
       <div class="header">
         <h3> Username </h3>
         <p> #1234 </p>
-        <button class="close-btn" on:click={() => details.open = false}>
+        <button class="close-btn" on:click={() => isopen = false}>
           <Icon name="window/close" size="20px" />
         </button>
       </div>
     </div>
-  </Modal>
+  {/if}
 </div>
 
 <style lang="scss">
   .room-request-modal {
-    width: 44px;
-    height: 44px;
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 34px;
+    height: 34px;
 
     .invis-btn {
-      width: 44px;
+      width: 46px;
       height: 44px;
 
       position: absolute;
-      top: -39px;
-      left: 0;
+      top: -4px;
+      left: -6px;
 
       cursor: pointer;
     }
 
     .modal {
+      position: absolute;
+
       width: 260px;
       height: 128px;
+
+      top: 44px;
+      right: -8px;
 
       margin-right: 5px;
 
       background-color: #37383c;
       border: 1.5px solid #535557;
       border-radius: 6px;
-      box-shadow: 0 8px 24px #1c2128;
+      box-shadow: 0 8px 24px #1c1c1c;
+
+      animation: modal-animation 0.2s cubic-bezier(0, 0.1, 0.1, 1) backwards;
+
+      @keyframes modal-animation {
+        0% {
+          opacity: 0;
+          top: 28px;
+        }
+        100% {
+          opacity: 1;
+          top: 44px;
+        }
+      }
 
       &::before {
         content: "";
         position: absolute;
 
-        top: -4px;
-        right: 18.5px;
+        top: -16px;
+        right: 12.5px;
         left: auto;
 
         border: 8px solid #0000;
@@ -67,8 +111,8 @@
         content: "";
         position: absolute;
 
-        top: -2px;
-        right: 19.25px;
+        top: -13.5px;
+        right: 13px;
         left: auto;
 
         border: 7.5px solid #0000;
