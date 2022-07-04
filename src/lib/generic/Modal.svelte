@@ -1,6 +1,5 @@
 <script lang="ts">
   export let details: HTMLDetailsElement = undefined;
-
 </script>
 
 <details
@@ -38,7 +37,12 @@
     }
 
     &:not([open]) > :not(summary) {
-      display: none !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+
+    &[open] > .menu {
+      transform: translateY(0px) !important;
     }
 
     // Summary class
@@ -75,15 +79,24 @@
       padding: 12px 0 12px 12px;
       flex-direction: column;
       list-style: none;
+      opacity: 1;
 
-      animation: modal-animation 0.12s cubic-bezier(0, 0.1, 0.1, 1) backwards;
+      transition: transform 0.12s cubic-bezier(0, 0.1, 0.1, 1), opacity 0.12s cubic-bezier(0, 0.1, 0.1, 1);
+      transform: translateY(-16px);
+      //transform: translateY(-16px);
 
-      @keyframes modal-animation {
-        0% {
-          opacity: 0;
-          transform: translateY(-16px);
-        }
-      }
+      // animation: modal-animation 0.12s cubic-bezier(0, 0.1, 0.1, 1) backwards;
+
+      // @keyframes modal-animation {
+      //   0% {
+      //     opacity: 0;
+      //     transform: translateY(-16px) !important;
+      //   }
+      //   100% {
+      //     opacity: 1;
+      //     transform: translateY(0px) !important;
+      //   }
+      // }
     }
   }
 </style>
