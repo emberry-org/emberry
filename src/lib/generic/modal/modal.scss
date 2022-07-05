@@ -1,0 +1,101 @@
+.modal {
+  position: relative;
+
+  width: 100%;
+  height: 100%;
+
+  // ========== Button ==========
+  .btn {
+    width: 100%;
+    height: 100%;
+  }
+
+  // ========== Popup ==========
+  .popup {
+    position: absolute;
+
+    width: fit-content;
+    height: fit-content;
+
+    top: 44px;
+    right: -8px;
+
+    margin-right: 5px;
+
+    background-color: #37383c;
+    border: 1.5px solid #535557;
+    border-radius: 6px;
+    box-shadow: 0 8px 24px #1c1c1c;
+
+    animation: popup-animation 0.2s cubic-bezier(0, 0.1, 0.1, 1) backwards;
+
+    @keyframes popup-animation {
+      0% {
+        opacity: 0;
+        top: 28px;
+      }
+      100% {
+        opacity: 1;
+        top: 44px;
+      }
+    }
+
+    &::before {
+      content: "";
+      position: absolute;
+
+      top: -16px;
+      right: 12.5px;
+      left: auto;
+
+      border: 8px solid #0000;
+      border-bottom-color: #535557;
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+
+      top: -13.5px;
+      right: 13px;
+      left: auto;
+
+      border: 7.5px solid #0000;
+      border-bottom-color: #37383c;
+    }
+
+    // ========== Popup Header ==========
+    header {
+      width: 100%;
+      height: 32px;
+  
+      display: flex;
+      align-items: center;
+  
+      border-bottom: 1.5px solid #434547;
+  
+      .close-btn {
+        width: 32px;
+        height: 32px;
+  
+        display: flex;
+        justify-content: center;
+        align-items: center;
+  
+        margin-left: auto;
+        margin-right: 4px;
+  
+        background-color: #0000;
+        border: none;
+        outline: none;
+        color: #888;
+  
+        cursor: pointer;
+  
+        &:hover {
+          color: #ddd;
+        }
+      }
+    }
+  }
+}
