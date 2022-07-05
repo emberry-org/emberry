@@ -22,7 +22,14 @@ fn main() {
   #[cfg(not(target_os = "linux"))]
   let builder = builder.setup(|app| {
     let window = app.get_window("main").unwrap();
+
     window::set_shadow(&window, true).expect("Unsupported platform!");
+
+    // #[cfg(target_os = "windows")]
+    // if let Err(_) = window_vibrancy::apply_mica(&window) {
+    //   window_vibrancy::apply_blur(&window, Some((32, 32, 32, 255))).unwrap();
+    // }
+
     Ok(())
   });
 

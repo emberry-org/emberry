@@ -7,7 +7,7 @@
     "distDir": "../dist"
   },
   "package": {
-    "productName": "emberry",
+    "productName": "Emberry",
     "version": "0.1.0"
   },
   "tauri": {
@@ -57,12 +57,13 @@
       {
         "fullscreen": false,
         "decorations": false,
-        "height": 450,
+        "transparent": true,
+        "height": 600,
         "resizable": true,
         "title": "Emberry",
-        "width": 670,
-        "minWidth": 432,
-        "minHeight": 312
+        "width": 800,
+        "minWidth": 600,
+        "minHeight": 375
       }
     ]
   }

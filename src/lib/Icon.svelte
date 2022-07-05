@@ -1,21 +1,18 @@
 <script lang="ts">
   import Icon from 'svelte-icon/Icon.svelte';
-  import { IconArchive } from '@assets/icons/Archive';
+  import { loadIcon } from '@core/Icons';
 
   /** The name of the icon file without file extension */
   export let name: string;
   export let size: string = "20px";
   export let strokeWidth: string = "0em";
 
-  $: icon = fetchIcon(name);
+  $: name, fetchIcon(name);
+  let icon: string = "";
 
   /** Fetch the icon svg with a given name */
-  function fetchIcon(name: string): string {
-    if (Object.keys(IconArchive).includes(name)) {
-      return IconArchive[name];
-    } else {
-      return IconArchive["fallback"];
-    }
+  async function fetchIcon(name: string) {
+    icon = await loadIcon(name);
   }
 </script>
 

@@ -1,14 +1,9 @@
 <script lang="ts">
-  import { Router, Route, NavigatorHistory, createHistory, createMemorySource } from "svelte-navigator";
-  import Titlebar from "@lib/window/Titlebar.svelte";
-  import Home from "@page/Home.svelte";
-  import Chat from "@page/Chat.svelte";
+  import { Body, Footer, Titlebar } from "@page/structure";
   import CommandCenter from '@lib/window/CommandCenter.svelte';
   import { commandCenterState } from "@store";
   import setupOS from "@core/OppSys";
   import { onMount } from "svelte";
-  import NewChat from "@page/NewChat.svelte";
-  //import AddressBook from "@lib/window/AddressBook.svelte";
 
   onMount(() => {
     setupOS();
@@ -24,27 +19,19 @@
 </script>
 
 <main>
-  {#if $commandCenterState}
-    <CommandCenter />
-  {/if}
+  
+  <div class="contents">
+    {#if $commandCenterState}
+      <CommandCenter />
+    {/if}
 
-  <Titlebar />
+    <Titlebar />
 
-  <div class="body">
-    <!-- <AddressBook /> -->
+    <Body />
 
-    <Router primary={false}>
-      <Route path="/">
-        <Home />
-      </Route>
-      <Route path="/chat/new">
-        <NewChat />
-      </Route>
-      <Route path="/chat/:id" let:params>
-        <Chat id={params.id} />
-      </Route>
-    </Router>
+    <Footer />
   </div>
+
 </main>
 
 <style lang="scss" global>
@@ -80,16 +67,21 @@
   body {
     padding: 0;
     margin: 0;
+    background-color: #212327 !important;
+    overflow: hidden;
   }
 
   main {
     width: 100vw;
     height: 100vh;
 
-    display: flex;
-    flex-direction: column;
+    .contents {
+      width: 100vw;
+      height: 100vh;
 
-    background-color: #292b2f;
+      display: flex;
+      flex-direction: column;
+    }
 
     .body {
       width: 100%;

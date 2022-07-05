@@ -6,4 +6,7 @@ import tsconfigPaths from 'vite-tsconfig-paths'
 export default defineConfig({
   plugins: [svelte(), tsconfigPaths()],
   optimizeDeps: { exclude: ["svelte-navigator"] },
+  server: {
+    hmr: { overlay: false },
+  },
 })

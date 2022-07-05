@@ -9,6 +9,9 @@ use tokio::net::UdpSocket;
 use tokio::select;
 use tokio::sync::oneshot;
 
+pub mod message;
+use message::Message;
+
 type ConnectionMap = HashMap<String, Connection>;
 pub struct Connection {
   pub send_handle: EventHandler,
@@ -27,7 +30,7 @@ struct Config {
 
 #[derive(Clone, serde::Serialize)]
 struct MessageRecievedPayload {
-  message: String,
+  message: Message,
 }
 
 #[tauri::command(async)]
@@ -64,7 +67,8 @@ pub async fn hole_punch(
   let sender = arc_sock.clone();
   let send_handle = window.listen(format!("send_message_{}", identity), move |e| {
     let sender = sender.clone();
-    tokio::spawn(async move { sender.send(e.payload().unwrap().as_bytes()).await });
+    let msg = serde_json::from_str::<Message>(e.payload().unwrap()).unwrap();
+    tokio::spawn(async move { msg.send_with(&sender).await });
   });
 
   /* Setup the receive loop */
@@ -74,8 +78,7 @@ pub async fn hole_punch(
   tokio::spawn(async move {
     loop {
       select! {
-        Ok(len) = arc_sock.recv(&mut buf) => {
-        let msg = String::from_utf8_lossy(&buf[..len]).to_string();
+          Ok(msg) = Message::recv_from(&arc_sock, &mut buf) => {
 
         /* Emit the message_recieved event when a message is recieved */
         window
@@ -104,7 +107,7 @@ pub fn chat_exists(state: tauri::State<'_, Networking>, id: String) -> bool {
   // Check if the store contains the key for this chat.
   match state.chats.lock() {
     Ok(chats) => chats.contains_key(&id),
-    Err(_) => false
+    Err(_) => false,
   }
 }
 
@@ -120,6 +123,8 @@ where
   // Send the server our identity (Used to match us with a peer)
   socket.send(ident).await?;
 
+  #[cfg(feature = "debug")]
+  println!("HolePunching: Waiting on response from server");
   // Wait for the server to send us a peer:
   let mut b = [0u8; 512];
   let size = socket.recv(&mut b).await?;
@@ -127,8 +132,14 @@ where
   // Try parse the recieved peer address.
   let addr = parse_addr(&b, size).expect("Failed to parse address");
 
+  #[cfg(feature = "debug")]
+  println!("HolePunching: connect to {}", &addr);
+
   // Swap the connection from the server to the peer.
   socket.connect(addr).await?;
+
+  #[cfg(feature = "debug")]
+  println!("HolePunching: connected");
 
   Ok(socket)
 }

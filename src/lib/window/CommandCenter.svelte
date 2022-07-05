@@ -151,7 +151,7 @@
 
   transform: translateX(-50%);
 
-  background-color: #212327;
+  background-color: #222222;
   border: 1.5px solid #ffffff22;
   border-radius: 6px;
 
@@ -169,7 +169,7 @@
     outline: none;
     border: none;
     border-bottom: 1.5px solid #ffffff1b;
-    background: #212327;
+    background: #222222;
     color: #dddddd;
 
     font-size: 0.9rem;
@@ -189,7 +189,7 @@
       cursor: pointer;
 
       &:hover, &.selected {
-        background-color: #292b2f;
+        background-color: #2a2a2a;
 
         .icon {
           color: #aaa;

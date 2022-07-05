@@ -3,15 +3,17 @@
   import Feed from "@lib/chat/Feed.svelte";
   import { onMount } from 'svelte';
   import { getChatHistory, insertChatHistory } from '@store';
-  //import Icon from "@lib/Icon.svelte";
-  //import { addressBookState } from "@store";
-  //import { onMount } from "svelte";
+  import { toPacket } from '@core/messages/Packet';
+  import type Msg from '@core/messages/Msg';
 
   export let id: string;
 
   let inputBox = '';
+  
+  let myName = 'Me';
+  let peerName = 'Peer';
 
-  $: messages = [] as { sender: String, content: String }[];
+  $: messages = [] as Msg[];
   $: id, updateHistory();
 
   onMount(async () => {
@@ -29,14 +31,26 @@
   /* Listen for incoming messages from the peer */
   listen(`message_recieved_${id}`, (event) => {
     // Push the message into the messages array.
-    let message = (event.payload as any).message as string;
-    messages.push({ sender: 'Peer', content: message });
+    let packet = toPacket(event as any);
 
-    // Update the persistent store.
-    insertChatHistory(id, { sender: 'Peer', content: message });
+    console.log('received packet: ', packet);
 
-    // Force update the Feed.
-    messages = [...messages];
+    if (packet.type == 'Chat') {
+      let time = getTime();
+      
+      // Push the message into the messages array.
+      messages.push({ sender: peerName, content: packet.content, time });
+
+      // Update the persistent store.
+      insertChatHistory(id, { sender: peerName, content: packet.content, time });
+
+      // Force update the Feed.
+      messages = [...messages];
+    }
+
+    if (packet.type == 'Username') {
+      peerName = packet.content;
+    }
   });
 
   /** Listen for the user to press the enter key */
@@ -46,14 +60,16 @@
 
   /** Send a message to the peer */
   function sendMessage() {
+    let time = getTime();
+
     // Push the message into the messages array.
-    messages.push({ sender: 'Me', content: inputBox });
+    messages.push({ sender: myName, content: inputBox, time });
 
     // Update the persistent store.
-    insertChatHistory(id, { sender: 'Me', content: inputBox });
+    insertChatHistory(id, { sender: myName, content: inputBox, time });
 
     // Tell the backend to send the message.
-    emit(`send_message_${id}`, inputBox);
+    emit(`send_message_${id}`, { type: 'Chat', content: inputBox });
 
     // Force update the Feed.
     messages = [...messages];
@@ -62,18 +78,23 @@
     inputBox = '';
   }
 
-  //function toggleAddressBook() { addressBookState.set(!$addressBookState); }
+  /** Send a new username to the peer */
+  function sendUsername() {
+    emit(`send_message_${id}`, { type: 'Username', content: myName });
+  }
+
+  function getTime(): String {
+    const now = new Date();
+    const current = now.getHours() + ':' + now.getMinutes();
+    return current;
+  }
 
 </script>
 
 <div class="chat">
 
   <div class="toolbar">
-    <!-- <button class="icon-button" on:click={toggleAddressBook}>
-      <Icon name="addressBook" size="16px" />
-    </button>
-    <div class="seperator" /> -->
-    <div class="username"> { id } </div>
+    <input type="text" class="username" name="Username" bind:value={myName} on:change={sendUsername}>
   </div>
 
   <div class="logs">
@@ -94,30 +115,26 @@
 
   display: flex;
   flex-direction: column;
+  position: relative;
 
   .toolbar {
+    position: absolute;
+    pointer-events: none;
+
+    top: 0;
+    left: 0;
+    z-index: 2;
+
     width: 100%;
-    height: 32px;
+    height: 30.5px;
 
     display: flex;
     align-items: center;
+    justify-content: flex-end;
 
     background-color: #37383c;
+    border-top: 1.5px solid #434547;
     border-bottom: 1.5px solid #434547;
-    box-shadow: 0 1px 2px 0 #00000055;
-
-    // button {
-    //   margin-left: 4px;
-    //   margin-right: 4px;
-    //   padding-bottom: 1px;
-    // }
-
-    // .seperator {
-    //   width: 0px;
-    //   height: 65%;
-
-    //   border-right: 1.5px solid #ffffff18;
-    // }
 
     .username {
       font-family: Inter;
@@ -125,8 +142,12 @@
       font-size: 0.9rem;
       color: #aaa;
 
-      margin-left: 10px;
+      margin-right: 10px;
       overflow: hidden;
+      pointer-events: all;
+      background-color: transparent;
+      outline: none;
+      border: none;
     }
   }
 
@@ -153,7 +174,7 @@
       box-shadow: 0 1px 2px 0 #00000055;
 
       background-color: #37383c;
-      border: 1.5px solid #454749;
+      border: 1.5px solid #ffffff11;
       outline: none;
       border-radius: 4px;
 
