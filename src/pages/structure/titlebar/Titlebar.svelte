@@ -33,10 +33,10 @@
   
   <div class="left" data-tauri-drag-region={!hideDecorations || null}>
     <!-- Makes sure you can always drag the window -->
-    {#if !maximized && !hideDecorations} <div class="drag-square"> <Icon name="app/logo" size="24px" /> </div> {/if}
+    {#if !hideDecorations} <div class="drag-square"> <Icon name="app/logo" size="24px" /> </div> {/if}
 
     <div class="profile { maximized || hideDecorations ? 'ml' : '' }">
-      <Modal orientation="se" margins="6px 0 0 0">
+      <Modal orientation="se" margins="6px 0 0 5px" arrow="false">
         <div class="img" slot="btn" style="background-image: url(https://cdn.discordapp.com/avatars/274954769846501376/ce8cedc7e70deedda89d8b17643e8647.webp?size=48)">
         
         </div>
@@ -189,7 +189,7 @@
         display: flex;
         flex-direction: column;
 
-        cursor: default;
+        cursor: auto;
 
         // ========== Profile Media ==========
         .media {
@@ -255,11 +255,29 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: relative;
+
+            &::before {
+              content: "username";
+
+              position: absolute;
+              top: 4px;
+              left: 0;
+
+              font-size: 12px;
+              font-weight: bold;
+              font-variant: small-caps;
+              color: #777;
+
+              margin-left: 12px;
+            }
 
             p {
               font-size: 14px;
               font-weight: normal;
               margin-left: 12px;
+              padding-top: 12px;
+              color: #ccc;
             }
 
             .edit-btn {
@@ -271,7 +289,7 @@
               background-color: #ffffff18;
               border: 2px solid #ffffff18;
               border-radius: 4px;
-              color: #ddd;
+              color: #ccc;
 
               font-size: 14px;
 

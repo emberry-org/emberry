@@ -1,4 +1,5 @@
 <script lang="ts">
+  export let arrow: 'true' | 'false' = 'true';
   export let orientation: 'se' | 'sw' = 'sw';
   export let margins: string = '0px 0px 0px 0px';
 
@@ -23,7 +24,7 @@
 
   /** Called when the user clicks somewhere in the app */
   const onMouseDown = (e: MouseEvent) => {
-    if (isopen == false) return;
+    if (isopen == false || !modal) return;
 
     const bounds: DOMRect = modal.getBoundingClientRect();
 
@@ -50,7 +51,7 @@
 
   {#if isopen}
 
-  <div class="popup" style="margin: { margins }" bind:this={modal}>
+  <div class="popup { arrow == 'true' ? 'arrow' : '' }" style="margin: { margins }" bind:this={modal}>
     <slot name="mdl" >
       <button id="close-btn" />
     </slot>

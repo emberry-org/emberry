@@ -36,6 +36,9 @@
           <Icon name="window/close" size="20px" />
         </button>
       </header>
+      <div class="body">
+
+      </div>
     </div>
   </Modal>
   
@@ -129,6 +132,12 @@
   width: 260px;
   height: 128px;
 
+  display: flex;
+  flex-direction: column;
+
+  border-radius: 5px;
+  overflow: hidden;
+
   h3 {
     font-size: 14px;
     font-weight: normal;
@@ -140,6 +149,16 @@
     font-weight: normal;
     margin-left: 8px;
     padding-top: 2px;
+  }
+
+  header {
+    background-color: #262729;
+  }
+
+  .body {
+    width: 100%;
+
+    background-color: #323335;
   }
 }
 
