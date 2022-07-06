@@ -10,17 +10,47 @@
     height: 100%;
   }
 
+  // ========== Orientation ==========
+  &.sw .popup {
+    top: 48px;
+    right: -5px;
+
+    &::before {
+      top: -16px;
+      right: 12.5px;
+      left: auto;
+    }
+
+    &::after {
+      top: -12px;
+      right: 15px;
+      left: auto;
+    }
+  }
+
+  &.se .popup {
+    top: 48px;
+    left: -5px;
+
+    &::before {
+      top: -16px;
+      left: 12.5px;
+      right: auto;
+    }
+
+    &::after {
+      top: -12px;
+      left: 15px;
+      right: auto;
+    }
+  }
+
   // ========== Popup ==========
   .popup {
     position: absolute;
 
     width: fit-content;
     height: fit-content;
-
-    top: 48px;
-    right: -10px;
-
-    margin-right: 5px;
 
     background-color: #37383c;
     border: 1.5px solid #535557;
@@ -44,10 +74,6 @@
       content: "";
       position: absolute;
 
-      top: -16px;
-      right: 12.5px;
-      left: auto;
-
       border: 8px solid #0000;
       border-bottom-color: #535557;
     }
@@ -56,11 +82,7 @@
       content: "";
       position: absolute;
 
-      top: -13.5px;
-      right: 13px;
-      left: auto;
-
-      border: 7.5px solid #0000;
+      border: 6px solid #0000;
       border-bottom-color: #37383c;
     }
 

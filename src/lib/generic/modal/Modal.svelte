@@ -1,4 +1,7 @@
 <script lang="ts">
+  export let orientation: 'se' | 'sw' = 'sw';
+  export let margins: string = '0px 0px 0px 0px';
+
   let modal: HTMLDivElement;
   let isopen: boolean = false;
 
@@ -9,12 +12,12 @@
       /* Check if the user clicks outside the panel */
       document.addEventListener("mousedown", onMouseDown, true);
       setTimeout(() => {
-        if (modal) modal.querySelector("#close-btn").addEventListener("click", onCloseButton, true);
+        if (modal && modal.querySelector("#close-btn")) modal.querySelector("#close-btn").addEventListener("click", onCloseButton, true);
       }, 100);
     } else {
       /* Remove the event listener after the element is destroyed */
       document.removeEventListener("mousedown", onMouseDown, true);
-      if (modal) modal.querySelector("#close-btn").removeEventListener("click", onCloseButton, true);
+      if (modal && modal.querySelector("#close-btn")) modal.querySelector("#close-btn").removeEventListener("click", onCloseButton, true);
     }
   };
 
@@ -37,7 +40,7 @@
 
 </script>
 
-<div class="modal">
+<div class="modal { orientation }">
   
   <div class="btn" on:mousedown={() => isopen = true}>
     <slot name="btn" >
@@ -47,7 +50,7 @@
 
   {#if isopen}
 
-  <div class="popup" bind:this={modal}>
+  <div class="popup" style="margin: { margins }" bind:this={modal}>
     <slot name="mdl" >
       <button id="close-btn" />
     </slot>

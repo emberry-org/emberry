@@ -28,7 +28,7 @@
       </div>
     </div>
   
-    <div class="modal" slot="mdl">
+    <div class="details" slot="mdl">
       <header>
         <h3> Username </h3>
         <p> #1234 </p>
@@ -125,7 +125,7 @@
   }
 }
 
-.modal {
+.details {
   width: 260px;
   height: 128px;
 
