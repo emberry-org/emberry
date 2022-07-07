@@ -1,22 +1,33 @@
 <script lang="ts">
   import { appWindow } from '@tauri-apps/api/window'
+  import { open } from '@tauri-apps/api/dialog';
+  import { readBinaryFile } from '@tauri-apps/api/fs';
   import Icon from "@lib/Icon.svelte";
-  import { getUsername, onUsernameChanged, oppSys } from '@store';
+  import { getProfilePicture, getUsername, onProfilePictureChanged, onUsernameChanged, oppSys, setProfilePicture, setUsername } from '@store';
   import { onMount } from 'svelte';
   import Pub from './Pub.svelte';
   import Modal from '@lib/generic/modal/Modal.svelte';
 
   $: maximized = false;
   $: hideDecorations = $oppSys == 'linux' || $oppSys == 'darwin';
+  $: profileImage = 'background-image: url(data:image/png;base64,' + profilePicture + ')';
 
   let username = '';
+  let profilePicture = '';
 
   onMount(() => {
     // Get the username from storage.
     username = getUsername();
     if (!username) username = 'NoName';
+    usernameDummy = username;
     // Setup the on username changed event.
-    onUsernameChanged((newname) => { username = newname });
+    onUsernameChanged((newname) => { username = newname; usernameDummy = newname; });
+
+    // Get the profile picture from storage.
+    profilePicture = getProfilePicture();
+    if (!profilePicture) profilePicture = '';
+    // Setup the on profile picture changed event.
+    onProfilePictureChanged((newimg) => { profilePicture = newimg });
   });
 
   appWindow.listen('tauri://resize', async () => {
@@ -26,6 +37,58 @@
   function minimize() { appWindow.minimize(); }
   function maximize() { appWindow.toggleMaximize(); }
   function close() { appWindow.close(); }
+
+  // Handle the editing of the profile :
+  let isEditing = false;
+
+  // Username edit behaviour.
+  let usernameInputBox: HTMLInputElement;
+  let usernameDummy: string = '';
+  const editUsername = () => {
+    usernameInputBox.focus();
+    usernameInputBox.setSelectionRange(0, usernameInputBox.value.length);
+    usernameDummy = username;
+    isEditing = true;
+  };
+  const applyUsername = () => {
+    username = usernameDummy;
+    isEditing = false;
+    usernameInputBox.blur();
+    setUsername(usernameDummy);
+  };
+  const revertUsername = () => {
+    isEditing = false;
+    usernameInputBox.blur();
+    usernameDummy = username;
+  };
+
+  // Profile picture edit behaviour.
+  const uploadPicture = async () => {
+    const path = await open({
+      multiple: false,
+      filters: [{
+        name: 'Image',
+        extensions: ['png', 'jpeg', 'webp']
+      }]
+    });
+
+    if (typeof(path) == 'string') {
+      const binary = await readBinaryFile(path);
+      const base64 = window.btoa(String.fromCharCode(...new Uint8Array(binary)));
+
+      console.warn('TODO: resize images to avoid exceeding maximum stack size');
+
+      // Update the profile picture in the local store.
+      setProfilePicture(base64);
+    }
+  };
+
+  // Generic keydown event for input boxes.
+  const onKeydown = (e: KeyboardEvent) => {
+    if (e.key == 'Enter') {
+      applyUsername();
+    }
+  };
 
 </script>
 
@@ -37,22 +100,37 @@
 
     <div class="profile { maximized || hideDecorations ? 'ml' : '' }">
       <Modal orientation="se" margins="6px 0 0 5px" arrow="false">
-        <div class="img" slot="btn" style="background-image: url(https://cdn.discordapp.com/avatars/274954769846501376/ce8cedc7e70deedda89d8b17643e8647.webp?size=48)">
+        <div class="img" slot="btn" style="{ profileImage }">
         
         </div>
 
         <div class="details" slot="mdl">
           <div class="media">
             <div class="banner" />
-            <div class="picture" style="background-image: url(https://cdn.discordapp.com/avatars/274954769846501376/ce8cedc7e70deedda89d8b17643e8647.webp?size=128)" />
+            <div class="picture" on:click={uploadPicture} style="{ profileImage }">
+              <Icon name="file/upload" size="32px" />
+            </div>
           </div>
 
           <div class="info">
             <div class="username">
-              <p> { username } </p>
-              <button class="edit-btn">
-                Edit
-              </button>
+
+              <input class="{ !isEditing ? 'preview' : 'editable' }" type="text" name="username" 
+                bind:this={usernameInputBox} bind:value={usernameDummy} on:keydown={onKeydown}>
+
+              {#if isEditing}
+                <button class="btn float-right" on:click={revertUsername}>
+                  Revert
+                </button>
+                <button class="btn apply" on:click={applyUsername}>
+                  Apply
+                </button>
+              {:else}
+                <button class="btn float-right" on:click={editUsername}>
+                  Edit
+                </button>
+              {/if}
+              
             </div>
           </div>
         </div>
@@ -119,6 +197,7 @@
 
     .profile {
       width: fit-content;
+      max-width: calc(100% - 44px);
       height: 100%;
 
       display: flex;
@@ -165,9 +244,14 @@
         justify-content: center;
 
         h3 {
+          width: fit-content;
+          max-width: 150px;
           margin: 0;
           font-weight: normal;
           font-size: 0.9em;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
 
         p {
@@ -219,8 +303,15 @@
 
             transform: translateX(-50%);
 
+            background-color: #1f2022;
             background-size: contain;
             border-radius: 8px;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            cursor: pointer;
 
             &::after {
               content: "";
@@ -236,6 +327,25 @@
               border-radius: 8px;
 
               box-shadow: 0 0 0 8px #262729;
+              transition: background-color 0.1s;
+            }
+
+            &:hover {
+              &::after {
+                background-color: #0004;
+              }
+
+              :global(svg) {
+                opacity: 1;
+              }
+            }
+
+            :global(svg) {
+              z-index: 1;
+              color: #ddd;
+              opacity: 0;
+
+              transition: opacity 0.1s;
             }
           }
         }
@@ -253,7 +363,6 @@
             height: 42px;
 
             display: flex;
-            justify-content: space-between;
             align-items: center;
             position: relative;
 
@@ -272,28 +381,55 @@
               margin-left: 12px;
             }
 
-            p {
+            input {
+              flex-grow: 1;
               font-size: 14px;
               font-weight: normal;
-              margin-left: 12px;
+
+              margin-left: 6px;
+              margin-right: 6px;
               padding-top: 12px;
+              padding-left: 6px;
+
+              background-color: transparent;
+              border: none;
+              border-radius: 4px;
               color: #ccc;
+              outline: none;
+
+              &.preview {
+                pointer-events: none;
+              }
+
+              &.editable {
+                background-color: #1f2022;
+              }
             }
 
-            .edit-btn {
+            .btn {
               width: 64px;
               height: 32px;
 
               margin-right: 8px;
-
               background-color: #ffffff18;
               border: 2px solid #ffffff18;
-              border-radius: 4px;
               color: #ccc;
 
+              border-radius: 4px;
               font-size: 14px;
 
               cursor: pointer;
+
+              &.apply {
+                background-color: #125488;
+                border: 2px solid #176bae;
+                color: #f2eee8;
+
+                &:hover {
+                  background-color: #226498;
+                  border: 2px solid #277bbe;
+                }
+              }
 
               &:hover {
                 background-color: #ffffff28;
