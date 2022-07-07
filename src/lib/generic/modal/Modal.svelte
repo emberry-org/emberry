@@ -43,7 +43,7 @@
 
 <div class="modal { orientation }">
   
-  <div class="btn" on:mousedown={() => isopen = true}>
+  <div class="btn" on:mousedown={() => isopen = !isopen}>
     <slot name="btn" >
 
     </slot>
