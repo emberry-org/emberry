@@ -4,6 +4,7 @@
   export let margins: string = '0px 0px 0px 0px';
 
   let modal: HTMLDivElement;
+  let btn: HTMLDivElement;
   let isopen: boolean = false;
 
   $: isopen, onToggle();
@@ -26,10 +27,12 @@
   const onMouseDown = (e: MouseEvent) => {
     if (isopen == false || !modal) return;
 
-    const bounds: DOMRect = modal.getBoundingClientRect();
+    const modalBounds: DOMRect = modal.getBoundingClientRect();
+    const btnBounds: DOMRect = btn.getBoundingClientRect();
 
-    /* Close the command center if the users clicks outside of its bounds */
-    if (e.x <= bounds.left || e.x >= bounds.right || e.y <= bounds.top || e.y >= bounds.bottom) {
+    /* Close the modal if the users clicks outside of its bounds */
+    if ((e.x <= modalBounds.left || e.x >= modalBounds.right || e.y <= modalBounds.top || e.y >= modalBounds.bottom) &&
+        (e.x <= btnBounds.left || e.x >= btnBounds.right || e.y <= btnBounds.top || e.y >= btnBounds.bottom)) {
       isopen = false;
     }
   };
@@ -43,7 +46,7 @@
 
 <div class="modal { orientation }">
   
-  <div class="btn" on:mousedown={() => isopen = !isopen}>
+  <div class="btn" on:mousedown={() => isopen = !isopen} bind:this={btn}>
     <slot name="btn" >
 
     </slot>
