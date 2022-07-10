@@ -7,6 +7,8 @@
   import { onMount } from 'svelte';
   import Pub from './Pub.svelte';
   import Modal from '@lib/generic/modal/Modal.svelte';
+  import { resizeBase64Image } from '@core/Img';
+  //import Dialog from '@lib/generic/dialog/Dialog.svelte';
 
   $: maximized = false;
   $: hideDecorations = $oppSys == 'linux' || $oppSys == 'darwin';
@@ -68,18 +70,22 @@
       multiple: false,
       filters: [{
         name: 'Image',
-        extensions: ['png', 'jpeg', 'webp']
+        extensions: ['png', 'jpg', 'jpeg', 'webp']
       }]
     });
 
     if (typeof(path) == 'string') {
       const binary = await readBinaryFile(path);
-      const base64 = window.btoa(String.fromCharCode(...new Uint8Array(binary)));
+      const base64 = window.btoa(new Uint8Array(binary).reduce(function (data, byte) {
+        return data + String.fromCharCode(byte);
+      }, ''));
 
-      console.warn('TODO: resize images to avoid exceeding maximum stack size');
+      resizeBase64Image(base64, [256, 256], setProfilePicture);
+
+      //console.warn('TODO: resize images to avoid exceeding maximum stack size');
 
       // Update the profile picture in the local store.
-      setProfilePicture(base64);
+      //setProfilePicture(base64);
     }
   };
 
@@ -99,6 +105,7 @@
     {#if !hideDecorations} <div class="drag-square"> <Icon name="app/logo" size="24px" /> </div> {/if}
 
     <div class="profile { maximized || hideDecorations ? 'ml' : '' }">
+
       <Modal orientation="se" margins="6px 0 0 5px" arrow="false">
         <div class="img" slot="btn" style="{ profileImage }">
         
@@ -135,10 +142,12 @@
           </div>
         </div>
       </Modal>
+
       <div class="info">
         <h3> { username } </h3>
         <p>#1234</p>
       </div>
+
     </div>
 
   </div>
