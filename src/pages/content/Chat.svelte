@@ -123,18 +123,14 @@
 
     top: 0;
     left: 0;
-    z-index: 2;
+    //z-index: 2;
 
     width: 100%;
     height: 30.5px;
 
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-
-    background-color: #37383c;
-    border-top: 1.5px solid #434547;
-    border-bottom: 1.5px solid #434547;
+    background-color: #373937;
+    border-top: 1.5px solid #fff2;
+    border-bottom: 1.5px solid #fff1;
 
     .username {
       font-family: Inter;
@@ -154,6 +150,9 @@
   .logs {
     width: 100%;
     flex-grow: 1;
+
+    display: flex;
+    justify-content: center;
   }
 
   .input {

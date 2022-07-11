@@ -1,7 +1,7 @@
 <script lang="ts">
   import type Msg from "@core/messages/Msg";
   import { onMount } from "svelte";
-import { merge_ssr_styles } from "svelte/internal";
+  import Message from "./Message.svelte";
 
   export let chat: Msg[] = [];
 
@@ -38,34 +38,7 @@ import { merge_ssr_styles } from "svelte/internal";
 <div class="feed" bind:this={element}>
   {#each chat as msg, i}
 
-    {#if isFirst(i)} <!-- If this item needs an avatar and username -->
-
-      <div class="head-item">
-
-        <div class="avatar" />
-
-        <div class="content">
-          <div class="user">
-            <div class="username">{ msg.sender }</div>
-            <div class="dot">·</div>
-            <div class="timestamp">{ msg.time ?? '--:--' }</div>
-          </div>
-          <div class="message">{ msg.content }</div>
-        </div>
-
-      </div>
-
-    {:else} <!-- If this item is from the same user as the previous one -->
-      
-      <div class="body-item">
-
-        <div class="message">
-          { msg.content }
-        </div>
-
-      </div>
-
-    {/if}
+    <Message message={msg} isHeader={isFirst(i)} />
 
   {/each}
 </div>
@@ -85,120 +58,6 @@ import { merge_ssr_styles } from "svelte/internal";
   overflow-x: hidden;
 
   padding-top: 32px;
-
-  .head-item {
-    width: 100%;
-    height: fit-content;
-    margin-top: 16px;
-    color: #444444;
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    z-index: 1;
-
-    &:hover {
-      background-color: #222222;
-    }
-
-    .avatar {
-      width: 38px;
-      min-width: 38px;
-      height: 38px;
-      
-      margin-left: 16px;
-      background-color: #222222;
-      border-radius: 6px;
-
-      background-image: url("../../assets/secret.jpg");
-      background-size: cover;
-      background-repeat: no-repeat;
-      position: relative;
-
-      &::after {
-        content: "";
-        position: absolute;
-
-        top: 0;
-        left: 0;
-
-        width: 36px;
-        height: 36px;
-
-        border: 1px solid #ffffff33;
-        border-radius: 6px;
-      }
-    }
-
-    .content {
-      flex-grow: 1;
-      height: fit-content;
-
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      justify-content: space-between;
-
-      .user {
-        width: 100%;
-        height: 14px;
-
-        display: flex;
-        align-items: center;
-
-        .username {
-          margin-left: 16px;
-          font-size: 14px;
-          color: #f7f7f7;
-          user-select: none;
-          -webkit-user-select: none;
-        }
-
-        .dot {
-          margin: 0 8px 0 10px;
-          color: #6e6e6e;
-          user-select: none;
-          -webkit-user-select: none;
-        }
-
-        .timestamp {
-          font-size: 10px;
-          margin-top: 1px;
-          color: #6e6e6e;
-          user-select: none;
-          -webkit-user-select: none;
-        }
-      }
-
-      .message {
-        inline-size: calc(100% - 42px);
-        margin-left: 16px;
-        margin-top: 4px;
-        line-height: 20px;
-        font-size: 14px;
-        color: #ddd;
-        overflow-wrap: break-word;
-        word-break: keep-all; 
-      }
-    }
-  }
-
-  .body-item {
-    padding-left: 70px;
-    padding-top: 4px;
-
-    &:hover {
-      background-color: #222222;
-    }
-
-    .message {
-      line-height: 20px;
-      inline-size: calc(100% - 42px);
-      font-size: 14px;
-      color: #ddd;
-      overflow-wrap: break-word;
-      word-break: keep-all; 
-    }
-  }
 
   &::-webkit-scrollbar {
     width: 0px;
