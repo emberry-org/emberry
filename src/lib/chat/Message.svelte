@@ -6,7 +6,7 @@
 </script>
 
 <div class="message">
-  {#if isHeader}
+  {#if true}
     <!-- If this item needs an avatar and username -->
 
     <div class="head-item">
@@ -15,7 +15,6 @@
       <div class="details">
         <div class="user">
           <div class="username">{message.sender}</div>
-          <div class="dot">·</div>
           <div class="timestamp">{message.time ?? "--:--"}</div>
         </div>
         <div class="contents">{message.content}</div>
@@ -43,7 +42,7 @@
     padding: 12px;
     border-radius: 8px;
 
-    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica,
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica,
       Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
 
     &:hover {
@@ -86,7 +85,7 @@
       }
 
       .details {
-        flex-grow: 1;
+        width: fit-content;
         height: fit-content;
 
         display: flex;
@@ -100,11 +99,11 @@
 
           display: flex;
           align-items: center;
-          margin-top: 2px;
 
           .username {
             margin-left: 16px;
             font-size: 14px;
+            font-weight: 550;
             color: #f7f7f7;
             user-select: none;
             -webkit-user-select: none;
@@ -112,14 +111,15 @@
 
           .dot {
             margin: 0 8px 0 10px;
+            font-weight: 500;
             color: #6e6e6e;
             user-select: none;
             -webkit-user-select: none;
           }
 
           .timestamp {
-            font-size: 10px;
-            margin-top: 1px;
+            font-size: 12px;
+            margin: 3.5px 0 0 8px;
             color: #6e6e6e;
             user-select: none;
             -webkit-user-select: none;
@@ -128,15 +128,16 @@
 
         .contents {
           height: fit-content;
-          inline-size: calc(100% - 42px);
+          max-width: calc(100vw - 350px);
+          inline-size: 100%;
           margin-left: 16px;
-          margin-top: 4px;
+          margin-top: 6px;
           line-height: 20px;
           font-size: 14px;
-          color: #ddd;
+          color: #aaa;
           overflow-wrap: break-word;
           word-break: keep-all;
-          white-space: pre;
+          //white-space: pre;
         }
       }
     }
@@ -144,13 +145,13 @@
     .body-item {
       .contents {
         height: fit-content;
+        max-width: 100%;
         line-height: 20px;
         inline-size: calc(100% - 42px);
         font-size: 14px;
         color: #ddd;
         overflow-wrap: break-word;
         word-break: keep-all;
-        white-space: pre;
 
         display: flex;
         flex-direction: row;

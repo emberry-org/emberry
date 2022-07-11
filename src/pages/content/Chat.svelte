@@ -2,7 +2,7 @@
   import { emit, listen } from '@tauri-apps/api/event'
   import Feed from "@lib/chat/Feed.svelte";
   import { onMount } from 'svelte';
-  import { getChatHistory, insertChatHistory } from '@store';
+  import { getChatHistory, getUsername, insertChatHistory, onUsernameChanged } from '@store';
   import { toPacket } from '@core/messages/Packet';
   import type Msg from '@core/messages/Msg';
 
@@ -20,6 +20,11 @@
     // Retrieve the history for this chat.
     const history = await getChatHistory(id);
     if (history) messages = history; else messages = [];
+
+    // Retrieve the username from the store.
+    myName = getUsername();
+    onUsernameChanged((newName => { myName = newName; sendUsername(); }));
+    sendUsername();
   });
 
   async function updateHistory() {
@@ -94,7 +99,7 @@
 <div class="chat">
 
   <div class="toolbar">
-    <input type="text" class="username" name="Username" bind:value={myName} on:change={sendUsername}>
+    <span class="username">{ peerName }</span>
   </div>
 
   <div class="logs">
@@ -119,7 +124,7 @@
 
   .toolbar {
     position: absolute;
-    pointer-events: none;
+    pointer-events: all;
 
     top: 0;
     left: 0;
@@ -132,13 +137,16 @@
     border-top: 1.5px solid #fff2;
     border-bottom: 1.5px solid #fff1;
 
+    display: flex;
+    align-items: center;
+
     .username {
       font-family: Inter;
       font-weight: 500;
-      font-size: 0.9rem;
-      color: #aaa;
+      font-size: 14px;
+      color: #ddd;
 
-      margin-right: 10px;
+      margin-left: 10px;
       overflow: hidden;
       pointer-events: all;
       background-color: transparent;
