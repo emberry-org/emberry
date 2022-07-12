@@ -50,6 +50,16 @@ Then add a ``dist/`` directory on the same level as ``src/`` and ``src-tauri/`` 
 
 <br>
 
+<h3><samp>Dependencies</samp></h3>
+
+To build emberry on arch based systems the following packages need to be installed:
+
+```
+$ pacman -S webkit2gtk
+```
+
+<br>
+
 <h3><samp>Running</samp></h3>
 
 To run Emberry in developer mode use the following command :
