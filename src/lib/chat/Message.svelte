@@ -61,11 +61,27 @@
         height: 40px;
 
         background-color: #222222;
-        border-radius: 6px;
+        border-radius: 8px;
 
         background-image: url("../../assets/crabby.png");
         background-size: cover;
         background-repeat: no-repeat;
+
+        position: relative;
+
+        &::after {
+          content: "";
+          
+          width: 34px;
+          height: 34px;
+
+          position: absolute;
+          top: 0;
+          left: 0;
+
+          border: 3px solid #ffffff20;
+          border-radius: 8px;
+        }
       }
 
       .details {
