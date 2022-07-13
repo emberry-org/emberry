@@ -60,7 +60,7 @@
 
   /** Listen for the user to press the enter key */
   function keyPressed(e: KeyboardEvent) {
-    if (e.key == 'Enter') { sendMessage(); }
+    if (e.key == 'Enter' && e.shiftKey == false) { sendMessage(); }
   }
 
   /** Send a message to the peer */
@@ -123,15 +123,11 @@
   position: relative;
 
   .toolbar {
-    position: absolute;
     pointer-events: all;
-
-    top: 0;
-    left: 0;
-    //z-index: 2;
 
     width: 100%;
     height: 30.5px;
+    min-height: 30.5px;
 
     background-color: #373937;
     border-top: 1.5px solid #fff2;
@@ -157,7 +153,6 @@
 
   .logs {
     width: 100%;
-    flex-grow: 1;
 
     display: flex;
     justify-content: center;
@@ -172,12 +167,11 @@
     align-items: flex-start;
     
     input {
-      width: calc(100% - 32px);
-      max-width: 50vw;
+      width: calc(100% - 64px);
       height: 32px; 
 
       margin-top: 8px;
-      padding: 0 12px 0 12px;
+      padding: 2px 12px 2px 12px;
       box-shadow: 0 1px 2px 0 #00000055;
 
       background-color: #37383c;

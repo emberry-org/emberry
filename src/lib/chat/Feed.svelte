@@ -7,7 +7,7 @@
 
   $: chat, scrollToBottom();
 
-  let element: HTMLDivElement;
+  let element: HTMLOListElement;
 
   onMount(() => {
     element.scrollTop = element.scrollHeight;
@@ -35,29 +35,29 @@
 
 </script>
 
-<div class="feed" bind:this={element}>
+<ol class="feed" bind:this={element}>
   {#each chat as msg, i}
 
     <Message message={msg} isHeader={isFirst(i)} />
 
   {/each}
-</div>
+</ol>
 
 <style lang="scss">
 
 .feed {
   width: 100%;
-  height: calc(100vh - 164px);
+  height: calc(100vh - 166px);
 
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
+  display: block;
+  margin: 0;
 
   font-family: Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji"; 
   overflow-y: auto;
   overflow-x: hidden;
 
-  padding-top: 32px;
+  padding-left: 0;
+  list-style: none;
 
   &::-webkit-scrollbar {
     width: 0px;
