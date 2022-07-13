@@ -69,6 +69,7 @@
     margin: 0;
     background-color: #212327 !important;
     overflow: hidden;
+    text-rendering: optimizeLegibility !important;
   }
 
   main {

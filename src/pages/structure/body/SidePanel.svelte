@@ -25,7 +25,7 @@
     width: 100%;
     height: 30.5px;
 
-    background-color: #262927;
+    background-color: #262729;
     border-top: 1.5px solid #fff2;
     border-bottom: 1.5px solid #fff1;
   }

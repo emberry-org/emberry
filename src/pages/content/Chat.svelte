@@ -129,7 +129,7 @@
     height: 30.5px;
     min-height: 30.5px;
 
-    background-color: #373937;
+    background-color: #37383a;
     border-top: 1.5px solid #fff2;
     border-bottom: 1.5px solid #fff1;
 
@@ -170,12 +170,15 @@
       width: calc(100% - 64px);
       height: 32px; 
 
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica,
+      Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+
       margin-top: 8px;
       padding: 2px 12px 2px 12px;
       box-shadow: 0 1px 2px 0 #00000055;
 
-      background-color: #37383c;
-      border: 1.5px solid #ffffff11;
+      background-color: #37383a;
+      border: 2px solid #ffffff11;
       outline: none;
       border-radius: 4px;
 

@@ -229,6 +229,9 @@
 
         cursor: pointer;
 
+        user-select: none;
+        -webkit-user-select: none;
+
         &::after {
           content: "";
           
