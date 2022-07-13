@@ -15,6 +15,7 @@
       <div class="details">
         <h3 class="user">
           <span class="username">{message.sender}</span>
+          <span class="separator">·</span>
           <span class="timestamp">Today at {message.time ?? "--:--"}</span>
         </h3>
         <div class="contents">{message.content}</div>
@@ -89,12 +90,22 @@
           margin: -3px 0 0 0;
           padding: 0;
 
+          user-select: none;
+          -webkit-user-select: none;
+
           .username {
             font-size: 1rem;
             font-weight: 500;
             color: #eee;
-            user-select: none;
-            -webkit-user-select: none;
+            line-height: 20px;
+          }
+
+          .separator {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #777;
+            margin: 0 0 0 6px;
+            
             line-height: 20px;
           }
 
@@ -103,8 +114,6 @@
             margin: 0 0 0 6px;
             font-weight: 500;
             color: #777;
-            user-select: none;
-            -webkit-user-select: none;
             line-height: 20px;
           }
         }
@@ -137,13 +146,13 @@
 
         position: static;
         padding-left: 72px;
-        padding-bottom: 5px;
+        padding-bottom: 3px;
 
         .contents {
           height: fit-content;
           max-width: calc(100vw - 350px);
           inline-size: 100%;
-          line-height: 20px;
+          line-height: 22px;
           font-size: 1rem;
           font-weight: 400;
           color: #bbb;

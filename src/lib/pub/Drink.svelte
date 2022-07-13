@@ -53,7 +53,10 @@
   margin: 0 6px 0 6px;
 
   position: relative;
+  
   pointer-events: all;
+  user-select: none;
+  -webkit-user-select: none;
 
   .picture-btn {
     margin-top: 5px;
