@@ -482,8 +482,6 @@
   }
 
   &[hidden] {
-    background-color: #343434;
-
     .button {
       display: none;
     }
