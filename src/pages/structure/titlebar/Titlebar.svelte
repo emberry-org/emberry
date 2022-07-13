@@ -469,11 +469,13 @@
 
     outline: none;
     border: none;
+    z-index: 1;
 
+    background-color: #1f2022;
     color: #fff;
 
     &:hover {
-      background-color: #ffffff11;
+      background-color: #2f3032;
     }
 
     &.close:hover {

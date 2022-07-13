@@ -126,6 +126,19 @@
       transform: translate(-50%, -50%);
     }
   }
+
+  animation-name: bounce-in;
+  animation-timing-function: ease;
+  animation-duration: 2s;
+  animation-iteration-count: 1;
+
+  @keyframes bounce-in {
+    0%   { transform: scale(1,1)    translateY(-64px); }
+    10%  { transform: scale(1.1,.9) translateY(-64px); }
+    30%  { transform: scale(.9,1.1) translateY(16px); }
+    45%  { transform: scale(1,1)    translateY(0); }
+    100% { transform: scale(1,1)    translateY(0); }
+  }
 }
 
 .details {
