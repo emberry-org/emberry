@@ -37,6 +37,7 @@
 <style lang="scss" global>
   @import './style/fonts.css';
   @import './style/global.scss';
+  @import './style/inputbox.scss';
 
   :root {
     font-family: Amulya, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,

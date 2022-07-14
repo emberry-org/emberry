@@ -5,10 +5,12 @@
   import { getChatHistory, getUsername, insertChatHistory, onUsernameChanged } from '@store';
   import { toPacket } from '@core/messages/Packet';
   import type Msg from '@core/messages/Msg';
+  //import { InputBox } from '@core/input-box';
 
   export let id: string;
 
-  let inputBox = '';
+  //let input: InputBox;
+  let inputElement: HTMLDivElement;
   
   let myName = 'Me';
   let peerName = 'Peer';
@@ -25,6 +27,9 @@
     myName = getUsername();
     onUsernameChanged((newName => { myName = newName; sendUsername(); }));
     sendUsername();
+
+    //input = new InputBox(inputElement, sendMessage);
+    //input.setValue('test line 1\ntest line 2\nlolol');
   });
 
   async function updateHistory() {
@@ -60,27 +65,28 @@
 
   /** Listen for the user to press the enter key */
   function keyPressed(e: KeyboardEvent) {
-    if (e.key == 'Enter' && e.shiftKey == false) { sendMessage(); }
+    if (e.key == 'Enter' && e.shiftKey == false) { e.preventDefault(); sendMessage(); }
   }
 
   /** Send a message to the peer */
   function sendMessage() {
-    let time = getTime();
+    const time = getTime();
+    const msg = inputElement.innerText;
 
     // Push the message into the messages array.
-    messages.push({ sender: myName, content: inputBox, time });
+    messages.push({ sender: myName, content: msg, time });
 
     // Update the persistent store.
-    insertChatHistory(id, { sender: myName, content: inputBox, time });
+    insertChatHistory(id, { sender: myName, content: msg, time });
 
     // Tell the backend to send the message.
-    emit(`send_message_${id}`, { type: 'Chat', content: inputBox });
+    emit(`send_message_${id}`, { type: 'Chat', content: msg });
 
     // Force update the Feed.
     messages = [...messages];
 
     // Empty the input box.
-    inputBox = '';
+    inputElement.innerText = '';
   }
 
   /** Send a new username to the peer */
@@ -107,7 +113,8 @@
   </div>
 
   <div class="input">
-    <input type="text" bind:value={ inputBox } on:keypress={ keyPressed }>
+    <!-- <input type="text" bind:value={ inputBox } on:keypress={ keyPressed }> -->
+    <div class="inputbox" contenteditable="true" bind:this={inputElement} on:keypress={keyPressed} />
   </div>
 
 </div>
@@ -166,25 +173,25 @@
     justify-content: center;
     align-items: flex-start;
     
-    input {
-      width: calc(100% - 64px);
-      height: 32px; 
+    // input {
+    //   width: calc(100% - 64px);
+    //   height: 32px; 
 
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica,
-      Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    //   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica,
+    //   Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
 
-      margin-top: 8px;
-      padding: 2px 12px 2px 12px;
-      box-shadow: 0 1px 2px 0 #00000055;
+    //   margin-top: 8px;
+    //   padding: 2px 12px 2px 12px;
+    //   box-shadow: 0 1px 2px 0 #00000055;
 
-      background-color: #37383a;
-      border: 2px solid #ffffff11;
-      outline: none;
-      border-radius: 4px;
+    //   background-color: #37383a;
+    //   border: 2px solid #ffffff11;
+    //   outline: none;
+    //   border-radius: 4px;
 
-      color: #ccc;
-      font-size: 1rem;
-    }
+    //   color: #ccc;
+    //   font-size: 1rem;
+    // }
   }
 }
 
