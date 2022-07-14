@@ -10,14 +10,15 @@
   let element: HTMLOListElement;
 
   onMount(() => {
-    element.scrollTop = element.scrollHeight;
+    scrollToBottom();
   });
 
   function scrollToBottom() {
     if (element) {
       setTimeout(() => {
         element.scrollTo({ top: element.scrollHeight });
-      }, 200);
+        element.scrollTop = element.scrollHeight;
+      }, 100);
     }
   }
 
@@ -36,6 +37,7 @@
 </script>
 
 <ol class="feed" bind:this={element}>
+  <div class="header" />
   {#each chat as msg, i}
 
     <Message message={msg} isHeader={isFirst(i)} />
@@ -50,6 +52,8 @@
   height: calc(100vh - 166px);
 
   display: block;
+  //flex-direction: column;
+  //justify-content: flex-end;
   margin: 0;
 
   font-family: Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji"; 
@@ -58,6 +62,13 @@
 
   padding-left: 0;
   list-style: none;
+
+  scroll-behavior: smooth;
+
+  .header {
+    width: 100%;
+    height: calc(100vh - 166px - 70px);
+  }
 
   &::-webkit-scrollbar {
     width: 0px;
