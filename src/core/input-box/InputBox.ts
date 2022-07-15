@@ -1,5 +1,6 @@
 import { insertString } from "@core/Utils";
-import { MirageRenderer } from "./InputMirage";
+import { setupHooks } from "./input/InputEventHandler";
+import { MirageRenderer } from "./renderer/TextRenderer";
 import { CustomSelection } from "./Selection";
 
 /**
@@ -8,9 +9,9 @@ import { CustomSelection } from "./Selection";
 export class InputBox {
 
   private renderer: MirageRenderer;
-  private display: HTMLDivElement;
+  display: HTMLDivElement;
 
-  private value: string = '';
+  value: string = '';
   private selection: CustomSelection;
 
   private onSubmit: () => void;
@@ -36,7 +37,8 @@ export class InputBox {
      *  ...
      */
 
-    this.initHooks();
+    //this.initHooks();
+    setupHooks(this);
   }
 
   /**
@@ -44,15 +46,14 @@ export class InputBox {
    */
   setValue(value: string) {
     this.value = value;
-    this.renderer = new MirageRenderer(this.display);
-    this.renderer.render(this.value);
+    this.display.innerText = this.value;
   }
 
   /**
    * @returns The current value of the input box.
    */
   getValue(): string {
-    return this.value;
+    return this.value.replaceAll('﻿', '');
   }
 
   /**

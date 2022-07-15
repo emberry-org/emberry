@@ -26,9 +26,21 @@
     width: 100%;
     min-height: 22px;
 
-    span {
-      line-height: 22px;
-      font-size: 16px;
+    font-size: 16px;
+    word-break: break-word;
+    white-space: break-spaces;
+    line-height: 22px;
+
+    span.text {
+      color: #ddd;
+
+      span.bold {
+        font-weight: bold;
+      }
+
+      span.italic {
+        font-style: italic;
+      }
     }
   }
 }

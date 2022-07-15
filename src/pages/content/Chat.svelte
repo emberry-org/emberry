@@ -5,11 +5,11 @@
   import { getChatHistory, getUsername, insertChatHistory, onUsernameChanged } from '@store';
   import { toPacket } from '@core/messages/Packet';
   import type Msg from '@core/messages/Msg';
-  //import { InputBox } from '@core/input-box';
+  import { InputBox } from '@core/input-box';
 
   export let id: string;
 
-  //let input: InputBox;
+  let input: InputBox;
   let inputElement: HTMLDivElement;
   
   let myName = 'Me';
@@ -28,8 +28,8 @@
     onUsernameChanged((newName => { myName = newName; sendUsername(); }));
     sendUsername();
 
-    //input = new InputBox(inputElement, sendMessage);
-    //input.setValue('test line 1\ntest line 2\nlolol');
+    input = new InputBox(inputElement, sendMessage);
+    input.setValue('');
   });
 
   async function updateHistory() {
@@ -71,7 +71,7 @@
   /** Send a message to the peer */
   function sendMessage() {
     const time = getTime();
-    const msg = inputElement.innerText;
+    const msg = input.getValue();
 
     // Push the message into the messages array.
     messages.push({ sender: myName, content: msg, time });
@@ -86,7 +86,7 @@
     messages = [...messages];
 
     // Empty the input box.
-    inputElement.innerText = '';
+    input.setValue('');
   }
 
   /** Send a new username to the peer */
