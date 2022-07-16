@@ -1,46 +1,43 @@
-.inputbox {
-  position: absolute;
+input-box {
+  position: relative;
+  
+  textarea, .mirage {
+    position: absolute;
+    top: 0;
+    left: 0;
 
-  width: calc(100% - 56px);
-  min-height: 22px; 
+    margin: 0 !important;
+    padding: inherit !important;
 
-  bottom: 12px;
-
-  margin-top: 8px;
-  padding: 8px 12px 8px 12px;
-  box-shadow: 0 1px 2px 0 #00000055;
-
-  background-color: #37383a;
-  border: 2px solid #ffffff11;
-  outline: none;
-  border-radius: 8px;
-
-  user-select: none;
-  -webkit-user-select: none;
-  cursor: text;
-
-  white-space: pre-wrap !important;
-  color: #ddd;
-
-  .text-line {
+    border: 0;
     width: 100%;
-    min-height: 22px;
+    height: 100%;
 
-    font-size: 16px;
-    word-break: break-word;
-    white-space: break-spaces;
-    line-height: 22px;
+    font-size: inherit !important;
+    font-family: inherit !important;
+    line-height: inherit !important;
+    tab-size: inherit !important;
 
-    span.text {
-      color: #ddd;
+    overflow: auto !important;
 
-      span.bold {
-        font-weight: bold;
-      }
+    white-space: pre-wrap;
+    word-spacing: normal;
+    word-break: normal;
+    word-wrap: normal;
+  }
 
-      span.italic {
-        font-style: italic;
-      }
-    }
+  textarea {
+    z-index: 2;
+
+    background-color: transparent;
+    color: transparent;
+    caret-color: #fff !important;
+
+    resize: none;
+    outline: none !important;
+  }
+
+  .mirage {
+    color: inherit;
   }
 }

@@ -5,11 +5,12 @@
   import { getChatHistory, getUsername, insertChatHistory, onUsernameChanged } from '@store';
   import { toPacket } from '@core/messages/Packet';
   import type Msg from '@core/messages/Msg';
-  import { InputBox } from '@core/input-box';
+  import '@core/input-box/InputBox';
+  //import { InputBox } from '@core/input-box';
 
   export let id: string;
 
-  let input: InputBox;
+  //let input: InputBox;
   let inputElement: HTMLDivElement;
   
   let myName = 'Me';
@@ -28,8 +29,8 @@
     onUsernameChanged((newName => { myName = newName; sendUsername(); }));
     sendUsername();
 
-    input = new InputBox(inputElement, sendMessage);
-    input.setValue('');
+    //input = new InputBox(inputElement, sendMessage);
+    //input.setValue('');
   });
 
   async function updateHistory() {
@@ -71,7 +72,7 @@
   /** Send a message to the peer */
   function sendMessage() {
     const time = getTime();
-    const msg = input.getValue();
+    const msg = inputElement.innerText;
 
     // Push the message into the messages array.
     messages.push({ sender: myName, content: msg, time });
@@ -86,7 +87,7 @@
     messages = [...messages];
 
     // Empty the input box.
-    input.setValue('');
+    inputElement.innerText = '';
   }
 
   /** Send a new username to the peer */
@@ -114,7 +115,8 @@
 
   <div class="input">
     <!-- <input type="text" bind:value={ inputBox } on:keypress={ keyPressed }> -->
-    <div class="inputbox" contenteditable="true" bind:this={inputElement} on:keypress={keyPressed} />
+    <!-- <div class="inputbox" contenteditable="true" bind:this={inputElement} on:keypress={keyPressed} /> -->
+    <input-box placeholder="yo wassup"></input-box>
   </div>
 
 </div>
@@ -173,25 +175,26 @@
     justify-content: center;
     align-items: flex-start;
     
-    // input {
-    //   width: calc(100% - 64px);
-    //   height: 32px; 
+    input-box {
+      width: calc(100% - 64px);
+      height: 26px; 
 
-    //   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica,
-    //   Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica,
+      Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
 
-    //   margin-top: 8px;
-    //   padding: 2px 12px 2px 12px;
-    //   box-shadow: 0 1px 2px 0 #00000055;
+      margin-top: 8px;
+      padding: 8px 12px 6px 12px;
+      box-shadow: 0 1px 2px 0 #00000055;
+      line-height: 22px;
 
-    //   background-color: #37383a;
-    //   border: 2px solid #ffffff11;
-    //   outline: none;
-    //   border-radius: 4px;
+      background-color: #37383a;
+      border: 2px solid #ffffff11;
+      outline: none;
+      border-radius: 4px;
 
-    //   color: #ccc;
-    //   font-size: 1rem;
-    // }
+      color: #ccc;
+      font-size: 1rem;
+    }
   }
 }
 
