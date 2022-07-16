@@ -6,12 +6,12 @@
   import { toPacket } from '@core/messages/Packet';
   import type Msg from '@core/messages/Msg';
   import '@core/input-box/InputBox';
+  import type { InputBox } from '@core/input-box/InputBox';
   //import { InputBox } from '@core/input-box';
 
   export let id: string;
 
-  //let input: InputBox;
-  let inputElement: HTMLDivElement;
+  let input: InputBox;
   
   let myName = 'Me';
   let peerName = 'Peer';
@@ -72,7 +72,7 @@
   /** Send a message to the peer */
   function sendMessage() {
     const time = getTime();
-    const msg = inputElement.innerText;
+    const msg = input.value;
 
     // Push the message into the messages array.
     messages.push({ sender: myName, content: msg, time });
@@ -87,7 +87,7 @@
     messages = [...messages];
 
     // Empty the input box.
-    inputElement.innerText = '';
+    input.clear();
   }
 
   /** Send a new username to the peer */
@@ -116,7 +116,7 @@
   <div class="input">
     <!-- <input type="text" bind:value={ inputBox } on:keypress={ keyPressed }> -->
     <!-- <div class="inputbox" contenteditable="true" bind:this={inputElement} on:keypress={keyPressed} /> -->
-    <input-box placeholder="yo wassup"></input-box>
+    <input-box placeholder="Message @{ peerName }" bind:this={input} on:keypress={keyPressed}></input-box>
   </div>
 
 </div>
@@ -193,6 +193,7 @@
       border-radius: 4px;
 
       color: #ccc;
+      caret-color: #ccc;
       font-size: 1rem;
     }
   }

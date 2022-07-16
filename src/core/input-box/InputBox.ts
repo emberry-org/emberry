@@ -30,7 +30,16 @@ export class InputBox extends HTMLElement {
 
     // Render the rich mirage here ...
 
-    return this.sanitize(text);
+    let html = '';
+    const lines = text.split('\n');
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      if (i > 0) html += '<br>';
+      html += `<span class="line">${line}</span>`;
+    }
+
+    return this.sanitize(html);
   }
 
   /**
@@ -110,6 +119,9 @@ export class InputBox extends HTMLElement {
   connectedCallback() {
     this.setup();
   }
+
+  /** Clear the input box. */
+  clear() { this.update(''); }
 
   /* Value attribute */
   get value() { return this.getAttribute("value"); }
