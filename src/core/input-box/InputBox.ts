@@ -22,7 +22,9 @@ export class InputBox extends HTMLElement {
     }
 
     // Update mirage (visible text)
-    this.mirage.innerHTML = this.render(value);
+    const html = this.render(value);
+    this.mirage.innerHTML = html;
+    this.textarea.innerHTML = html;
   }
 
   /**
@@ -36,8 +38,11 @@ export class InputBox extends HTMLElement {
     const lines = text.split('\n');
 
     for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
+      let line = lines[i];
       if (i > 0) html += '<br>';
+
+      const bold = /\*\*(.*?)\*\*/gm;
+      line = line.replace(bold, '<strong>**$1**</strong>');    
       html += `<span class="line">${line}</span>`;
     }
 
