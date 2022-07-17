@@ -13,6 +13,8 @@ export class InputBox extends HTMLElement {
   update(value: string) {
     if(this.value != value) this.value = value; // Change value attribute if necessary.
     if(this.textarea.value != value) this.textarea.value = value; 
+    this.textarea.style.height = '';
+    this.textarea.style.height = this.textarea.scrollHeight - 16 + 'px';
 
     // Handle final newlines
     if (value[value.length - 1] == "\n") {

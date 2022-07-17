@@ -43,6 +43,7 @@
     <Message message={msg} isHeader={isFirst(i)} />
 
   {/each}
+  <div class="footer" />
 </ol>
 
 <style lang="scss">
@@ -68,6 +69,11 @@
   .header {
     width: 100%;
     height: calc(100vh - 166px - 70px);
+  }
+
+  .footer {
+    width: 100%;
+    height: 16px;
   }
 
   &::-webkit-scrollbar {
