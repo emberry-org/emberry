@@ -43,7 +43,17 @@ export class MirageRenderer {
    */
   render(value: string) {
     this.value = value.split('\n');
-    this.display.innerText = value;
+    //this.display.innerText = value;
+
+    let html = '';
+    for (let i = 0; i < this.value.length; i++) {
+      const line = this.value[i];
+      if (i > 0) html += '<br>';
+      html += `<span class="line">${line}</span>`;
+    }
+    console.log(html);
+    this.display.innerHTML = html;
+
     //console.log(this.value);
 
     // Remove the existing lines.
