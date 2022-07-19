@@ -10,6 +10,7 @@ use tokio::select;
 use tokio::sync::oneshot;
 
 pub mod message;
+pub mod ctrl_chnl;
 use message::Message;
 
 type ConnectionMap = HashMap<String, Connection>;

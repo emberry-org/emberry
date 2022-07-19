@@ -13,7 +13,12 @@ use tauri::Manager;
 mod window;
 
 mod network;
-use network::{hole_punch, chat_exists, Networking};
+use network::{
+  chat_exists,
+  ctrl_chnl::{connect, RhizomeConnection},
+  hole_punch, Networking,
+};
+use std::sync::Mutex;
 use tauri_plugin_store::PluginBuilder;
 
 fn main() {
@@ -37,8 +42,16 @@ fn main() {
     .manage(Networking {
       chats: Default::default(),
     })
+    .manage(RhizomeConnection{
+      channel: Mutex::new(None),
+    })
     .plugin(PluginBuilder::default().build())
-    .invoke_handler(tauri::generate_handler![toggle_devtools, hole_punch, chat_exists])
+    .invoke_handler(tauri::generate_handler![
+      toggle_devtools,
+      hole_punch,
+      chat_exists,
+      connect
+    ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }
