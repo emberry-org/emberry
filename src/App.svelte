@@ -13,7 +13,7 @@
   document.addEventListener("keydown", function(e) {
     if (e.ctrlKey && e.shiftKey && e.code === "KeyP") {
       e.preventDefault();
-      commandCenterState.update(state => {return !state;});
+      commandCenterState.update(state => !state);
     }
   });
 </script>
