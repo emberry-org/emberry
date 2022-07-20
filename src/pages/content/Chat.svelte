@@ -96,7 +96,7 @@
 
   function getTime(): String {
     const now = new Date();
-    const current = now.getHours() + ':' + now.getMinutes();
+    const current = (now.getHours() < 10 ? '0' + now.getHours() : now.getHours()) + ':' + (now.getMinutes() < 10 ? '0' + now.getMinutes() : now.getMinutes());
     return current;
   }
 

@@ -65,16 +65,18 @@ export class InputBox {
       ev.preventDefault();
       // Save the current selection before updating the content.
       this.selection.saveCurrentSelection();
+      const position = getCaretIndex(this.display);
+      console.log('pos: ', getCaretIndex(this.display));
       console.log(ev, this.selection.currentSelection.startOffset, this.selection.currentSelection.endOffset);
 
       if (ev.inputType == 'insertText') {
-        this.value = insertString(this.value, ev.data, this.selection.currentSelection.startOffset);
+        this.value = insertString(this.value, ev.data, position.start);
         this.selection.currentOffset += 1;
         this.renderer.render(this.value);
       }
 
       if (ev.inputType == 'insertLineBreak') {
-        this.value = insertString(this.value, '\n﻿', this.selection.currentSelection.startOffset);
+        this.value = insertString(this.value, '\n﻿', position.start);
         this.selection.currentOffset += 1;
         this.renderer.render(this.value);
       }
@@ -92,6 +94,24 @@ export class InputBox {
       this.selection.restoreSelection();
     });
   }
+}
+
+function getCaretIndex(element) {
+  let position = 0;
+  const isSupported = typeof window.getSelection !== "undefined";
+  if (isSupported) {
+    const selection = window.getSelection();
+    if (selection.rangeCount !== 0) {
+      const range = window.getSelection().getRangeAt(0);
+      console.log(range);
+      //const preCaretRange = range.cloneRange();
+      //preCaretRange.selectNodeContents(element);
+      //preCaretRange.setEnd(range.endContainer, range.endOffset);
+      //position = preCaretRange.toString().length;
+      return { start: range.startOffset, end: range.endOffset };
+    }
+  }
+  //return position;
 }
 
 // Recursive function to navigate childNodes and build linebreaks with text

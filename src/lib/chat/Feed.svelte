@@ -49,7 +49,7 @@
 
 .feed {
   width: 100%;
-  height: calc(100vh - 166px);
+  height: calc(100vh - 166px - 16px);
 
   display: block;
   //flex-direction: column;
@@ -61,6 +61,7 @@
   overflow-x: hidden;
 
   padding-left: 0;
+  padding-bottom: 16px;
   list-style: none;
 
   scroll-behavior: smooth;
