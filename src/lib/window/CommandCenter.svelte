@@ -91,7 +91,7 @@
     let voidAction = cmd.action as VoidAction;
 
     if (typeof cmd.action == 'string') {
-      invoke(backendAction);
+      invoke(backendAction).then(err => console.log(`![${backendAction}] -> `, err));
       commandCenterState.set(false);
       inputMode = false;
     } else if (cmd.input == true) {

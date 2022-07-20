@@ -11,7 +11,7 @@ export const CmdArchive: Cmd[] = [
 
   { title: 'Close Window', type: CmdType.Control, accelerator: ['Alt', 'F4'], action: () => { appWindow.close(); }, input: false },
 
-  { title: 'Connect Tls', type: CmdType.Debug, accelerator: [], action: () => { invoke('connect').then(err => console.log(err)) }, input: false },
+  { title: 'Connect Tls', type: CmdType.Debug, accelerator: [], action: 'connect', input: false },
 
   {
     title: 'Attempt Connection', type: CmdType.Debug, accelerator: [], action: (s: String) => {
