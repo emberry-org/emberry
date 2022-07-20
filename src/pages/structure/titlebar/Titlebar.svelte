@@ -98,7 +98,7 @@
 
 </script>
 
-<div class="titlebar" style="--maximized: { maximized || hideDecorations ? '0px' : '1px' }" hidden={hideDecorations}>
+<div class="titlebar" style="--maximized: { maximized || hideDecorations ? '0px' : '1px' }" hidden={hideDecorations} data-tauri-drag-region={!hideDecorations || null}>
   
   <div class="left" data-tauri-drag-region={!hideDecorations || null}>
     <!-- Makes sure you can always drag the window -->
@@ -107,14 +107,14 @@
     <div class="profile { maximized || hideDecorations ? 'ml' : '' }">
 
       <Modal orientation="se" margins="6px 0 0 5px" arrow="false">
-        <div class="img" slot="btn" style="{ profileImage }">
+        <div class="profile-picture" slot="btn" style="{ profileImage }">
         
         </div>
 
         <div class="details" slot="mdl">
           <div class="media">
             <div class="banner" />
-            <div class="picture" on:click={uploadPicture} style="{ profileImage }">
+            <div class="profile-picture lg" on:click={uploadPicture} style="{ profileImage }">
               <Icon name="file/upload" size="32px" />
             </div>
           </div>
@@ -187,8 +187,10 @@
     width: 248px;
     min-width: 248px;
     height: 100%;
+    margin-left: 72px;
 
     display: flex;
+    border-left: 1.5px solid var(--tb);
 
     .drag-square {
       width: 44px;
@@ -216,35 +218,11 @@
         margin-left: 6px;
       }
 
-      .img {
-        width: 34px;
-        height: 34px;
-
+      .profile-picture {
         margin-right: 8px;
         margin-top: 5px;
-        position: relative;
-
-        background-size: contain;
-        border-radius: 8px;
 
         cursor: pointer;
-
-        user-select: none;
-        -webkit-user-select: none;
-
-        &::after {
-          content: "";
-          
-          width: 30px;
-          height: 30px;
-
-          position: absolute;
-          top: 0;
-          left: 0;
-
-          border: 2px solid #ffffff20;
-          border-radius: 8px;
-        }
       }
 
       > .info {
@@ -305,19 +283,12 @@
             box-shadow: inset 0 0 24px 12px #00000088;
           }
 
-          .picture {
-            width: 64px;
-            height: 64px;
-
+          .profile-picture {
             position: absolute;
             top: 80px;
             left: 50%;
 
             transform: translateX(-50%);
-
-            background-color: #1f2022;
-            background-size: contain;
-            border-radius: 8px;
 
             display: flex;
             justify-content: center;
@@ -326,18 +297,6 @@
             cursor: pointer;
 
             &::after {
-              content: "";
-              
-              width: 56px;
-              height: 56px;
-
-              position: absolute;
-              top: 0;
-              left: 0;
-
-              border: 4px solid #ffffff20;
-              border-radius: 8px;
-
               box-shadow: 0 0 0 8px #262729;
               transition: background-color 0.1s;
             }

@@ -15,7 +15,7 @@
       <div class="details">
         <h3 class="user">
           <span class="username">{message.sender}</span>
-          <span class="separator">·</span>
+          <span class="separator">——</span>
           <span class="timestamp">Today at {message.time ?? "--:--"}</span>
         </h3>
         <div class="contents">{message.content}</div>
@@ -56,9 +56,10 @@
       display: flex;
 
       .avatar {
-        width: 40px;
-        min-width: 40px;
-        height: 40px;
+        width: 30px;
+        min-width: 30px;
+        height: 30px;
+        margin: 6px 5px 5px 5px;
 
         background-color: #222222;
         border-radius: 8px;
@@ -72,8 +73,8 @@
         &::after {
           content: "";
           
-          width: 34px;
-          height: 34px;
+          width: 24px;
+          height: 24px;
 
           position: absolute;
           top: 0;
@@ -110,16 +111,16 @@
           -webkit-user-select: none;
 
           .username {
-            font-size: 1rem;
+            font-size: 0.85rem;
             font-weight: 500;
-            color: #eee;
+            color: #888;
             line-height: 20px;
           }
 
           .separator {
             font-size: 1rem;
             font-weight: 500;
-            color: #777;
+            color: #444;
             margin: 0 0 0 6px;
             
             line-height: 20px;
@@ -127,7 +128,7 @@
 
           .timestamp {
             font-size: 0.75rem;
-            margin: 0 0 0 6px;
+            margin: 0 0 0 4px;
             font-weight: 500;
             color: #777;
             line-height: 20px;

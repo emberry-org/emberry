@@ -7,9 +7,9 @@ export class CustomSelection {
 
   private display: HTMLDivElement;
 
-  private currentSelection: Range;
+  currentSelection: Range;
   private startOffset: number;
-  private currentOffset: number;
+  currentOffset: number;
 
   constructor(display: HTMLDivElement) {
     this.display = display;

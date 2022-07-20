@@ -15,11 +15,12 @@
 
 .side-panel {
   width: 248px;
-  min-width: calc(248px - 1.5px);
+  min-width: 248px;
   flex-grow: 1;
 
   display: flex;
   flex-direction: column;
+  border-left: 1.5px solid var(--tb);
 
   .toolbar {
     width: 100%;
