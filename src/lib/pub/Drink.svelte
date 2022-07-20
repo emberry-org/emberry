@@ -2,8 +2,16 @@
   import { getNotificationIcon, getNotificationStyle, Notification } from "@core/messages/Notification";
   import Modal from "@lib/generic/modal/Modal.svelte";
   import Icon from "@lib/Icon.svelte";
+  import { createEventDispatcher } from 'svelte';
+
+	const dispatch = createEventDispatcher();
 
   export let notification: Notification;
+
+  // TODO : Call this when the drink is activated.
+  const activate = () => {
+    dispatch('activate');
+  };
 
 </script>
 

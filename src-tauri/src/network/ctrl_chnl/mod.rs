@@ -95,7 +95,7 @@ async fn run_channel_result(
           RhizMessage::Shutdown() => return Ok(()),
           RhizMessage::HasRoute(usr) => todo!("update visual (attempt is pending)"),
           RhizMessage::NoRoute(usr) => todo!("update visual (user offline)"),
-          RhizMessage::WantsRoom(usr) => todo!("update visual (user wants room)"),
+          RhizMessage::WantsRoom(usr) => window.emit("room-request", usr).expect("Failed to emit WantsRoom event"),
           RhizMessage::AcceptedRoom(usr) => {todo!("holepunchin"); todo!("update visual (chat room opens)");},
           RhizMessage::ServerError(err) => return Err(io::Error::new(ErrorKind::Other, err)),
         }

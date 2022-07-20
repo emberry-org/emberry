@@ -1,5 +1,42 @@
 import type AppTab from "@core/AppTab";
+import type Drink from "@core/Drink";
 import { navigate } from "svelte-navigator";
+
+/**
+ * Insert a drink into the application store.
+ * @param drink The drink to insert.
+ */
+ export function addDrink(drink: Drink) {
+  let drinks = getDrinks();
+
+  if (drinks) drinks.push(drink);
+  else drinks = [drink];
+
+  const json = JSON.stringify(drinks);
+
+  sessionStorage.setItem('drinks', json);
+  dispatchEvent( new StorageEvent('storage', { key: 'drinks', storageArea: sessionStorage, newValue: json }) );
+}
+
+/**
+ * Get the drinks stored in the application store.
+ * @returns An array of application drinks.
+ */
+export function getDrinks(): Array<Drink> {
+  return JSON.parse(sessionStorage.getItem('drinks'));
+}
+
+/**
+ * Calls a callback whenever the drinks store is mutated.
+ */
+export function onDrinksChanged(callback: (drinks: Array<Drink>) => void) {
+  addEventListener('storage', e => {
+    if (e.storageArea === sessionStorage && e.key === 'drinks') {
+      callback(JSON.parse(e.newValue));
+    }
+  });
+}
+
 
 /**
  * Insert a tab into the application store.
