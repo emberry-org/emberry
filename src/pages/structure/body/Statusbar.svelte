@@ -54,6 +54,9 @@
     width: 50%;
     height: 100%;
 
+    margin-left: 72px;
+    border-left: 1.5px solid var(--tb);
+
     display: flex;
   }
 
@@ -91,6 +94,7 @@
 
   .purple {
     background-color: #273628;
+    border-top-right-radius: 6px;
 
     p {
       color: #7e9781;

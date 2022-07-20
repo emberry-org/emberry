@@ -24,7 +24,8 @@
   flex-direction: column;
 
   background-color: #292a2c;
-  border-bottom: 1.5px solid #37393d;
+  border-bottom-left-radius: 12px;
+  //border-bottom: 1.5px solid #37393d;
 }
 
 </style>
