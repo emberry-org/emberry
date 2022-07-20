@@ -91,20 +91,24 @@
     let voidAction = cmd.action as VoidAction;
 
     if (typeof cmd.action == 'string') {
-      invoke(backendAction);
+      // If this command has an action that is just a string then call the backend method with that name.
+      invoke(backendAction).then(err => console.log(`![${backendAction}] -> `, err));
       commandCenterState.set(false);
       inputMode = false;
     } else if (cmd.input == true) {
+      // If this command has a string input then handle it.
       selectedAction = stringAction;
       if (cmd.input_desc) placeholderText = cmd.input_desc;
       commands = [cmd];
       searchString = "";
       inputMode = true;
     } else if (typeof cmd.action == 'function') {
+      // If this action is a function then call it.
       voidAction();
       commandCenterState.set(false);
       inputMode = false;
     } else {
+      // If all above fails then this command is unknown.
       console.error("Unknown command action");
       commandCenterState.set(false);
       inputMode = false;
