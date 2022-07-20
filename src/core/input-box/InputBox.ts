@@ -70,13 +70,13 @@ export class InputBox {
       console.log(ev, this.selection.currentSelection.startOffset, this.selection.currentSelection.endOffset);
 
       if (ev.inputType == 'insertText') {
-        this.value = insertString(this.value, ev.data, position.start);
+        this.value = insertString(this.value, ev.data, position);
         this.selection.currentOffset += 1;
         this.renderer.render(this.value);
       }
 
       if (ev.inputType == 'insertLineBreak') {
-        this.value = insertString(this.value, '\n﻿', position.start);
+        this.value = insertString(this.value, '\n﻿', position);
         this.selection.currentOffset += 1;
         this.renderer.render(this.value);
       }
@@ -104,14 +104,14 @@ function getCaretIndex(element) {
     if (selection.rangeCount !== 0) {
       const range = window.getSelection().getRangeAt(0);
       console.log(range);
-      //const preCaretRange = range.cloneRange();
-      //preCaretRange.selectNodeContents(element);
-      //preCaretRange.setEnd(range.endContainer, range.endOffset);
-      //position = preCaretRange.toString().length;
-      return { start: range.startOffset, end: range.endOffset };
+      const preCaretRange = range.cloneRange();
+      preCaretRange.selectNodeContents(element);
+      preCaretRange.setEnd(range.endContainer, range.endOffset);
+      position = preCaretRange.toString().length;
+      //return { start: range.startOffset, end: range.endOffset };
     }
   }
-  //return position;
+  return position;
 }
 
 // Recursive function to navigate childNodes and build linebreaks with text
