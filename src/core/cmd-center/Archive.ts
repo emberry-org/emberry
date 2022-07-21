@@ -7,6 +7,12 @@ import { clearChatHistory, insertTab, navigateTo } from '@store';
 
 /** Collection of all the executable commands */
 export const CmdArchive: Cmd[] = [
+  {
+    title: '> Run', type: CmdType.Debug, accelerator: [], action: (s: String) =>
+      invoke(s.toString()).then(err => console.log(`![${s}] -> `, err)),
+    input: true
+  },
+
   { title: 'Toggle Developer Tools', type: CmdType.Debug, accelerator: ['CmdOrCtrl', 'Shift', 'I'], action: 'toggle_devtools', input: false },
 
   { title: 'Close Window', type: CmdType.Control, accelerator: ['Alt', 'F4'], action: () => { appWindow.close(); }, input: false },
