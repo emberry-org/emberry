@@ -15,7 +15,7 @@ mod window;
 mod network;
 use network::{
   chat_exists,
-  ctrl_chnl::{connect, RhizomeConnection},
+  ctrl_chnl::{connect, responses::*, RhizomeConnection},
   hole_punch, Networking,
 };
 use std::sync::Mutex;
@@ -50,7 +50,8 @@ fn main() {
       toggle_devtools,
       hole_punch,
       chat_exists,
-      connect
+      connect,
+      send_room_affirm,
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
