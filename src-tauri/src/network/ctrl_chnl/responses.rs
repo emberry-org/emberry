@@ -12,23 +12,18 @@ pub async fn send_room_affirm(
 ) -> Result<()> {
   let msg = EmbMessage::Accept(accepted);
   // create variable outside of inner scope
-  let tx;
-  { // use inner scope to drop mutex guard before sending the message
-    let guard = match state.channel.read() {
-      Ok(guard) => guard,
-      Err(_) => {
-        return Err(tauri::Error::Io(Error::new(
-          ErrorKind::Other,
-          "RhizomeConnection mutex has a cobra bite (poisoned mutex)",
-        )))
-      }
-    };
+  // use inner scope to drop mutex guard before sending the message
+  let guard = state.channel.read().await;
 
-    tx = match &*guard {
-      Some(tx) => tx.clone(),
-      None => return Err(tauri::Error::Io(Error::new(ErrorKind::Other, "No connection to rhizome"))),
-    };
-  }
+  let tx = match &*guard {
+    Some(tx) => tx,
+    None => {
+      return Err(tauri::Error::Io(Error::new(
+        ErrorKind::Other,
+        "No connection to rhizome",
+      )))
+    }
+  };
 
   tx.send(Direct(msg)).await.map_err(|_| {
     tauri::Error::Io(Error::new(

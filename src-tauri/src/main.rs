@@ -18,7 +18,7 @@ use network::{
   ctrl_chnl::{connect, responses::*, RhizomeConnection},
   hole_punch, Networking,
 };
-use std::sync::RwLock;
+use tokio::sync::RwLock;
 use tauri_plugin_store::PluginBuilder;
 
 fn main() {
