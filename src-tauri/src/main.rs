@@ -18,7 +18,7 @@ use network::{
   ctrl_chnl::{connect, responses::*, RhizomeConnection},
   hole_punch, Networking,
 };
-use std::sync::Mutex;
+use std::sync::RwLock;
 use tauri_plugin_store::PluginBuilder;
 
 fn main() {
@@ -43,7 +43,7 @@ fn main() {
       chats: Default::default(),
     })
     .manage(RhizomeConnection{
-      channel: Mutex::new(None),
+      channel: RwLock::new(None),
     })
     .plugin(PluginBuilder::default().build())
     .invoke_handler(tauri::generate_handler![

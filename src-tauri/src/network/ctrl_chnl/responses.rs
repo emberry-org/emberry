@@ -14,7 +14,7 @@ pub async fn send_room_affirm(
   // create variable outside of inner scope
   let tx;
   { // use inner scope to drop mutex guard before sending the message
-    let guard = match state.channel.lock() {
+    let guard = match state.channel.read() {
       Ok(guard) => guard,
       Err(_) => {
         return Err(tauri::Error::Io(Error::new(

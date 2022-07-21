@@ -59,7 +59,7 @@ pub async fn connect(
 
   let (tx, rx) = mpsc::channel::<EmberryMessage>(25);
 
-  state.channel.lock().unwrap().replace(tx);
+  state.channel.write().unwrap().replace(tx);
 
   run_channel(window, rx, tls).await?;
   Ok(())
