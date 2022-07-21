@@ -13,10 +13,10 @@ pub async fn send_room_affirm(
   let msg = EmbMessage::Accept(accepted);
   // create variable outside of inner scope
   // use inner scope to drop mutex guard before sending the message
-  let guard = state.channel.read().await;
+  let guard = state.read().await;
 
   let tx = match &*guard {
-    Some(tx) => tx,
+    Some(rc) => &rc.channel,
     None => {
       return Err(tauri::Error::Io(Error::new(
         ErrorKind::Other,

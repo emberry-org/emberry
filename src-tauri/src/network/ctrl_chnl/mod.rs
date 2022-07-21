@@ -8,10 +8,12 @@ use std::{
   sync::Arc,
 };
 
+pub use self::state::RwOption;
 pub use messages::EmberryMessage;
 use rustls::{ClientConfig, RootCertStore, ServerName};
 use smoke::messages::RhizMessage;
 pub use state::RhizomeConnection;
+pub use state::State;
 use tokio::{
   io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
   net::TcpStream,
@@ -24,10 +26,12 @@ use tokio_rustls::{client::TlsStream, TlsConnector};
 
 use self::messages::RhizomeMessage;
 
+use super::Networking;
+
 #[tauri::command(async)]
 pub async fn connect(
   window: tauri::Window,
-  state: tauri::State<'_, RhizomeConnection>,
+  rc: tauri::State<'_, RhizomeConnection>,
 ) -> tauri::Result<()> {
   let mut root_store = RootCertStore::empty();
 
@@ -59,7 +63,8 @@ pub async fn connect(
 
   let (tx, rx) = mpsc::channel::<EmberryMessage>(25);
 
-  state.channel.write().await.replace(tx);
+  let conn = State { channel: tx };
+  rc.write().await.replace(conn);
 
   run_channel(window, rx, tls).await?;
   Ok(())

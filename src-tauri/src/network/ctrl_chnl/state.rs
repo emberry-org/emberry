@@ -1,7 +1,15 @@
-use super::EmberryMessage;
-use tokio::sync::RwLock;
-use tokio::sync::mpsc::Sender;
+use std::sync::{Mutex, Arc};
 
-pub struct RhizomeConnection{
-   pub channel: RwLock<Option<Sender<EmberryMessage>>>
+use crate::network::ConnectionMap;
+
+use super::EmberryMessage;
+use tauri::Window;
+use tokio::sync::mpsc::Sender;
+use tokio::sync::RwLock;
+
+pub type RwOption<T> = RwLock<Option<T>>;
+pub type RhizomeConnection = RwOption<State>;
+
+pub struct State {
+  pub channel: Sender<EmberryMessage>,
 }

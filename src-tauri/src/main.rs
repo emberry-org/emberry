@@ -15,9 +15,9 @@ mod window;
 mod network;
 use network::{
   chat_exists,
-  ctrl_chnl::{connect, responses::*, RhizomeConnection},
   hole_punch, Networking,
 };
+use network::ctrl_chnl::{connect, responses::*, State};
 use tokio::sync::RwLock;
 use tauri_plugin_store::PluginBuilder;
 
@@ -42,9 +42,9 @@ fn main() {
     .manage(Networking {
       chats: Default::default(),
     })
-    .manage(RhizomeConnection{
-      channel: RwLock::new(None),
-    })
+    .manage(
+      RwLock::<Option<State>>::new(None)
+    )
     .plugin(PluginBuilder::default().build())
     .invoke_handler(tauri::generate_handler![
       toggle_devtools,
