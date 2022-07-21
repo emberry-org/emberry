@@ -26,13 +26,18 @@ use tokio_rustls::{client::TlsStream, TlsConnector};
 
 use self::messages::RhizomeMessage;
 
-use super::Networking;
-
 #[tauri::command(async)]
 pub async fn connect(
   window: tauri::Window,
   rc: tauri::State<'_, RhizomeConnection>,
 ) -> tauri::Result<()> {
+  if rc.read().await.is_some() {
+    return Err(tauri::Error::Io(io::Error::new(
+      io::ErrorKind::Unsupported,
+      "Already connected to the server",
+    )));
+  }
+
   let mut root_store = RootCertStore::empty();
 
   let cert = certs::craft();
@@ -66,7 +71,9 @@ pub async fn connect(
   let conn = State { channel: tx };
   rc.write().await.replace(conn);
 
-  run_channel(window, rx, tls).await?;
+  let res = run_channel(window, rx, tls).await;
+  *rc.write().await = None;
+  res?;
   Ok(())
 }
 
