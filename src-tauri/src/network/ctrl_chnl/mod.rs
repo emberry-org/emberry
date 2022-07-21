@@ -40,7 +40,9 @@ pub async fn connect(
 
   let server_name = get_server_name();
   let conn = TlsConnector::from(Arc::new(config));
-  let sock = TcpStream::connect(dotenv!("CONTROL_ADDRESS")).await.unwrap();
+  let sock = TcpStream::connect(dotenv!("CONTROL_ADDRESS"))
+    .await
+    .unwrap();
   let mut tls = BufReader::new(conn.connect(server_name, sock).await.unwrap());
 
   let mut plaintext = String::new();
@@ -66,14 +68,14 @@ async fn run_channel(
   window: tauri::Window,
   rx: Receiver<EmberryMessage>,
   tls: BufReader<TlsStream<TcpStream>>,
-) -> io::Result<()>{
+) -> io::Result<()> {
   if let Err(err) = run_channel_result(&window, rx, tls).await {
     window
       .emit("rhizome_connection", RhizomeMessage::Error(err.to_string()))
       .expect("failed to emit tauri event");
     return Err(err);
   }
-  
+
   Ok(())
 }
 
