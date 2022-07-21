@@ -1,8 +1,10 @@
 use serde::{Deserialize, Serialize};
+use smoke::messages::EmbMessage;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Serialize, Deserialize)]
 pub enum EmberryMessage {
-    Close()
+    Close(),
+    Direct(EmbMessage)
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

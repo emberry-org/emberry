@@ -87,6 +87,7 @@ async fn run_channel_result(
     select! {
       Some(msg) = rx.recv() => {
         match msg {
+            EmberryMessage::Direct(msg) => msg.send_with(&mut tls).await?,
             EmberryMessage::Close() => return Ok(()),
         }
       }
