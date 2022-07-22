@@ -13,14 +13,14 @@ pub mod message;
 pub mod ctrl_chnl;
 use message::Message;
 
-pub type ConnectionMap = HashMap<String, Connection>;
+type ConnectionMap = HashMap<String, Connection>;
 pub struct Connection {
   pub send_handle: EventHandler,
   pub recv_handle: oneshot::Sender<()>,
 }
 
 pub struct Networking {
-  pub chats: Arc<Mutex<ConnectionMap>>,
+  pub chats: Mutex<ConnectionMap>,
 }
 
 #[derive(serde::Deserialize, Debug)]
