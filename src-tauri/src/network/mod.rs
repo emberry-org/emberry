@@ -3,6 +3,7 @@ use std::io::{Error, ErrorKind};
 use std::net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr};
 use std::sync::{Arc, Mutex};
 
+use smoke::messages::RoomId;
 use tauri::EventHandler;
 
 use tokio::net::UdpSocket;
@@ -13,7 +14,7 @@ pub mod message;
 pub mod ctrl_chnl;
 use message::Message;
 
-type ConnectionMap = HashMap<String, Connection>;
+type ConnectionMap = HashMap<RoomId, Connection>;
 pub struct Connection {
   pub send_handle: EventHandler,
   pub recv_handle: oneshot::Sender<()>,
@@ -38,29 +39,18 @@ struct MessageRecievedPayload {
 pub async fn hole_punch(
   window: tauri::Window,
   state: tauri::State<'_, Networking>,
-  peer_key: String,
-) -> Result<String, String> {
+  room_id: RoomId,
+) -> tauri::Result<String> {
   /* Get the server ip from .env */
   let env = Config {
     public_key: dotenv!("PUBLIC_KEY").into(),
     server_address: dotenv!("SERVER_ADDRESS").into(),
   };
 
-  if env.public_key == peer_key {
-    return Err("Cannot connect to oneself".into());
-  }
-
-  let identity = if env.public_key.as_bytes() < peer_key.as_bytes() {
-    format!("{}{}", env.public_key, peer_key)
-  } else {
-    format!("{}{}", peer_key, env.public_key)
-  };
+  let identity = base64::encode_config(&room_id.0, base64::URL_SAFE);
 
   /* Holepunch using rhizome */
-  let socket = match punch_hole(env.server_address, identity.as_bytes()).await {
-    Ok(socket) => socket,
-    Err(e) => return Err(e.to_string()),
-  };
+  let socket = punch_hole(env.server_address, &room_id.0).await?;
 
   let arc_sock = Arc::new(socket);
 
@@ -99,13 +89,13 @@ pub async fn hole_punch(
     recv_handle,
     send_handle,
   };
-  state.chats.lock().unwrap().insert(identity.clone(), con);
+  state.chats.lock().unwrap().insert(room_id.clone(), con);
 
   Ok(identity)
 }
 
 #[tauri::command]
-pub fn chat_exists(state: tauri::State<'_, Networking>, id: String) -> bool {
+pub fn chat_exists(state: tauri::State<'_, Networking>, id: RoomId) -> bool {
   // Check if the store contains the key for this chat.
   match state.chats.lock() {
     Ok(chats) => chats.contains_key(&id),
