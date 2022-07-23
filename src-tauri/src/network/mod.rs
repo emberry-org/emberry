@@ -77,13 +77,14 @@ pub async fn hole_punch(
   let mut buf = [0u8; 512];
   let emit_identity = identity.clone();
   tokio::spawn(async move {
+    let event_name = format!("message_recieved_{}", &emit_identity);
     loop {
       select! {
           Ok(msg) = Message::recv_from(&arc_sock, &mut buf) => {
 
         /* Emit the message_recieved event when a message is recieved */
         window
-          .emit(format!("message_recieved_{}", &emit_identity).as_str(), MessageRecievedPayload { message: msg })
+          .emit(&event_name, MessageRecievedPayload { message: msg })
           .expect("Failed to emit event");
 
         },
