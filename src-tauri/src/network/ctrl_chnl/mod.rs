@@ -76,32 +76,28 @@ pub async fn connect(
   let conn = State { channel: tx };
   rc.write().await.replace(conn);
 
-  let res = run_channel(window, rx, tls).await;
+  let res = match run_channel_result(&window, rx, tls, net, &rc).await {
+    Err(err) => {
+      window
+        .emit("rhizome_connection", RhizomeMessage::Error(err.to_string()))
+        .expect("failed to emit tauri event");
+      Err(err)
+    }
+    Ok(_) => Ok(()),
+  };
+
   *rc.write().await = None;
-  res?;
-  Ok(())
+
+  res
 }
 
-async fn run_channel(
-  window: tauri::Window,
-  rx: Receiver<EmberryMessage>,
-  tls: BufReader<TlsStream<TcpStream>>,
-) -> io::Result<()> {
-  if let Err(err) = run_channel_result(&window, rx, tls).await {
-    window
-      .emit("rhizome_connection", RhizomeMessage::Error(err.to_string()))
-      .expect("failed to emit tauri event");
-    return Err(err);
-  }
-
-  Ok(())
-}
-
-async fn run_channel_result(
+async fn run_channel_result<'a>(
   window: &tauri::Window,
   mut rx: Receiver<EmberryMessage>,
   mut tls: BufReader<TlsStream<TcpStream>>,
-) -> io::Result<()> {
+  net: tauri::State<'_, Networking>,
+  rc: &tauri::State<'a, RhizomeConnection>,
+) -> tauri::Result<()> {
   let mut buf = vec![];
   loop {
     select! {
