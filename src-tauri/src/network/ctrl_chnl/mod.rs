@@ -11,9 +11,11 @@ use std::{
 pub use self::state::RwOption;
 pub use messages::EmberryMessage;
 use rustls::{ClientConfig, RootCertStore, ServerName};
-use smoke::messages::RhizMessage;
+use smoke::messages::RhizMessage::{self, *};
+use smoke::messages::RoomId;
 pub use state::RhizomeConnection;
 pub use state::State;
+use tauri::Window;
 use tokio::{
   io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
   net::TcpStream,
@@ -26,9 +28,12 @@ use tokio_rustls::{client::TlsStream, TlsConnector};
 
 use self::messages::RhizomeMessage;
 
+use super::Networking;
+
 #[tauri::command(async)]
 pub async fn connect(
   window: tauri::Window,
+  net: tauri::State<'_, Networking>,
   rc: tauri::State<'_, RhizomeConnection>,
 ) -> tauri::Result<()> {
   if rc.read().await.is_some() {
@@ -106,18 +111,45 @@ async fn run_channel_result(
             EmberryMessage::Close() => return Ok(()),
         }
       }
-      msg = RhizMessage::recv_with(&mut tls, &mut buf) => {
-        match msg?{
-          RhizMessage::Shutdown() => return Ok(()),
-          RhizMessage::HasRoute(usr) => todo!("update visual (attempt is pending)"),
-          RhizMessage::NoRoute(usr) => todo!("update visual (user offline)"),
-          RhizMessage::WantsRoom(usr) => window.emit("room-request", usr).expect("Failed to emit WantsRoom event"),
-          RhizMessage::AcceptedRoom(usr) => {todo!("holepunchin"); todo!("update visual (chat room opens)");},
-          RhizMessage::ServerError(err) => return Err(io::Error::new(ErrorKind::Other, err)),
-        }
-      }
+      msg = RhizMessage::recv_with(&mut tls, &mut buf) => handle_rhiz_msg(msg, window, &net).await?
     }
   }
+}
+
+async fn handle_rhiz_msg(
+  msg: Result<RhizMessage, io::Error>,
+  window: &Window,
+  net: &tauri::State<'_, Networking>,
+) -> tauri::Result<()> {
+  match msg? {
+    Shutdown() => return Ok(()),
+    HasRoute(usr) => window
+      .emit("room-req-pending", usr)
+      .expect("Failed to emit HasRoute"),
+    NoRoute(usr) => todo!("update visual (user offline)"),
+    WantsRoom(usr) => window
+      .emit("room-request", usr)
+      .expect("Failed to emit WantsRoom event"),
+    AcceptedRoom(id) => try_holepunch(window.clone(), net.clone(), id).await?,
+    ServerError(err) => {
+      return Err(tauri::Error::Io(io::Error::new(
+        ErrorKind::Other,
+        format!("Rhizome internal error: {}", err),
+      )))
+    }
+  };
+
+  Ok(())
+}
+
+async fn try_holepunch(
+  window: tauri::Window,
+  net_state: tauri::State<'_, Networking>,
+  room_id: Option<RoomId>,
+) -> tauri::Result<()> {
+  todo!("holepunchin");
+  todo!("update visual (chat room opens)");
+  Ok(())
 }
 
 #[inline]
