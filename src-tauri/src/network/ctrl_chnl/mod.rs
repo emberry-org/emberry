@@ -76,15 +76,7 @@ pub async fn connect(
   let conn = State { channel: tx };
   rc.write().await.replace(conn);
 
-  let res = match run_channel_result(&window, rx, tls, net, &rc).await {
-    Err(err) => {
-      window
-        .emit("rhizome_connection", RhizomeMessage::Error(err.to_string()))
-        .expect("failed to emit tauri event");
-      Err(err)
-    }
-    Ok(_) => Ok(()),
-  };
+  let res = run_channel_result(&window, rx, tls, net, &rc).await;
 
   *rc.write().await = None;
 
