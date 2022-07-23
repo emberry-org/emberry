@@ -26,8 +26,6 @@ use tokio::{
 };
 use tokio_rustls::{client::TlsStream, TlsConnector};
 
-use self::messages::RhizomeMessage;
-
 use super::Networking;
 
 #[tauri::command(async)]
