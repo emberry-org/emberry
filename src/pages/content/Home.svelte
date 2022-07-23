@@ -37,7 +37,7 @@
 
     <div class="buttons">
       <input type="text" name="chatId" bind:value={chatId}>
-      <button class="card-button start" on:click={attemptConnect} disabled={ connecting ? true : null }>New Chat</button>
+      <button class="btn" on:click={attemptConnect} disabled={ connecting ? true : null }>New Chat</button>
     </div>
 
   </div>
@@ -93,31 +93,9 @@
         display: flex;
         justify-content: space-around;
 
-        .card-button {
-          width: 30%;
+        .btn {
           height: 36px;
-
-          background-color: #373739;
-          border: 1px solid #545454;
-          border-radius: 6px;
-
-          padding: 0 12px 0 12px;
-
-          font-family: Inter;
-          font-size: 0.85em;
-          color: #ccc;
-
-          user-select: none;
-          cursor: pointer;
-
-          &.start {
-            width: 40%;
-            min-width: fit-content;
-          }
-
-          &:hover {
-            border: 1px solid #5a5a5a;
-          }
+          padding: 0 12px;
 
           &[disabled] {
             opacity: .5;
@@ -126,8 +104,8 @@
         }
 
         input {
-          background-color: #373739;
-          border: 1px solid #545454;
+          background-color: var(--fg);
+          border: 2px solid var(--tb);
           border-radius: 6px;
           color: #ccc;
           padding: 0 12px 0 12px;
@@ -137,7 +115,8 @@
           outline: none;
 
           &:hover {
-            border: 1px solid #5a5a5a;
+            background-color: var(--ffg);
+            border: 2px solid var(--tb);
           }
         }
       }

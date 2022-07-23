@@ -4,6 +4,7 @@
   import { commandCenterState } from "@store";
   import setupOS from "@core/OppSys";
   import { onMount } from "svelte";
+  import Snackbar from "@lib/window/Snackbar.svelte";
 
   onMount(() => {
     setupOS();
@@ -21,6 +22,8 @@
 <main>
   
   <div class="contents">
+    <Snackbar />
+
     {#if $commandCenterState}
       <CommandCenter />
     {/if}

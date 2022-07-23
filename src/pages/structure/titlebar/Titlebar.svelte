@@ -129,7 +129,7 @@
                 <button class="btn float-right" on:click={revertUsername}>
                   Revert
                 </button>
-                <button class="btn apply" on:click={applyUsername}>
+                <button class="btn positive" on:click={applyUsername}>
                   Apply
                 </button>
               {:else}
@@ -378,34 +378,7 @@
             }
 
             .btn {
-              width: 64px;
-              height: 32px;
-
               margin-right: 8px;
-              background-color: #ffffff18;
-              border: 2px solid #ffffff18;
-              color: #ccc;
-
-              border-radius: 4px;
-              font-size: 14px;
-
-              cursor: pointer;
-
-              &.apply {
-                background-color: #125488;
-                border: 2px solid #176bae;
-                color: #f2eee8;
-
-                &:hover {
-                  background-color: #226498;
-                  border: 2px solid #277bbe;
-                }
-              }
-
-              &:hover {
-                background-color: #ffffff28;
-                border: 2px solid #ffffff28;
-              }
             }
           }
         }
