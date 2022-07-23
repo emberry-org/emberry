@@ -1,21 +1,49 @@
 <script lang="ts">
   import Icon from "@lib/Icon.svelte";
-  import type { Snack } from "@core/Snack";
+  import type { Snack, SnackAction } from "@core/Snack";
   import { onMount } from "svelte";
-  import { getSnacks, onSnackBarChanged } from "@store";
+  import { addSnack, closeSnack, getSnacks, onSnackBarChanged } from "@store";
+import type { VoidAction } from "@core/cmd-center/Cmd";
 
   let snacks: Snack[] = [];
 
   onMount(() => {
     snacks = getSnacks();
 
+    addSnack({
+      title: "Welcome to Tauri!",
+      description: "This is a simple chat app built with Tauri.",
+      actions: [
+        {
+          label: "Thanks",
+          handler: () => {
+            console.log("Thanks!");
+          },
+          class: "positive"
+        },
+        {
+          label: "Decline",
+          handler: () => {
+            console.log("Declined!");
+          },
+        }
+      ]
+    });
+
     onSnackBarChanged(newSnacks => {
       snacks = newSnacks;
     });
   });
 
+  const invokeAction = (action: SnackAction) => {
+    const func = action.handler as VoidAction;
+    func();
+  };
+
   const removeSnack = (i: number) => {
-    snacks = snacks.splice(i, 1);
+    closeSnack(i);
+    snacks.splice(i, 1);
+    snacks = [...snacks];
   };
 </script>
 
@@ -35,7 +63,7 @@
 
         <div class="actions">
           {#each snack.actions as action}
-            <button class="action { action.class }" on:click={action.handler}>{action.label}</button>
+            <button class="action { action.class }" on:click={() => { invokeAction(action); removeSnack(i); }}>{action.label}</button>
           {/each}
         </div>
       </div>

@@ -20,6 +20,22 @@ import { navigate } from "svelte-navigator";
 }
 
 /**
+ * Close a snack in the application store.
+ * @param index Index of the snack to close.
+ */
+ export function closeSnack(index: number) {
+  let snacks = getSnacks();
+
+  if (snacks) snacks.splice(index, 1);
+  else snacks = [];
+
+  const json = JSON.stringify(snacks);
+
+  sessionStorage.setItem('snacks', json);
+  dispatchEvent( new StorageEvent('storage', { key: 'snacks', storageArea: sessionStorage, newValue: json }) );
+}
+
+/**
  * Get the snacks stored in the application store.
  * @returns An array of application snacks.
  */

@@ -1,3 +1,5 @@
+import type { VoidAction } from "./cmd-center/Cmd";
+
 export interface Snack {
     title: string;
     description: string;
@@ -8,5 +10,5 @@ export interface Snack {
 export interface SnackAction {
     label: string;
     class?: string;
-    handler: () => void;
+    handler: VoidAction;
 }
