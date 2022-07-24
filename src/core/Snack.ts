@@ -10,5 +10,5 @@ export interface Snack {
 export interface SnackAction {
     label: string;
     class?: string;
-    handler: VoidAction;
+    key: string;
 }

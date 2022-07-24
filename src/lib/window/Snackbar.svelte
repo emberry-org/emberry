@@ -1,9 +1,8 @@
 <script lang="ts">
   import Icon from "@lib/Icon.svelte";
-  import type { Snack, SnackAction } from "@core/Snack";
+  import type { Snack } from "@core/Snack";
   import { onMount } from "svelte";
   import { addSnack, closeSnack, getSnacks, onSnackBarChanged } from "@store";
-import type { VoidAction } from "@core/cmd-center/Cmd";
 
   let snacks: Snack[] = [];
 
@@ -11,21 +10,17 @@ import type { VoidAction } from "@core/cmd-center/Cmd";
     snacks = getSnacks();
 
     addSnack({
-      title: "Welcome to Tauri!",
-      description: "This is a simple chat app built with Tauri.",
+      title: "Room Request",
+      description: "Devensiv has send you a room request.",
       actions: [
         {
-          label: "Thanks",
-          handler: () => {
-            console.log("Thanks!");
-          },
+          label: "Accept",
+          key: "accept",
           class: "positive"
         },
         {
           label: "Decline",
-          handler: () => {
-            console.log("Declined!");
-          },
+          key: "decline",
         }
       ]
     });
@@ -35,9 +30,8 @@ import type { VoidAction } from "@core/cmd-center/Cmd";
     });
   });
 
-  const invokeAction = (action: SnackAction) => {
-    const func = action.handler as VoidAction;
-    func();
+  const invokeAction = (action: string) => {
+    console.log(action);
   };
 
   const removeSnack = (i: number) => {
@@ -48,12 +42,13 @@ import type { VoidAction } from "@core/cmd-center/Cmd";
 </script>
 
 <div class="snackbar">
-  {#each snacks as snack, i}
+  {#each snacks.reverse() as snack, i}
     <div class="snack">
 
       <header>
+        <Icon name="notifications/connect" size="16px" />
         <div class="title">{snack.title}</div>
-        <button class="close" on:click={() => removeSnack(i)}>
+        <button class="close" on:click={() => removeSnack(snacks.length - i - 1)}>
           <Icon name="window/close" size="20px" />
         </button>
       </header>
@@ -63,7 +58,7 @@ import type { VoidAction } from "@core/cmd-center/Cmd";
 
         <div class="actions">
           {#each snack.actions as action}
-            <button class="action { action.class }" on:click={() => { invokeAction(action); removeSnack(i); }}>{action.label}</button>
+            <button class="action { action.class }" on:click={() => { invokeAction(action.key); removeSnack(snacks.length - i - 1); }}>{action.label}</button>
           {/each}
         </div>
       </div>
@@ -97,13 +92,14 @@ import type { VoidAction } from "@core/cmd-center/Cmd";
     pointer-events: all !important;
     z-index: 100;
 
-    background-color: var(--ffg);
-    border: 2px solid var(--tb);
+    background-color: var(--mg);
+    border: 2px solid var(--tb2);
     box-shadow: 0 8px 24px #1c1c1c;
     border-radius: 8px;
 
     display: flex;
     flex-direction: column;
+    margin-top: 24px;
 
     header {
       display: flex;
@@ -112,9 +108,14 @@ import type { VoidAction } from "@core/cmd-center/Cmd";
       padding-left: 8px;
       margin-bottom: 6px;
 
-      background-color: var(--mg);
+      background-color: var(--fg);
       border-top-left-radius: 6px;
       border-top-right-radius: 6px;
+
+      > :global(svg) {
+        color: #63c466;
+        margin-right: 8px;
+      }
       
       .title {
         color: #ccc;
