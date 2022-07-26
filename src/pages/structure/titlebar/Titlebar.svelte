@@ -7,7 +7,7 @@
   import { onMount } from 'svelte';
   import Pub from './Pub.svelte';
   import Modal from '@lib/generic/modal/Modal.svelte';
-  import { resizeBase64Image } from '@core/Img';
+  import { resizeBase64Image } from '@core/utils/Img';
   //import Dialog from '@lib/generic/dialog/Dialog.svelte';
 
   $: maximized = false;

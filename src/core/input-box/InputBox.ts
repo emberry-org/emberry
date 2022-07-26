@@ -1,4 +1,4 @@
-import { insertString } from "@core/Utils";
+import { insertString } from "@core/utils/Utils";
 import { setupHooks } from "./input/InputEventHandler";
 import { MirageRenderer } from "./renderer/TextRenderer";
 import { CustomSelection } from "./Selection";

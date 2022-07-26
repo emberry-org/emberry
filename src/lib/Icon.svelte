@@ -1,6 +1,6 @@
 <script lang="ts">
   import Icon from 'svelte-icon/Icon.svelte';
-  import { loadIcon } from '@core/Icons';
+  import { loadIcon } from '@core/utils/Icons';
 
   /** The name of the icon file without file extension */
   export let name: string;

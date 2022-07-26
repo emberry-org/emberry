@@ -2,7 +2,7 @@
   import { Body, Footer, Titlebar } from "@page/structure";
   import CommandCenter from '@lib/window/CommandCenter.svelte';
   import { commandCenterState } from "@store";
-  import setupOS from "@core/OppSys";
+  import setupOS from "@core/utils/OppSys";
   import { onMount } from "svelte";
   import Snackbar from "@lib/window/Snackbar.svelte";
 

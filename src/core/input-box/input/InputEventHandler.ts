@@ -1,4 +1,4 @@
-import { insertString, removeRange } from "@core/Utils";
+import { insertString, removeRange } from "@core/utils/Utils";
 import type { InputBox } from "../InputBox";
 import { CustomSelection } from "../Selection";
 
