@@ -1,8 +1,9 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::io::{Error, ErrorKind};
 use std::net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr};
 use std::sync::{Arc, Mutex};
 
+use smoke::User;
 use smoke::messages::RoomId;
 use tauri::EventHandler;
 
@@ -22,6 +23,7 @@ pub struct Connection {
 
 pub struct Networking {
   pub chats: Mutex<ConnectionMap>,
+  pub pending: Mutex<HashSet<User>>,
 }
 
 #[derive(serde::Deserialize, Debug)]

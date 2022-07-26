@@ -8,11 +8,16 @@ use std::{
   sync::Arc,
 };
 
+use crate::network::hole_punch;
+
 pub use self::state::RwOption;
 pub use messages::EmberryMessage;
 use rustls::{ClientConfig, RootCertStore, ServerName};
-use smoke::messages::RhizMessage::{self, *};
 use smoke::messages::RoomId;
+use smoke::{
+  messages::RhizMessage::{self, *},
+  User,
+};
 pub use state::RhizomeConnection;
 pub use state::State;
 use tauri::Window;
@@ -112,11 +117,20 @@ async fn handle_rhiz_msg(
     HasRoute(usr) => window
       .emit("room-req-pending", usr)
       .expect("Failed to emit HasRoute"),
-    NoRoute(usr) => todo!("update visual (user offline)"),
-    WantsRoom(usr) => window
+    NoRoute(usr) => {
+      if net.pending.lock().unwrap().remove(&usr) {
+        //if there was a pending signal fontend
+        todo!("update visual (user offline)");
+      }
+    }
+    WantsRoom(usr) => {
+      //check before emiting the event
+      window
       .emit("room-request", usr)
-      .expect("Failed to emit WantsRoom event"),
-    AcceptedRoom(id) => try_holepunch(window.clone(), net.clone(), id).await?,
+      .expect("Failed to emit WantsRoom event");
+      todo!("check if there is already a req. pending. & investigate what strategy to use to resolve this collision");
+    },
+    AcceptedRoom(id, usr) => try_holepunch(window.clone(), net.clone(), id, usr).await?,
     ServerError(err) => {
       return Err(tauri::Error::Io(io::Error::new(
         ErrorKind::Other,
@@ -128,11 +142,46 @@ async fn handle_rhiz_msg(
   Ok(())
 }
 
+async fn request_room(usr: User, net: &tauri::State<'_, Networking>) {
+  if !net.pending.lock().unwrap().insert(usr) {
+    // return if the request is already pending
+    return;
+  }
+  todo!("send room request to server");
+}
+
+async fn accept_room(usr: User, accepted: bool, net: &tauri::State<'_, Networking>) {
+  if accepted{
+  if !net.pending.lock().unwrap().insert(usr) {
+    // return if the request is already pending
+    return;
+  }
+  todo!("send room affirmation to server");
+
+  }else{
+    todo!("send room decline to the server");
+    todo!("investigate how to handle if already pending in this situation");
+  }
+}
+
 async fn try_holepunch(
   window: tauri::Window,
   net_state: tauri::State<'_, Networking>,
   room_id: Option<RoomId>,
+  usr: User,
 ) -> tauri::Result<()> {
+  let pending = net_state.pending.lock().unwrap().remove(&usr);
+  if !pending {
+    // This is rather weak protection as a compromized rhizome server could still just send a different room id with a valid user
+    // Room id procedure is subject to change in the future. (plan is to use cryptographic signatures to mitigated unwanted ip leak)
+    eprintln!("Rhizome just sent a malicious room opening packet (this should not happen)");
+    return Ok(());
+  }
+
+  if let Some(room_id) = room_id {
+    hole_punch(window, net_state, room_id).await?;
+    todo!("reinvestigate if this works as intended");
+  }
   todo!("holepunchin");
   todo!("update visual (chat room opens)");
   Ok(())

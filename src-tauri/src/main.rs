@@ -41,6 +41,7 @@ fn main() {
   builder
     .manage(Networking {
       chats: Default::default(),
+      pending: Default::default(),
     })
     .manage(
       RwLock::<Option<State>>::new(None)
