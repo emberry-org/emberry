@@ -5,7 +5,7 @@ pub mod responses;
 mod state;
 
 use std::{
-  io::{self, Error, ErrorKind},
+  io::{self, ErrorKind},
   sync::Arc,
 };
 
@@ -15,7 +15,7 @@ pub use self::state::RwOption;
 pub use messages::EmberryMessage;
 use rustls::{ClientConfig, RootCertStore, ServerName};
 use serde_json::json;
-use smoke::messages::{EmbMessage, RoomId};
+use smoke::messages::RoomId;
 use smoke::{
   messages::RhizMessage::{self, *},
   User,
@@ -81,7 +81,7 @@ pub async fn connect(
   let conn = State { channel: tx };
   rc.write().await.replace(conn);
 
-  let res = run_channel_result(&window, rx, tls, net, &rc).await;
+  let res = run_channel_result(&window, rx, tls, net).await;
 
   *rc.write().await = None;
 
@@ -93,7 +93,6 @@ async fn run_channel_result<'a>(
   mut rx: Receiver<EmberryMessage>,
   mut tls: BufReader<TlsStream<TcpStream>>,
   net: tauri::State<'_, Networking>,
-  rc: &tauri::State<'a, RhizomeConnection>,
 ) -> tauri::Result<()> {
   let mut buf = vec![];
   loop {

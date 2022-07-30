@@ -1,8 +1,6 @@
-use std::io::{Error, ErrorKind};
-
 use smoke::{messages::EmbMessage, User};
 
-use crate::network::ctrl_chnl::{EmberryMessage, RhizomeConnection};
+use crate::network::ctrl_chnl::RhizomeConnection;
 use crate::network::Networking;
 
 use super::state;
