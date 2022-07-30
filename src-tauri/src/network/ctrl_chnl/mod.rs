@@ -13,6 +13,7 @@ use crate::network::hole_punch;
 pub use self::state::RwOption;
 pub use messages::EmberryMessage;
 use rustls::{ClientConfig, RootCertStore, ServerName};
+use serde_json::json;
 use smoke::messages::RoomId;
 use smoke::{
   messages::RhizMessage::{self, *},
@@ -114,22 +115,24 @@ async fn handle_rhiz_msg(
 ) -> tauri::Result<()> {
   match msg? {
     Shutdown() => return Ok(()),
-    HasRoute(usr) => window
-      .emit("room-req-pending", usr)
-      .expect("Failed to emit HasRoute"),
+    HasRoute(usr) => {
+      let pending = net.pending.lock().unwrap().remove(&usr);
+      window
+        .emit("has-route", json!({ "pending": pending, "usr": usr, }))
+        .expect("Failed to emit NoRoute")
+    }
     NoRoute(usr) => {
-      if net.pending.lock().unwrap().remove(&usr) {
-        //if there was a pending signal fontend
-        todo!("update visual (user offline)");
-      }
+      let pending = net.pending.lock().unwrap().remove(&usr);
+      window
+        .emit("no-route", json!({ "pending": pending, "usr": usr, }))
+        .expect("Failed to emit NoRoute")
     }
     WantsRoom(usr) => {
-      //check before emiting the event
-      window
-      .emit("room-request", usr)
-      .expect("Failed to emit WantsRoom event");
       todo!("check if there is already a req. pending. & investigate what strategy to use to resolve this collision");
-    },
+      window
+        .emit("room-request", usr)
+        .expect("Failed to emit WantsRoom event");
+    }
     AcceptedRoom(id, usr) => try_holepunch(window.clone(), net.clone(), id, usr).await?,
     ServerError(err) => {
       return Err(tauri::Error::Io(io::Error::new(
@@ -151,14 +154,13 @@ async fn request_room(usr: User, net: &tauri::State<'_, Networking>) {
 }
 
 async fn accept_room(usr: User, accepted: bool, net: &tauri::State<'_, Networking>) {
-  if accepted{
-  if !net.pending.lock().unwrap().insert(usr) {
-    // return if the request is already pending
-    return;
-  }
-  todo!("send room affirmation to server");
-
-  }else{
+  if accepted {
+    if !net.pending.lock().unwrap().insert(usr) {
+      // return if the request is already pending
+      return;
+    }
+    todo!("send room affirmation to server");
+  } else {
     todo!("send room decline to the server");
     todo!("investigate how to handle if already pending in this situation");
   }
