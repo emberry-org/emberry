@@ -27,9 +27,9 @@ pub struct Networking {
 }
 
 #[derive(serde::Deserialize, Debug)]
-struct Config {
-  server_address: String,
-  public_key: String,
+struct Config<'a> {
+  server_address: &'a str,
+  public_key: &'a str,
 }
 
 #[derive(Clone, serde::Serialize)]
@@ -44,15 +44,15 @@ pub async fn hole_punch(
   room_id: RoomId,
 ) -> tauri::Result<String> {
   /* Get the server ip from .env */
-  let env = Config {
-    public_key: dotenv!("PUBLIC_KEY").into(),
-    server_address: dotenv!("SERVER_ADDRESS").into(),
+  const ENV: Config = Config {
+    public_key: dotenv!("PUBLIC_KEY"),
+    server_address: dotenv!("SERVER_ADDRESS"),
   };
 
   let identity = base64::encode_config(&room_id.0, base64::URL_SAFE);
 
   /* Holepunch using rhizome */
-  let socket = punch_hole(env.server_address, &room_id.0).await?;
+  let socket = punch_hole(ENV.server_address, &room_id.0).await?;
 
   let arc_sock = Arc::new(socket);
 
