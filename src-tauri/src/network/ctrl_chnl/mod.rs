@@ -128,10 +128,14 @@ async fn handle_rhiz_msg(
         .expect("Failed to emit NoRoute")
     }
     WantsRoom(usr) => {
-      todo!("check if there is already a req. pending. & investigate what strategy to use to resolve this collision");
-      window
-        .emit("room-request", usr)
-        .expect("Failed to emit WantsRoom event");
+      if net.pending.lock().unwrap().remove(&usr) {
+        window
+          .emit("wants-room", usr)
+          .expect("Failed to emit WantsRoom event");
+      } else {
+        // Here we get a WantsRoom while we already want a room with them
+        todo!("form a strategy to use to resolve this collision");
+      }
     }
     AcceptedRoom(id, usr) => try_holepunch(window.clone(), net.clone(), id, usr).await?,
     ServerError(err) => {
@@ -178,15 +182,15 @@ async fn try_holepunch(
     // Room id procedure is subject to change in the future. (plan is to use cryptographic signatures to mitigated unwanted ip leak)
     const MSG: &str = "Rhizome just sent a malicious room opening packet (this should not happen)";
     window
-        .emit("warning", MSG)
-        .expect("Failed to emit WantsRoom event");
+      .emit("warning", MSG)
+      .expect("Failed to emit WantsRoom event");
 
     eprintln!("{}", MSG);
     return Ok(());
   }
 
   if let Some(room_id) = room_id {
-    let ident = hole_punch(window, net_state, room_id).await?;
+    hole_punch(window, net_state, room_id).await?;
   }
 
   Ok(())
