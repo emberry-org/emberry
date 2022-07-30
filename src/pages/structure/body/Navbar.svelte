@@ -22,9 +22,9 @@
 <style lang="scss">
 
 .navbar {
-  width: 72px;
+  width: 66px;
   height: 100%;
-  min-width: 72px;
+  min-width: 66px;
 
   display: flex;
   flex-direction: column;

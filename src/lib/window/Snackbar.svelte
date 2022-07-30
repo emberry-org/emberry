@@ -3,35 +3,61 @@
   import type { Snack } from "@core/Snack";
   import { onMount } from "svelte";
   import { addSnack, closeSnack, getSnacks, onSnackBarChanged } from "@store";
+  import { emit, listen } from '@tauri-apps/api/event';
+  import { invoke } from '@tauri-apps/api/tauri'
 
   let snacks: Snack[] = [];
 
   onMount(() => {
     snacks = getSnacks();
 
-    addSnack({
-      title: "Room Request",
-      description: "Devensiv has send you a room request.",
-      actions: [
-        {
-          label: "Accept",
-          key: "accept",
-          class: "positive"
-        },
-        {
-          label: "Decline",
-          key: "decline",
-        }
-      ]
-    });
-
     onSnackBarChanged(newSnacks => {
       snacks = newSnacks;
     });
+
+    // Setup the wants-room event listener.
+    // TODO: Move this to a better place.
+    listen('wants-room', (e: any) => {
+      const usrkey = e.payload.key;
+
+      addSnack({
+        title: "Room Request",
+        description: `${ usrkey } has send you a room request.`,
+        actions: [
+          {
+            label: "Accept",
+            class: "positive",
+
+            isCommand: true,
+            key: "accept_room",
+            payload: {
+              usr: { key: usrkey },
+              accepted: true,
+            }
+          },
+          {
+            label: "Decline",
+
+            isCommand: true,
+            key: "accept_room",
+            payload: {
+              usr: { key: usrkey },
+              accepted: false,
+            }
+          }
+        ]
+      });
+    });
   });
 
-  const invokeAction = (action: string) => {
-    console.log(action);
+  /** Invoke a snackbar action */
+  const invokeAction = (key: string, isCommand?: boolean, payload?: any) => {
+
+    if (isCommand === true) {
+      invoke(key, payload);
+    } else {
+      emit(key, payload);
+    }
   };
 
   const removeSnack = (i: number) => {
@@ -58,7 +84,12 @@
 
         <div class="actions">
           {#each snack.actions as action}
-            <button class="action { action.class }" on:click={() => { invokeAction(action.key); removeSnack(snacks.length - i - 1); }}>{action.label}</button>
+            <button class="action { action.class }" 
+              on:click={() => { invokeAction(action.key, action.isCommand, action.payload); 
+              removeSnack(snacks.length - i - 1); }}
+            >
+              {action.label}
+            </button>
           {/each}
         </div>
       </div>

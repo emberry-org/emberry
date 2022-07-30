@@ -187,7 +187,7 @@
     width: 248px;
     min-width: 248px;
     height: 100%;
-    margin-left: 72px;
+    margin-left: 66px;
 
     display: flex;
     border-left: 1.5px solid var(--tb);

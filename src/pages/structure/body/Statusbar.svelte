@@ -54,7 +54,7 @@
     width: 50%;
     height: 100%;
 
-    margin-left: 72px;
+    margin-left: 66px;
     border-left: 1.5px solid var(--tb);
 
     display: flex;
