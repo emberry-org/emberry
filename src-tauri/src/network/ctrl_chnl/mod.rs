@@ -150,19 +150,6 @@ async fn handle_rhiz_msg(
   Ok(())
 }
 
-async fn accept_room(usr: User, accepted: bool, net: &tauri::State<'_, Networking>) {
-  if accepted {
-    if !net.pending.lock().unwrap().insert(usr) {
-      // return if the request is already pending
-      return;
-    }
-    todo!("send room affirmation to server");
-  } else {
-    todo!("send room decline to the server");
-    todo!("investigate how to handle if already pending in this situation");
-  }
-}
-
 async fn try_holepunch(
   window: tauri::Window,
   net_state: tauri::State<'_, Networking>,

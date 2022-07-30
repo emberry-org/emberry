@@ -47,7 +47,7 @@ fn main() {
       chat_exists,
       connect,
       request_room,
-      send_room_affirm,
+      accept_room,
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
