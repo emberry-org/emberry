@@ -3,16 +3,16 @@ use std::io::{Error, ErrorKind};
 use std::net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr};
 use std::sync::{Arc, Mutex};
 
-use smoke::User;
 use smoke::messages::RoomId;
+use smoke::User;
 use tauri::EventHandler;
 
 use tokio::net::UdpSocket;
 use tokio::select;
 use tokio::sync::oneshot;
 
-pub mod message;
 pub mod ctrl_chnl;
+pub mod message;
 use message::Message;
 
 type ConnectionMap = HashMap<RoomId, Connection>;
@@ -37,12 +37,11 @@ struct MessageRecievedPayload {
   message: Message,
 }
 
-#[tauri::command(async)]
 pub async fn hole_punch(
   window: tauri::Window,
   state: tauri::State<'_, Networking>,
   room_id: RoomId,
-) -> tauri::Result<String> {
+) -> tauri::Result<()> {
   /* Get the server ip from .env */
   const ENV: Config = Config {
     public_key: dotenv!("PUBLIC_KEY"),
@@ -50,6 +49,10 @@ pub async fn hole_punch(
   };
 
   let identity = base64::encode_config(&room_id.0, base64::URL_SAFE);
+
+  window
+    .emit("punching", &identity)
+    .expect("Failed to emit WantsRoom event");
 
   /* Holepunch using rhizome */
   let socket = punch_hole(ENV.server_address, &room_id.0).await?;
@@ -68,14 +71,15 @@ pub async fn hole_punch(
   let (recv_handle, mut rx) = oneshot::channel::<()>();
   let mut buf = [0u8; 512];
   let emit_identity = identity.clone();
+  let spawn_window = window.clone();
   tokio::spawn(async move {
-    let event_name = format!("message_recieved_{}", &emit_identity);
+    let event_name = format!("message_recieved_{}", emit_identity);
     loop {
       select! {
           Ok(msg) = Message::recv_from(&arc_sock, &mut buf) => {
 
         /* Emit the message_recieved event when a message is recieved */
-        window
+        spawn_window
           .emit(&event_name, MessageRecievedPayload { message: msg })
           .expect("Failed to emit event");
 
@@ -92,8 +96,10 @@ pub async fn hole_punch(
     send_handle,
   };
   state.chats.lock().unwrap().insert(room_id.clone(), con);
-
-  Ok(identity)
+  window
+    .emit("new-room", &identity)
+    .expect("Failed to emit WantsRoom event");
+  Ok(())
 }
 
 #[tauri::command]

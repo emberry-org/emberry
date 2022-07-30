@@ -49,7 +49,6 @@ fn main() {
     .plugin(PluginBuilder::default().build())
     .invoke_handler(tauri::generate_handler![
       toggle_devtools,
-      hole_punch,
       chat_exists,
       connect,
       send_room_affirm,

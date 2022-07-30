@@ -176,16 +176,19 @@ async fn try_holepunch(
   if !pending {
     // This is rather weak protection as a compromized rhizome server could still just send a different room id with a valid user
     // Room id procedure is subject to change in the future. (plan is to use cryptographic signatures to mitigated unwanted ip leak)
-    eprintln!("Rhizome just sent a malicious room opening packet (this should not happen)");
+    const MSG: &str = "Rhizome just sent a malicious room opening packet (this should not happen)";
+    window
+        .emit("warning", MSG)
+        .expect("Failed to emit WantsRoom event");
+
+    eprintln!("{}", MSG);
     return Ok(());
   }
 
   if let Some(room_id) = room_id {
-    hole_punch(window, net_state, room_id).await?;
-    todo!("reinvestigate if this works as intended");
+    let ident = hole_punch(window, net_state, room_id).await?;
   }
-  todo!("holepunchin");
-  todo!("update visual (chat room opens)");
+
   Ok(())
 }
 
