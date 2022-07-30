@@ -1,10 +1,11 @@
 mod certs;
 mod messages;
+pub mod requests;
 pub mod responses;
 mod state;
 
 use std::{
-  io::{self, ErrorKind},
+  io::{self, Error, ErrorKind},
   sync::Arc,
 };
 
@@ -14,7 +15,7 @@ pub use self::state::RwOption;
 pub use messages::EmberryMessage;
 use rustls::{ClientConfig, RootCertStore, ServerName};
 use serde_json::json;
-use smoke::messages::RoomId;
+use smoke::messages::{EmbMessage, RoomId};
 use smoke::{
   messages::RhizMessage::{self, *},
   User,
@@ -147,14 +148,6 @@ async fn handle_rhiz_msg(
   };
 
   Ok(())
-}
-
-async fn request_room(usr: User, net: &tauri::State<'_, Networking>) {
-  if !net.pending.lock().unwrap().insert(usr) {
-    // return if the request is already pending
-    return;
-  }
-  todo!("send room request to server");
 }
 
 async fn accept_room(usr: User, accepted: bool, net: &tauri::State<'_, Networking>) {

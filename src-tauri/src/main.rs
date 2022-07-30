@@ -13,13 +13,10 @@ use tauri::Manager;
 mod window;
 
 mod network;
-use network::{
-  chat_exists,
-  hole_punch, Networking,
-};
-use network::ctrl_chnl::{connect, responses::*, State};
-use tokio::sync::RwLock;
+use network::ctrl_chnl::{connect, requests::*, responses::*, State};
+use network::{chat_exists, Networking};
 use tauri_plugin_store::PluginBuilder;
+use tokio::sync::RwLock;
 
 fn main() {
   let builder = tauri::Builder::default();
@@ -43,14 +40,13 @@ fn main() {
       chats: Default::default(),
       pending: Default::default(),
     })
-    .manage(
-      RwLock::<Option<State>>::new(None)
-    )
+    .manage(RwLock::<Option<State>>::new(None))
     .plugin(PluginBuilder::default().build())
     .invoke_handler(tauri::generate_handler![
       toggle_devtools,
       chat_exists,
       connect,
+      request_room,
       send_room_affirm,
     ])
     .run(tauri::generate_context!())
