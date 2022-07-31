@@ -63,7 +63,11 @@ pub async fn hole_punch(
   let sender = arc_sock.clone();
   let send_handle = window.listen(format!("send_message_{}", identity), move |e| {
     let sender = sender.clone();
-    let msg = serde_json::from_str::<Message>(e.payload().unwrap()).unwrap();
+    let msg = serde_json::from_str::<Message>(
+      e.payload()
+        .expect("Invalid payload in send_message_<id> event"),
+    )
+    .expect("Invalid Json inside of payload from send_message_<id> event");
     tokio::spawn(async move { msg.send_with(&sender).await });
   });
 

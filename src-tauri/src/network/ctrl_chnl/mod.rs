@@ -60,13 +60,11 @@ pub async fn connect(
 
   let server_name = get_server_name();
   let conn = TlsConnector::from(Arc::new(config));
-  let sock = TcpStream::connect(dotenv!("CONTROL_ADDRESS"))
-    .await
-    .unwrap();
-  let mut tls = BufReader::new(conn.connect(server_name, sock).await.unwrap());
+  let sock = TcpStream::connect(dotenv!("CONTROL_ADDRESS")).await?;
+  let mut tls = BufReader::new(conn.connect(server_name, sock).await?);
 
   let mut plaintext = String::new();
-  tls.read_line(&mut plaintext).await.unwrap();
+  tls.read_line(&mut plaintext).await?;
   if plaintext != "rhizome v0.2.0\n" {
     return Err(tauri::Error::Io(io::Error::new(
       io::ErrorKind::Unsupported,
@@ -177,6 +175,7 @@ async fn try_holepunch(
 
 #[inline]
 fn get_server_name() -> ServerName {
+  // unwrap is ok here as this is tested with tests on build time
   dotenv!("SERVER_DOMAIN").try_into().unwrap()
 }
 
