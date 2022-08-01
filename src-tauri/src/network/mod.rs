@@ -15,19 +15,28 @@ pub mod ctrl_chnl;
 pub mod message;
 use message::Message;
 
+pub const ENV: Config = Config {
+  public_key: dotenv!("PUBLIC_KEY"),
+  server_address: dotenv!("SERVER_ADDRESS"),
+};
+
 type ConnectionMap = HashMap<RoomId, Connection>;
 pub struct Connection {
   pub send_handle: EventHandler,
   pub recv_handle: oneshot::Sender<()>,
 }
 
-pub struct Networking {
-  pub chats: Mutex<ConnectionMap>,
-  pub pending: Mutex<HashSet<User>>,
+pub enum RRState{
+  Pending,
+  Agreement,
 }
 
-#[derive(serde::Deserialize, Debug)]
-struct Config<'a> {
+pub struct Networking {
+  pub chats: Mutex<ConnectionMap>,
+  pub pending: Mutex<HashMap<User, RRState>>,
+}
+
+pub struct Config<'a> {
   server_address: &'a str,
   public_key: &'a str,
 }
@@ -43,10 +52,6 @@ pub async fn hole_punch(
   room_id: RoomId,
 ) -> tauri::Result<()> {
   /* Get the server ip from .env */
-  const ENV: Config = Config {
-    public_key: dotenv!("PUBLIC_KEY"),
-    server_address: dotenv!("SERVER_ADDRESS"),
-  };
 
   let identity = base64::encode_config(&room_id.0, base64::URL_SAFE);
 
