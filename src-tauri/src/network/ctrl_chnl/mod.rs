@@ -5,7 +5,7 @@ pub mod responses;
 mod state;
 
 use std::{
-  io::{self, ErrorKind},
+  io::{self, Error, ErrorKind},
   sync::Arc,
 };
 
@@ -15,7 +15,7 @@ pub use self::state::RwOption;
 pub use messages::EmberryMessage;
 use rustls::{ClientConfig, RootCertStore, ServerName};
 use serde_json::json;
-use smoke::messages::RoomId;
+use smoke::messages::{EmbMessage, RoomId};
 use smoke::{
   messages::RhizMessage::{self, *},
   User,
@@ -33,7 +33,7 @@ use tokio::{
 };
 use tokio_rustls::{client::TlsStream, TlsConnector};
 
-use super::Networking;
+use super::{Networking, RRState, ENV};
 
 #[tauri::command(async)]
 pub async fn connect(
@@ -79,7 +79,7 @@ pub async fn connect(
   let conn = State { channel: tx };
   rc.write().await.replace(conn);
 
-  let res = run_channel_result(&window, rx, tls, net).await;
+  let res = run_channel_result(&window, rx, tls, net, &rc).await;
 
   *rc.write().await = None;
 
@@ -91,6 +91,7 @@ async fn run_channel_result<'a>(
   mut rx: Receiver<EmberryMessage>,
   mut tls: BufReader<TlsStream<TcpStream>>,
   net: tauri::State<'_, Networking>,
+  rc: &tauri::State<'_, RhizomeConnection>,
 ) -> tauri::Result<()> {
   let mut buf = vec![];
   loop {
@@ -101,7 +102,7 @@ async fn run_channel_result<'a>(
             EmberryMessage::Close() => return Ok(()),
         }
       }
-      msg = RhizMessage::recv_with(&mut tls, &mut buf) => handle_rhiz_msg(msg, window, &net).await?
+      msg = RhizMessage::recv_with(&mut tls, &mut buf) => handle_rhiz_msg(msg, window, &net, rc).await?
     }
   }
 }
@@ -110,11 +111,12 @@ async fn handle_rhiz_msg(
   msg: Result<RhizMessage, io::Error>,
   window: &Window,
   net: &tauri::State<'_, Networking>,
+  rc: &tauri::State<'_, RhizomeConnection>,
 ) -> tauri::Result<()> {
   match msg? {
     Shutdown() => return Ok(()),
     HasRoute(usr) => {
-      let pending = net.pending.lock().unwrap().contains(&usr);
+      let pending = net.pending.lock().unwrap().contains_key(&usr);
       window
         .emit("has-route", json!({ "pending": pending, "usr": usr, }))
         .expect("Failed to emit HasRoute")
@@ -123,17 +125,35 @@ async fn handle_rhiz_msg(
       // might want to remove the ".remove(&usr)" when trying to auto reconnect...
       let pending = net.pending.lock().unwrap().remove(&usr);
       window
-        .emit("no-route", json!({ "pending": pending, "usr": usr, }))
+        .emit(
+          "no-route",
+          json!({ "pending": pending.is_some(), "usr": usr, }),
+        )
         .expect("Failed to emit NoRoute")
     }
     WantsRoom(usr) => {
-      if net.pending.lock().unwrap().remove(&usr) {
-        window
-          .emit("wants-room", usr)
-          .expect("Failed to emit WantsRoom event");
-      } else {
-        // Here we get a WantsRoom while we already want a room with them
-        todo!("form a strategy to use to resolve this collision");
+      // only option here is None or RRState::RemoteUnaware
+      let none;
+      {
+        let mut guard = net.pending.lock().unwrap();
+        none = guard.get(&usr).is_none();
+        if none {
+          window
+            .emit("wants-room", usr)
+            .expect("Failed to emit WantsRoom event");
+        } else {
+          // Here we get a WantsRoom while we already want a room with them (they were unaware when they made their request)
+          // In this situation the user with the higher value as pub key rejects the request
+          // the client with the lower value pub key auto accepts
+          // this is done to remove the dublicate request
+          guard.insert(usr, super::RRState::Agreement);
+        }
+      }
+
+      if !none {
+        // this is the same case where guard.insert(Agreement) happens just outside scope because we want to drop guard before await
+        let msg = EmbMessage::Accept(ENV.public_key.as_bytes() < usr.key.as_slice());
+        state::send(rc, msg).await?;
       }
     }
     AcceptedRoom(id, usr) => try_holepunch(window.clone(), net.clone(), id, usr).await?,
@@ -154,21 +174,28 @@ async fn try_holepunch(
   room_id: Option<RoomId>,
   usr: User,
 ) -> tauri::Result<()> {
-  let pending = net_state.pending.lock().unwrap().remove(&usr);
-  if !pending {
-    // This is rather weak protection as a compromized rhizome server could still just send a different room id with a valid user
-    // Room id procedure is subject to change in the future. (plan is to use cryptographic signatures to mitigated unwanted ip leak)
-    const MSG: &str = "Rhizome just sent a malicious room opening packet (this should not happen)";
-    window
-      .emit("warning", MSG)
-      .expect("Failed to emit WantsRoom event");
-
-    eprintln!("{}", MSG);
-    return Ok(());
-  }
-
   if let Some(room_id) = room_id {
-    hole_punch(window, net_state, room_id).await?;
+    if net_state.pending.lock().unwrap().remove(&usr).is_some() {
+      // only hole punch if there is a connection pending
+      hole_punch(window, net_state, room_id).await?;
+    } else {
+      // This is rather weak protection as a compromized rhizome server could still just send a different room id with a valid user
+      // Room id procedure is subject to change in the future. (plan is to use cryptographic signatures to mitigated unwanted ip leak)
+      return Err(tauri::Error::Io(Error::new(
+        ErrorKind::Other,
+        "Rhizome just sent a malicious room opening packet (this should not happen)",
+      )));
+    }
+  } else {
+    let mut guard = net_state.pending.lock().unwrap();
+    if let Some(kv) = guard.get_key_value(&usr) {
+      match kv.1 {
+        RRState::Agreement => return Ok(()), // We got the edgecase of colliding requests, throw away this one
+        RRState::Pending => {
+          guard.remove(&usr); // This case is a normal rejection
+        }
+      }
+    }
   }
 
   Ok(())
