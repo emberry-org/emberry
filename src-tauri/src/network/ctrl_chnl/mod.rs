@@ -114,12 +114,13 @@ async fn handle_rhiz_msg(
   match msg? {
     Shutdown() => return Ok(()),
     HasRoute(usr) => {
-      let pending = net.pending.lock().unwrap().remove(&usr);
+      let pending = net.pending.lock().unwrap().contains(&usr);
       window
         .emit("has-route", json!({ "pending": pending, "usr": usr, }))
-        .expect("Failed to emit NoRoute")
+        .expect("Failed to emit HasRoute")
     }
     NoRoute(usr) => {
+      // might want to remove the ".remove(&usr)" when trying to auto reconnect...
       let pending = net.pending.lock().unwrap().remove(&usr);
       window
         .emit("no-route", json!({ "pending": pending, "usr": usr, }))
