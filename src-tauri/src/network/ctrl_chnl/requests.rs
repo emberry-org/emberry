@@ -12,19 +12,16 @@ pub async fn request_room(
   rc: tauri::State<'_, RhizomeConnection>,
 ) -> tauri::Result<()> {
   // try to add to pending list
-  {
-    let mut guard = net.pending.lock().unwrap();
-    if guard.contains_key(&usr) {
-      // return if the request is already pending
-      todo!("send a room accept when there remote is waiting for approval or block the room request ui until room accept ui has been closed");
-      // DISCUSS WITH MAX
-      return Ok(());
+  let msg = match net.pending.lock().unwrap().entry(usr) {
+    std::collections::hash_map::Entry::Occupied(mut e) => {
+      e.insert(crate::network::RRState::Agreement);
+      EmbMessage::Accept(true)
     }
-
-    guard.insert(usr, crate::network::RRState::Pending);
-  }
-
-  let msg = EmbMessage::Room(usr);
+    std::collections::hash_map::Entry::Vacant(e) => {
+      e.insert(crate::network::RRState::Pending);
+      EmbMessage::Room(usr)
+    }
+  };
 
   state::send(&rc, msg).await?;
   Ok(())
