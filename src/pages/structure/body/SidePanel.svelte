@@ -20,22 +20,20 @@
 
   display: flex;
   flex-direction: column;
-  border-left: 1.5px solid var(--tb);
+  //border-left: 1.5px solid var(--tb);
 
   .toolbar {
     width: 100%;
     height: 30.5px;
 
-    background-color: #262729;
-    border-top: 1.5px solid #fff2;
-    border-bottom: 1.5px solid #fff1;
+    background-color: var(--mg);
   }
 
   .panel {
     width: 100%;
     flex-grow: 1;
 
-    background-color: #1f2022;
+    background-color: var(--mg);
   }
 }
 

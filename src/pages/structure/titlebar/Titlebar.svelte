@@ -102,7 +102,7 @@
   
   <div class="left" data-tauri-drag-region={!hideDecorations || null}>
     <!-- Makes sure you can always drag the window -->
-    {#if !hideDecorations} <div class="drag-square"> <Icon name="app/logo" size="24px" /> </div> {/if}
+    <!-- {#if !hideDecorations} <div class="drag-square"> <Icon name="app/logo" size="24px" /> </div> {/if}
 
     <div class="profile { maximized || hideDecorations ? 'ml' : '' }">
 
@@ -148,13 +148,13 @@
         <p>#1234</p>
       </div>
 
-    </div>
+    </div> -->
 
   </div>
 
   <div class="right" data-tauri-drag-region={!hideDecorations || null}>
 
-    <Pub />
+    <!-- <Pub /> -->
 
     <div class="button float-right" on:click={minimize}>
       <Icon name="window/minimize" />
@@ -173,15 +173,17 @@
 <style lang="scss">
 
 .titlebar {
+  position: absolute;
+
   width: 100vw;
-  height: 44px;
-  min-height: 44px;
+  height: 36px;
+  min-height: 36px;
   
   display: flex;
   align-items: flex-start;
-  z-index: 1;
+  z-index: 2;
 
-  background-color: #1f2022;
+  background-color: transparent;
 
   .left {
     width: 248px;
@@ -190,12 +192,12 @@
     margin-left: 66px;
 
     display: flex;
-    border-left: 1.5px solid var(--tb);
+    //border-left: 1.5px solid var(--tb);
 
     .drag-square {
-      width: 44px;
-      min-width: 44px;
-      height: 44px;
+      width: 36px;
+      min-width: 36px;
+      height: 36px;
 
       pointer-events: none;
 
@@ -208,7 +210,7 @@
 
     .profile {
       width: fit-content;
-      max-width: calc(100% - 44px);
+      max-width: calc(100% - 36px);
       height: 100%;
 
       display: flex;
@@ -396,7 +398,7 @@
   .button {
     width: 46.5px;
     min-width: 46.5px;
-    height: 44px;
+    height: 36px;
 
     display: flex;
     justify-content: center;
@@ -406,11 +408,11 @@
     border: none;
     z-index: 1;
 
-    background-color: #1f2022;
+    background-color: var(--bg);
     color: #fff;
 
     &:hover {
-      background-color: #2f3032;
+      background-color: var(--mg);
     }
 
     &.close:hover {

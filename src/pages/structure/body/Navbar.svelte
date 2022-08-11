@@ -14,9 +14,9 @@
     <Icon name="navigation/settings" size="24px" />
   </div>
 
-  <div class="item profile">
+  <!-- <div class="item profile">
     <div class="profile-picture" />
-  </div>
+  </div> -->
 </div>
 
 <style lang="scss">
@@ -51,9 +51,7 @@
     }
 
     &.logo {
-      height: 35px;
-      margin-bottom: 13px;
-      margin-top: 0;
+      margin-top: 8px;
 
       background-color: transparent !important;
       color: #fff2;

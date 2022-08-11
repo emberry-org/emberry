@@ -23,8 +23,9 @@
   display: flex;
   flex-direction: column;
 
-  background-color: #292a2c;
-  border-bottom-left-radius: 12px;
+  background-color: var(--bg);
+  //border-left: 1.5px solid var(--fg);
+  //border-bottom-left-radius: 12px;
   //border-bottom: 1.5px solid #37393d;
 }
 

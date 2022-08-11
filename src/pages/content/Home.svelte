@@ -25,7 +25,7 @@
 </script>
 
 <div class="home">
-  <div class="toolbar" />
+  <!-- <div class="toolbar" /> -->
 
   <div class="card">
 
