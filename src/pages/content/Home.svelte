@@ -121,7 +121,7 @@
         }
 
         input {
-          background-color: var(--fg);
+          background-color: var(--mg);
           border: 2px solid var(--tb);
           border-radius: 6px;
           color: #ccc;
@@ -132,7 +132,7 @@
           outline: none;
 
           &:hover {
-            background-color: var(--ffg);
+            background-color: var(--fg);
             border: 2px solid var(--tb);
           }
         }
@@ -141,7 +141,7 @@
       :global(svg) {
         max-width: 200px;
         max-height: 200px;
-        color: var(--ffg);
+        color: #fff1;
       }
     }
   }
