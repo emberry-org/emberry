@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Body, Footer, Titlebar } from "@page/structure";
+  import { Body, Titlebar } from "@page/structure";
   import CommandCenter from '@lib/window/CommandCenter.svelte';
   import { commandCenterState } from "@store";
   import setupOS from "@core/utils/OppSys";
@@ -31,8 +31,6 @@
     <Titlebar />
 
     <Body />
-
-    <Footer />
   </div>
 
 </main>

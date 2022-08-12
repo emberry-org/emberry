@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Home, Chat } from "@page/content";
   import { Router, Route } from "svelte-navigator";
+import Statusbar from "./Statusbar.svelte";
 
 </script>
 
@@ -13,6 +14,8 @@
       <Chat id={params.id} />
     </Route>
   </Router>
+
+  <Statusbar />
 </div>
 
 <style lang="scss">

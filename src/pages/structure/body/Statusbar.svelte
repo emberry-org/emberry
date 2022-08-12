@@ -93,11 +93,11 @@
   }
 
   .purple {
-    background-color: #273628;
+    background-color: #483522;
     border-top-left-radius: 6px;
 
     p {
-      color: #8ea791;
+      color: #fff7;
     }
   }
 }

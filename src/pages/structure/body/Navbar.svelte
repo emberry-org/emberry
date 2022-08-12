@@ -1,5 +1,22 @@
 <script lang="ts">
   import Icon from "@lib/Icon.svelte";
+  import ProfileDetails from "@lib/ProfileDetails.svelte";
+  import Modal from '@lib/generic/modal/Modal.svelte';
+  import { onMount } from "svelte";
+  import { getProfilePicture, onProfilePictureChanged } from "@store";
+
+
+  $: profileImage = 'background-image: url(data:image/png;base64,' + profilePicture + ')';
+
+  let profilePicture = '';
+
+  onMount(() => {
+    // Get the profile picture from storage.
+    profilePicture = getProfilePicture();
+    if (!profilePicture) profilePicture = '';
+    // Setup the on profile picture changed event.
+    onProfilePictureChanged((newimg) => { profilePicture = newimg });
+  });
 
 </script>
 
@@ -14,9 +31,15 @@
     <Icon name="navigation/settings" size="24px" />
   </div>
 
-  <!-- <div class="item profile">
-    <div class="profile-picture" />
-  </div> -->
+  <div class="item profile">
+    <Modal orientation="ne" margins="0 0 -30px 72px" arrow="false">
+      <div class="profile-picture" slot="btn" style="{ profileImage }">
+      
+      </div>
+
+      <ProfileDetails slot="mdl" />
+    </Modal>
+  </div>
 </div>
 
 <style lang="scss">
@@ -60,9 +83,11 @@
     &.profile {
       background-color: transparent !important;
       margin-top: auto;
+      margin-bottom: 12px;
 
       .profile-picture {
         cursor: pointer;
+        margin-left: 9px;
       }
     }
   }

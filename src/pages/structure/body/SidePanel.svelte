@@ -14,13 +14,14 @@
 <style lang="scss">
 
 .side-panel {
-  width: 248px;
-  min-width: 248px;
+  width: 248px; //calc(248px - 3px);
+  min-width: 248px; //calc(248px - 3px);
   flex-grow: 1;
 
   display: flex;
   flex-direction: column;
-  //border-left: 1.5px solid var(--tb);
+  //border-left: 1.5px solid #fff2;
+  //border-right: 1.5px solid #fff2;
 
   .toolbar {
     width: 100%;
