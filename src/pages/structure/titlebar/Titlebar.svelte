@@ -173,7 +173,7 @@
 <style lang="scss">
 
 .titlebar {
-  position: absolute;
+  //position: absolute;
 
   width: 100vw;
   height: 36px;

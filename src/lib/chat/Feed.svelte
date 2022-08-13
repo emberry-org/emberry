@@ -49,7 +49,7 @@
 
 .feed {
   width: 100%;
-  height: calc(100vh - 131px - 16px);
+  height: calc(100vh - 172px - 16px);
 
   display: block;
   //flex-direction: column;

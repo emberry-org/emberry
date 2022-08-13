@@ -94,8 +94,9 @@
   }
 
   .purple {
-    background-color: #3d301f;
+    //background-color: #3d301f;
     border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
 
     p {
       color: #fff7;

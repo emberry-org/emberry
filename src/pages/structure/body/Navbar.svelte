@@ -52,7 +52,6 @@
   align-items: center;
 
   background-color: var(--bg);
-  border-right: 2px solid var(--mg);
 
   .item {
     width: 52px;

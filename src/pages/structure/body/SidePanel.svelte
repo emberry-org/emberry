@@ -20,21 +20,21 @@
 
   display: flex;
   flex-direction: column;
+
+  background-color: var(--mg);
+  margin-bottom: 24px;
+  border-radius: 10px;
   //border-left: 1.5px solid #fff2;
   //border-right: 1.5px solid #fff2;
 
   .toolbar {
     width: 100%;
     height: 30.5px;
-
-    background-color: var(--mg);
   }
 
   .panel {
     width: 100%;
     flex-grow: 1;
-
-    background-color: var(--mg);
   }
 }
 
