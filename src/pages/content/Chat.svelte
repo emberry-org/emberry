@@ -131,6 +131,7 @@
   display: flex;
   flex-direction: column;
   position: absolute;
+  background-color: var(--mg);
 
   .toolbar {
     pointer-events: all;

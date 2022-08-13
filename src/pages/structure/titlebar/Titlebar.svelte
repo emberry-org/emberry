@@ -408,11 +408,11 @@
     border: none;
     z-index: 1;
 
-    background-color: var(--bg);
+    background-color: #fff0;
     color: #fff;
 
     &:hover {
-      background-color: var(--mg);
+      background-color: #fff1;
     }
 
     &.close:hover {
