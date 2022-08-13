@@ -2,6 +2,7 @@
   import Icon from "@lib/Icon.svelte";
   import { insertTab, navigateTo } from "@store";
   import { invoke } from "@tauri-apps/api/tauri";
+  import { fade } from 'svelte/transition';
 
   let chatId: string;
   let error: string = '';
@@ -24,7 +25,7 @@
   }
 </script>
 
-<div class="home">
+<div class="home" transition:fade={{ duration: 200 }}>
   <!-- <div class="toolbar" /> -->
 
   <div class="card">

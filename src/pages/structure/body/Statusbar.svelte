@@ -46,6 +46,7 @@
   display: flex;
 
   background-color: var(--bg);
+  margin-top: auto;
 
   user-select: none;
   -webkit-user-select: none;

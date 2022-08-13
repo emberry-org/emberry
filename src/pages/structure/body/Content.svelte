@@ -8,10 +8,14 @@ import Statusbar from "./Statusbar.svelte";
 <div class="content">
   <Router primary={false}>
     <Route path="/">
-      <Home />
+      <div class="wrapper">
+        <Home />
+      </div>
     </Route>
     <Route path="/chat/:id" let:params>
-      <Chat id={params.id} />
+      <div class="wrapper">
+        <Chat id={params.id} />
+      </div>
     </Route>
   </Router>
 
@@ -27,9 +31,18 @@ import Statusbar from "./Statusbar.svelte";
   flex-direction: column;
 
   background-color: var(--bg);
+  position: relative;
   //border-left: 1.5px solid var(--fg);
   //border-bottom-left-radius: 12px;
   //border-bottom: 1.5px solid #37393d;
+
+  .wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
 }
 
 </style>

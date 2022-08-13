@@ -6,6 +6,7 @@
   import { toPacket } from '@core/messages/Packet';
   import type Msg from '@core/messages/Msg';
   import { InputBox } from '@core/input-box';
+  import { fade } from 'svelte/transition';
 
   export let id: string;
 
@@ -102,7 +103,7 @@
 
 </script>
 
-<div class="chat">
+<div class="chat" transition:fade={{ duration: 200 }}>
 
   <div class="toolbar">
     <div class="profile-picture" style="" />
@@ -129,7 +130,7 @@
 
   display: flex;
   flex-direction: column;
-  position: relative;
+  position: absolute;
 
   .toolbar {
     pointer-events: all;
