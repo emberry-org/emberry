@@ -1,5 +1,22 @@
 <script lang="ts">
   import Icon from "@lib/Icon.svelte";
+  import ProfileDetails from "@lib/ProfileDetails.svelte";
+  import Modal from '@lib/generic/modal/Modal.svelte';
+  import { onMount } from "svelte";
+  import { getProfilePicture, navigateTo, onProfilePictureChanged } from "@store";
+
+
+  $: profileImage = 'background-image: url(data:image/png;base64,' + profilePicture + ')';
+
+  let profilePicture = '';
+
+  onMount(() => {
+    // Get the profile picture from storage.
+    profilePicture = getProfilePicture();
+    if (!profilePicture) profilePicture = '';
+    // Setup the on profile picture changed event.
+    onProfilePictureChanged((newimg) => { profilePicture = newimg });
+  });
 
 </script>
 
@@ -7,15 +24,19 @@
   <div class="item logo">
     <Icon name="app/logo" size="28px" />
   </div>
-  <div class="item">
-    <Icon name="navigation/settings" size="24px" />
-  </div>
-  <div class="item">
-    <Icon name="navigation/settings" size="24px" />
+  <div class="item" on:click={() => navigateTo('/')}>
+    <Icon name="navigation/home" size="24px" />
   </div>
 
+  <div class="item top-auto">
+    <Icon name="navigation/settings" size="24px" />
+  </div>
   <div class="item profile">
-    <div class="profile-picture" />
+    <Modal orientation="ne" margins="0 0 -30px 72px" arrow="false">
+      <div class="profile-picture" slot="btn" style="{ profileImage }" />
+
+      <ProfileDetails slot="mdl" />
+    </Modal>
   </div>
 </div>
 
@@ -31,6 +52,7 @@
   align-items: center;
 
   background-color: var(--bg);
+  border-right: 2px solid var(--mg);
 
   .item {
     width: 52px;
@@ -50,10 +72,12 @@
       color: #ccc;
     }
 
+    &.top-auto {
+      margin-top: auto;
+    }
+
     &.logo {
-      height: 35px;
-      margin-bottom: 13px;
-      margin-top: 0;
+      margin-top: 8px;
 
       background-color: transparent !important;
       color: #fff2;
@@ -61,10 +85,12 @@
 
     &.profile {
       background-color: transparent !important;
-      margin-top: auto;
+      margin-bottom: 12px;
 
       .profile-picture {
         cursor: pointer;
+        margin-left: 9px;
+        margin-top: 9px;
       }
     }
   }

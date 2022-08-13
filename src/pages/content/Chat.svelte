@@ -105,6 +105,8 @@
 <div class="chat">
 
   <div class="toolbar">
+    <div class="profile-picture" style="" />
+
     <span class="username">{ peerName }</span>
   </div>
 
@@ -123,7 +125,7 @@
 
 .chat {
   width: 100%;
-  height: 100%;
+  height: calc(100% - 24px);
 
   display: flex;
   flex-direction: column;
@@ -133,28 +135,32 @@
     pointer-events: all;
 
     width: 100%;
-    height: 30.5px;
-    min-height: 30.5px;
-
-    background-color: #37383a;
-    border-top: 1.5px solid #fff2;
-    border-bottom: 1.5px solid #fff1;
+    height: 52px;
+    min-height: 52px;
+    margin-top: 7px;
 
     display: flex;
     align-items: center;
 
+    .profile-picture {
+      margin-left: 20px;
+    }
+
     .username {
       font-family: Inter;
       font-weight: 500;
-      font-size: 14px;
+      font-size: 16px;
       color: #ddd;
 
-      margin-left: 10px;
+      margin-left: 20px;
       overflow: hidden;
       pointer-events: all;
       background-color: transparent;
       outline: none;
       border: none;
+
+      user-select: none;
+      -webkit-user-select: none;
     }
   }
 
