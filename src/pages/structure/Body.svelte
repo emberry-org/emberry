@@ -7,11 +7,9 @@
 
   <Navbar />
   
-  <div class="left-side">
+  <!-- <div class="left-side">
     <SidePanel />
-    
-    <!-- <Navbar /> -->
-  </div>
+  </div> -->
 
   <Content />
 

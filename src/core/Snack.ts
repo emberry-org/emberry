@@ -2,7 +2,7 @@ export interface Snack {
     title: string;
     description: string;
 
-    actions: SnackAction[];
+    actions?: SnackAction[];
 }
 
 export interface SnackAction {

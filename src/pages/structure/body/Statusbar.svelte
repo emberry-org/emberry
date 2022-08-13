@@ -93,7 +93,7 @@
   }
 
   .purple {
-    background-color: #483522;
+    background-color: #3d301f;
     border-top-left-radius: 6px;
 
     p {

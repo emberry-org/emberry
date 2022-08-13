@@ -75,23 +75,25 @@
         <Icon name="notifications/connect" size="16px" />
         <div class="title">{snack.title}</div>
         <button class="close" on:click={() => removeSnack(snacks.length - i - 1)}>
-          <Icon name="window/close" size="20px" />
+          <Icon name="navigation/close" size="20px" />
         </button>
       </header>
       
       <div class="body">
         <div class="desc">{snack.description}</div>
 
-        <div class="actions">
-          {#each snack.actions as action}
-            <button class="action { action.class }" 
-              on:click={() => { invokeAction(action.key, action.isCommand, action.payload); 
-              removeSnack(snacks.length - i - 1); }}
-            >
-              {action.label}
-            </button>
-          {/each}
-        </div>
+        {#if snack.actions}
+          <div class="actions">
+            {#each snack.actions as action}
+              <button class="action { action.class }" 
+                on:click={() => { invokeAction(action.key, action.isCommand, action.payload); 
+                removeSnack(snacks.length - i - 1); }}
+              >
+                {action.label}
+              </button>
+            {/each}
+          </div>
+        {/if}
       </div>
 
     </div>
@@ -123,8 +125,8 @@
     pointer-events: all !important;
     z-index: 100;
 
-    background-color: var(--mg);
-    border: 2px solid var(--tb2);
+    background-color: #332f2d;
+    border: 2px solid #403d3a;
     box-shadow: 0 8px 24px #1c1c1c;
     border-radius: 8px;
 
@@ -139,7 +141,8 @@
       padding-left: 8px;
       margin-bottom: 6px;
 
-      background-color: var(--fg);
+      background-color: #332f2d;
+      border-bottom: 2px solid #403d3a;
       border-top-left-radius: 6px;
       border-top-right-radius: 6px;
 
@@ -149,7 +152,7 @@
       }
       
       .title {
-        color: #ccc;
+        color: #cfc9c6;
         font-size: 14px;
       }
 
@@ -166,12 +169,12 @@
         background-color: #0000;
         border: none;
         outline: none;
-        color: #888;
+        color: #504d4a;
   
         cursor: pointer;
   
         &:hover {
-          color: #ddd;
+          color: #afa9a6;
         }
       }
     }
@@ -184,8 +187,8 @@
 
       .desc {
         font-size: 14px;
-        color: #aaa;
-        margin-bottom: 3px;
+        color: #afa9a6;
+        margin-bottom: 6px;
       }
 
       .actions {
