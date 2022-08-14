@@ -176,8 +176,8 @@
   //position: absolute;
 
   width: 100vw;
-  height: 36px;
-  min-height: 36px;
+  height: 27px;
+  min-height: 27px;
   
   display: flex;
   align-items: flex-start;
@@ -398,7 +398,7 @@
   .button {
     width: 46.5px;
     min-width: 46.5px;
-    height: 36px;
+    height: 27px;
 
     display: flex;
     justify-content: center;

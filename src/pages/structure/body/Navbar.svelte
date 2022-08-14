@@ -76,15 +76,13 @@
     }
 
     &.logo {
-      margin-top: 8px;
-
       background-color: transparent !important;
       color: #fff2;
     }
 
     &.profile {
       background-color: transparent !important;
-      margin-bottom: 12px;
+      margin-bottom: 24px;
 
       .profile-picture {
         cursor: pointer;
