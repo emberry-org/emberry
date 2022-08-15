@@ -8,5 +8,6 @@ export default defineConfig({
   optimizeDeps: { exclude: ["svelte-navigator"] },
   server: {
     hmr: { overlay: false },
+    port: 3000
   },
 })
