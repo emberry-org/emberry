@@ -25,7 +25,7 @@
     if (history) messages = history; else messages = [];
 
     // Retrieve the username from the store.
-    myName = getUsername();
+    myName = getUsername() ?? "NoName";
     onUsernameChanged((newName => { myName = newName; sendUsername(); }));
     sendUsername();
 
