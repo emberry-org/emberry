@@ -20,6 +20,12 @@ export const CmdArchive: Cmd[] = [
   { title: 'Connect Tls', type: CmdType.Debug, accelerator: [], action: 'connect', input: false },
 
   {
+    title: 'Request Room', type: CmdType.Debug, accelerator: [], action: (s: String) =>
+      invoke("request_room", { user: { key: s } }).then(err => console.log(`![${s}] -> `, err)),
+    input: true
+  },
+
+  {
     title: 'Attempt Connection', type: CmdType.Debug, accelerator: [], action: (s: String) => {
 
       invoke('hole_punch', { peerKey: s }).then((id: String) => {
