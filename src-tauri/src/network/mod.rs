@@ -53,7 +53,7 @@ pub async fn hole_punch(
 ) -> tauri::Result<()> {
   /* Get the server ip from .env */
 
-  let identity = base64::encode_config(&room_id.0, base64::URL_SAFE);
+  let identity = bs58::encode(&room_id.0).into_string();
 
   window
     .emit("punching", &identity)
