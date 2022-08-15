@@ -92,7 +92,7 @@
 
     if (typeof cmd.action == 'string') {
       // If this command has an action that is just a string then call the backend method with that name.
-      invoke(backendAction).then(err => console.log(`![${backendAction}] -> `, err));
+      invoke(backendAction).catch(err => console.log(`![${backendAction}] -> `, err));
       commandCenterState.set(false);
       inputMode = false;
     } else if (cmd.input == true) {

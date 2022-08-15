@@ -20,8 +20,10 @@ export const CmdArchive: Cmd[] = [
   { title: 'Connect Tls', type: CmdType.Debug, accelerator: [], action: 'connect', input: false },
 
   {
-    title: 'Request Room', type: CmdType.Debug, accelerator: [], action: (s: String) =>
-      invoke("request_room", { user: { key: s } }).then(err => console.log(`![${s}] -> `, err)),
+    title: 'Request Room', type: CmdType.Debug, accelerator: [], action: (s: string) => {
+      let utf8Encode = new TextEncoder();
+      invoke("request_room", { usr: { key: Array.from(utf8Encode.encode(s)) } }).then(err => console.log(`![${s}] -> `, err))
+    },
     input: true
   },
 

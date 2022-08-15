@@ -48,6 +48,16 @@
         ]
       });
     });
+
+    listen('no-route', (e: any) => {
+      const usrkey = e.payload.usr;
+      const pending = e.payload.pending;
+
+      addSnack({
+        title: "No Route",
+        description: `${ usrkey } doesn't exist. (pending: ${ pending })`,
+      });
+    });
   });
 
   /** Invoke a snackbar action */
