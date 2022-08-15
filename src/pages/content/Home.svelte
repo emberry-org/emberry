@@ -2,15 +2,23 @@
   import Icon from "@lib/Icon.svelte";
   import { insertTab, navigateTo } from "@store";
   import { invoke } from "@tauri-apps/api/tauri";
+  import { listen } from '@tauri-apps/api/event';
   import { fade } from 'svelte/transition';
+  import { onMount } from "svelte";
 
   let chatId: string;
   let error: string = '';
   let connecting: boolean = false;
 
+  onMount(() => {
+    listen("new-room", (event) => {
+      navigateTo('/chat/' + event.payload);
+    });
+  });
+
   function attemptConnect() {
 
-    navigateTo('/chat/1234');
+    //navigateTo('/chat/1234');
     return;
 
     connecting = true;
