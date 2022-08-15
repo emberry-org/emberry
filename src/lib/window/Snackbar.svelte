@@ -50,12 +50,12 @@
     });
 
     listen('no-route', (e: any) => {
-      const usrkey = e.payload.usr;
+      //const usrkey = e.payload.usr.key;
       const pending = e.payload.pending;
 
       addSnack({
         title: "No Route",
-        description: `${ usrkey } doesn't exist. (pending: ${ pending })`,
+        description: `User doesn't exist. (pending: ${ pending })`,
       });
     });
   });
