@@ -18,7 +18,7 @@
 
   function attemptConnect() {
 
-    //navigateTo('/chat/1234');
+    navigateTo('/chat/1234');
     return;
 
     connecting = true;

@@ -12,7 +12,6 @@
 
   background-color: #383838;
   border: 2px solid #ffffff11;
-  outline: none;
   border-radius: 8px;
 
   user-select: none;
@@ -22,25 +21,8 @@
   white-space: pre-wrap !important;
   color: #ddd;
 
-  .text-line {
-    width: 100%;
-    min-height: 22px;
-
-    font-size: 16px;
-    word-break: break-word;
-    white-space: break-spaces;
-    line-height: 22px;
-
-    span.text {
-      color: #ddd;
-
-      span.bold {
-        font-weight: bold;
-      }
-
-      span.italic {
-        font-style: italic;
-      }
-    }
+  // Prose Mirror Rich Text Editor
+  .ProseMirror {
+    outline: none !important;
   }
 }
