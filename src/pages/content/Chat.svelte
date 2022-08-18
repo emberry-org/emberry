@@ -6,7 +6,7 @@
   import { toPacket } from '@core/messages/Packet';
   import type Msg from '@core/messages/Msg';
   import { fade } from 'svelte/transition';
-  import { Editor } from '@tiptap/core'
+  import { Editor, Extension } from '@tiptap/core'
   import { Bold } from '@core/tiptap-ext/bold';
   import { Text } from '@core/tiptap-ext/text';
   import { Document } from '@core/tiptap-ext/doc';
@@ -40,15 +40,21 @@
         Document,
         Paragraph,
         Bold,
+
+        new class extends Extension {
+          keys() {
+            return {
+              Enter(state, dispatch, view) {
+                sendMessage();
+                console.log('test');
+                // return true prevents default behaviour
+                return true
+              },
+            }
+          }
+        }() as any,
       ],
       content: `<p>Hello world!</p>`,
-    });
-    inputElement.addEventListener('keyup', (e) => {
-      e.preventDefault();
-      // if (e.da == "Enter") {
-        
-      // }
-      console.log(e);
     });
   });
 
@@ -146,13 +152,12 @@
 
 .chat {
   width: 100%;
-  height: calc(100% - 24px);
+  height: 100%;
 
   display: flex;
   flex-direction: column;
   position: absolute;
   background-color: var(--fg);
-  border-radius: 10px;
 
   .toolbar {
     pointer-events: all;

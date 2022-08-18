@@ -1,7 +1,6 @@
 <script lang="ts">
   import { Home, Chat } from "@page/content";
   import { Router, Route } from "svelte-navigator";
-import Statusbar from "./Statusbar.svelte";
 
 </script>
 
@@ -18,8 +17,6 @@ import Statusbar from "./Statusbar.svelte";
       </div>
     </Route>
   </Router>
-
-  <Statusbar />
 </div>
 
 <style lang="scss">
@@ -32,7 +29,6 @@ import Statusbar from "./Statusbar.svelte";
 
   background-color: var(--bg);
   position: relative;
-  margin-left: 16px;
   //border-left: 1.5px solid var(--fg);
   //border-bottom-left-radius: 12px;
   //border-bottom: 1.5px solid #37393d;

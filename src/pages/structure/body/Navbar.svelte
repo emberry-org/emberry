@@ -43,9 +43,9 @@
 <style lang="scss">
 
 .navbar {
-  width: 66px;
+  width: 72px;
   height: 100%;
-  min-width: 66px;
+  min-width: 72px;
 
   display: flex;
   flex-direction: column;
@@ -78,11 +78,12 @@
     &.logo {
       background-color: transparent !important;
       color: #fff2;
+      margin-top: 1px;
     }
 
     &.profile {
       background-color: transparent !important;
-      margin-bottom: 24px;
+      margin-bottom: 12px;
 
       .profile-picture {
         cursor: pointer;
