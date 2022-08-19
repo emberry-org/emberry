@@ -27,19 +27,5 @@ export const CmdArchive: Cmd[] = [
     input: true
   },
 
-  {
-    title: 'Attempt Connection', type: CmdType.Debug, accelerator: [], action: (s: String) => {
-
-      invoke('hole_punch', { peerKey: s }).then((id: String) => {
-        // Create a new tab once the chat has been created.
-        insertTab({ icon: 'chat', title: id.substring(0, 6), path: '/chat/' + id, keep_open: true });
-        // Navigate to the chat tab.
-        navigateTo('/chat/' + id);
-      });
-    },
-
-    input: true, input_desc: 'Enter peer public key...'
-  },
-
   { title: 'Clear Chat History', type: CmdType.Debug, accelerator: [], action: () => { clearChatHistory(); }, input: false }
 ];
