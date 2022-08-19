@@ -13,10 +13,6 @@
 
   <Content />
 
-  <div class="right-side">
-
-  </div>
-
 </div>
 
 <style lang="scss">
@@ -36,13 +32,6 @@
     flex-direction: column;
 
     //border-bottom: 1.5px solid #ffffff10;
-  }
-
-  .right-side {
-    width: 24px;
-    height: 100%;
-
-    background-color: var(--bg);
   }
 }
 

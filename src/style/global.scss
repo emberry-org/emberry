@@ -58,6 +58,11 @@ p,
   color: #aaa;
 }
 
+p {
+  margin-block: 0;
+  margin-inline: 0;
+}
+
 .text-small {
   color: #666;
 }

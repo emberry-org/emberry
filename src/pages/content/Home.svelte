@@ -18,7 +18,7 @@
 
   function attemptConnect() {
 
-    //navigateTo('/chat/1234');
+    navigateTo('/chat/1234');
     return;
 
     connecting = true;
@@ -62,24 +62,25 @@
     align-items: center;
 
     color: #00000033;
+    //background-color: var(--fg);
     position: relative;
     overflow: hidden;
 
-    &::before {
-      content: "";
-      position: absolute;
-      width: 350px;
-      height: 400px;
-      pointer-events: none;
-      border-radius: 50%;
+    // &::before {
+    //   content: "";
+    //   position: absolute;
+    //   width: 350px;
+    //   height: 400px;
+    //   pointer-events: none;
+    //   border-radius: 50%;
 
-      filter: blur(50px) saturate(150%);
-      //background: radial-gradient(at 27% 37%,#3a8bfd 0,transparent 50%),radial-gradient(at 97% 21%,#9772fe 0,transparent 50%),radial-gradient(at 52% 99%,#fd3a4e 0,transparent 50%),radial-gradient(at 10% 29%,#5afc7d 0,transparent 50%),radial-gradient(at 97% 96%,#e4c795 0,transparent 50%),radial-gradient(at 33% 50%,#8ca8e8 0,transparent 50%),radial-gradient(at 79% 53%,#eea5ba 0,transparent 50%);
-      background: radial-gradient(at 27% 37%,#fd833a 0,transparent 50%),radial-gradient(at 97% 21%,#feef72 0,transparent 50%),radial-gradient(at 52% 99%,#fd3a4e 0,transparent 50%),radial-gradient(at 10% 29%,#5afc7d 0,transparent 50%),radial-gradient(at 97% 96%,#e4c795 0,transparent 50%),radial-gradient(at 33% 50%,#e88c8c 0,transparent 50%),radial-gradient(at 79% 53%,#eea5ba 0,transparent 50%);
-      background-repeat: no-repeat;
-      background-position: center;
-      opacity: .2;
-    }
+    //   filter: blur(50px) saturate(150%);
+    //   //background: radial-gradient(at 27% 37%,#3a8bfd 0,transparent 50%),radial-gradient(at 97% 21%,#9772fe 0,transparent 50%),radial-gradient(at 52% 99%,#fd3a4e 0,transparent 50%),radial-gradient(at 10% 29%,#5afc7d 0,transparent 50%),radial-gradient(at 97% 96%,#e4c795 0,transparent 50%),radial-gradient(at 33% 50%,#8ca8e8 0,transparent 50%),radial-gradient(at 79% 53%,#eea5ba 0,transparent 50%);
+    //   background: radial-gradient(at 27% 37%,#fd833a 0,transparent 50%),radial-gradient(at 97% 21%,#feef72 0,transparent 50%),radial-gradient(at 52% 99%,#fd3a4e 0,transparent 50%),radial-gradient(at 10% 29%,#5afc7d 0,transparent 50%),radial-gradient(at 97% 96%,#e4c795 0,transparent 50%),radial-gradient(at 33% 50%,#e88c8c 0,transparent 50%),radial-gradient(at 79% 53%,#eea5ba 0,transparent 50%);
+    //   background-repeat: no-repeat;
+    //   background-position: center;
+    //   opacity: .2;
+    // }
 
     // .toolbar {
     //   position: absolute;

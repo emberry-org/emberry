@@ -5,12 +5,16 @@
   import { getChatHistory, getUsername, insertChatHistory, onUsernameChanged } from '@store';
   import { toPacket } from '@core/messages/Packet';
   import type Msg from '@core/messages/Msg';
-  import { InputBox } from '@core/input-box';
   import { fade } from 'svelte/transition';
+  import { Editor, Extension } from '@tiptap/core'
+  import { Bold } from '@core/tiptap-ext/bold';
+  import { Text } from '@core/tiptap-ext/text';
+  import { Document } from '@core/tiptap-ext/doc';
+  import { Paragraph } from '@core/tiptap-ext/p';
 
   export let id: string;
 
-  let input: InputBox;
+  let input: Editor;
   let inputElement: HTMLDivElement;
   
   let myName = 'Me';
@@ -25,12 +29,33 @@
     if (history) messages = history; else messages = [];
 
     // Retrieve the username from the store.
-    myName = getUsername();
+    myName = getUsername() ?? "NoName";
     onUsernameChanged((newName => { myName = newName; sendUsername(); }));
     sendUsername();
 
-    input = new InputBox(inputElement, sendMessage);
-    input.setValue('');
+    input = new Editor({
+      element: inputElement,
+      extensions: [
+        Text,
+        Document,
+        Paragraph,
+        Bold,
+
+        new class extends Extension {
+          keys() {
+            return {
+              Enter(state, dispatch, view) {
+                sendMessage();
+                console.log('test');
+                // return true prevents default behaviour
+                return true
+              },
+            }
+          }
+        }() as any,
+      ],
+      content: `<p>Hello world!</p>`,
+    });
   });
 
   async function updateHistory() {
@@ -72,7 +97,7 @@
   /** Send a message to the peer */
   function sendMessage() {
     const time = getTime();
-    const msg = input.getValue();
+    const msg = input.getText();
 
     // Push the message into the messages array.
     messages.push({ sender: myName, content: msg, time });
@@ -87,7 +112,7 @@
     messages = [...messages];
 
     // Empty the input box.
-    input.setValue('');
+    input.commands.clearContent();
   }
 
   /** Send a new username to the peer */
@@ -117,7 +142,8 @@
 
   <div class="input">
     <!-- <input type="text" bind:value={ inputBox } on:keypress={ keyPressed }> -->
-    <div class="inputbox" contenteditable="true" bind:this={inputElement} on:keypress={keyPressed} />
+    <!-- <div class="inputbox" contenteditable="true" bind:this={inputElement} on:keypress={keyPressed} /> -->
+    <div class="inputbox" bind:this={inputElement} />
   </div>
 
 </div>
@@ -126,13 +152,12 @@
 
 .chat {
   width: 100%;
-  height: calc(100% - 24px);
+  height: 100%;
 
   display: flex;
   flex-direction: column;
   position: absolute;
   background-color: var(--fg);
-  border-radius: 10px;
 
   .toolbar {
     pointer-events: all;

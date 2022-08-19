@@ -5,6 +5,7 @@
   import setupOS from "@core/utils/OppSys";
   import { onMount } from "svelte";
   import Snackbar from "@lib/window/Snackbar.svelte";
+import Statusbar from "@page/structure/body/Statusbar.svelte";
 
   onMount(() => {
     setupOS();
@@ -31,6 +32,8 @@
     <Titlebar />
 
     <Body />
+
+    <Statusbar />
   </div>
 
 </main>
