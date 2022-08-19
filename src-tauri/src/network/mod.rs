@@ -3,29 +3,42 @@ use std::io::{Error, ErrorKind};
 use std::net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr};
 use std::sync::{Arc, Mutex};
 
+use smoke::messages::RoomId;
+use smoke::User;
 use tauri::EventHandler;
 
 use tokio::net::UdpSocket;
 use tokio::select;
 use tokio::sync::oneshot;
 
+pub mod ctrl_chnl;
 pub mod message;
 use message::Message;
 
-type ConnectionMap = HashMap<String, Connection>;
+pub const ENV: Config = Config {
+  public_key: dotenv!("PUBLIC_KEY"),
+  server_address: dotenv!("SERVER_ADDRESS"),
+};
+
+type ConnectionMap = HashMap<RoomId, Connection>;
 pub struct Connection {
   pub send_handle: EventHandler,
   pub recv_handle: oneshot::Sender<()>,
 }
 
-pub struct Networking {
-  pub chats: Mutex<ConnectionMap>,
+pub enum RRState{
+  Pending,
+  Agreement,
 }
 
-#[derive(serde::Deserialize, Debug)]
-struct Config {
-  server_address: String,
-  public_key: String,
+pub struct Networking {
+  pub chats: Mutex<ConnectionMap>,
+  pub pending: Mutex<HashMap<User, RRState>>,
+}
+
+pub struct Config<'a> {
+  server_address: &'a str,
+  public_key: &'a str,
 }
 
 #[derive(Clone, serde::Serialize)]
@@ -33,33 +46,21 @@ struct MessageRecievedPayload {
   message: Message,
 }
 
-#[tauri::command(async)]
 pub async fn hole_punch(
   window: tauri::Window,
   state: tauri::State<'_, Networking>,
-  peer_key: String,
-) -> Result<String, String> {
+  room_id: RoomId,
+) -> tauri::Result<()> {
   /* Get the server ip from .env */
-  let env = Config {
-    public_key: dotenv!("PUBLIC_KEY").into(),
-    server_address: dotenv!("SERVER_ADDRESS").into(),
-  };
 
-  if env.public_key == peer_key {
-    return Err("Cannot connect to oneself".into());
-  }
+  let identity = bs58::encode(&room_id.0).into_string();
 
-  let identity = if env.public_key.as_bytes() < peer_key.as_bytes() {
-    format!("{}{}", env.public_key, peer_key)
-  } else {
-    format!("{}{}", peer_key, env.public_key)
-  };
+  window
+    .emit("punching", &identity)
+    .expect("Failed to emit WantsRoom event");
 
   /* Holepunch using rhizome */
-  let socket = match punch_hole(env.server_address, identity.as_bytes()).await {
-    Ok(socket) => socket,
-    Err(e) => return Err(e.to_string()),
-  };
+  let socket = punch_hole(ENV.server_address, &room_id.0).await?;
 
   let arc_sock = Arc::new(socket);
 
@@ -67,7 +68,11 @@ pub async fn hole_punch(
   let sender = arc_sock.clone();
   let send_handle = window.listen(format!("send_message_{}", identity), move |e| {
     let sender = sender.clone();
-    let msg = serde_json::from_str::<Message>(e.payload().unwrap()).unwrap();
+    let msg = serde_json::from_str::<Message>(
+      e.payload()
+        .expect("Invalid payload in send_message_<id> event"),
+    )
+    .expect("Invalid Json inside of payload from send_message_<id> event");
     tokio::spawn(async move { msg.send_with(&sender).await });
   });
 
@@ -75,14 +80,16 @@ pub async fn hole_punch(
   let (recv_handle, mut rx) = oneshot::channel::<()>();
   let mut buf = [0u8; 512];
   let emit_identity = identity.clone();
+  let spawn_window = window.clone();
   tokio::spawn(async move {
+    let event_name = format!("message_recieved_{}", emit_identity);
     loop {
       select! {
           Ok(msg) = Message::recv_from(&arc_sock, &mut buf) => {
 
         /* Emit the message_recieved event when a message is recieved */
-        window
-          .emit(format!("message_recieved_{}", &emit_identity).as_str(), MessageRecievedPayload { message: msg })
+        spawn_window
+          .emit(&event_name, MessageRecievedPayload { message: msg })
           .expect("Failed to emit event");
 
         },
@@ -97,13 +104,15 @@ pub async fn hole_punch(
     recv_handle,
     send_handle,
   };
-  state.chats.lock().unwrap().insert(identity.clone(), con);
-
-  Ok(identity)
+  state.chats.lock().unwrap().insert(room_id.clone(), con);
+  window
+    .emit("new-room", &identity)
+    .expect("Failed to emit WantsRoom event");
+  Ok(())
 }
 
 #[tauri::command]
-pub fn chat_exists(state: tauri::State<'_, Networking>, id: String) -> bool {
+pub fn chat_exists(state: tauri::State<'_, Networking>, id: RoomId) -> bool {
   // Check if the store contains the key for this chat.
   match state.chats.lock() {
     Ok(chats) => chats.contains_key(&id),

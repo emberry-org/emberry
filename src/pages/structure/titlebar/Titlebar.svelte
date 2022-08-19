@@ -7,7 +7,7 @@
   import { onMount } from 'svelte';
   import Pub from './Pub.svelte';
   import Modal from '@lib/generic/modal/Modal.svelte';
-  import { resizeBase64Image } from '@core/Img';
+  import { resizeBase64Image } from '@core/utils/Img';
   //import Dialog from '@lib/generic/dialog/Dialog.svelte';
 
   $: maximized = false;
@@ -98,23 +98,23 @@
 
 </script>
 
-<div class="titlebar" style="--maximized: { maximized || hideDecorations ? '0px' : '1px' }" hidden={hideDecorations}>
+<div class="titlebar" style="--maximized: { maximized || hideDecorations ? '0px' : '1px' }" hidden={hideDecorations} data-tauri-drag-region={!hideDecorations || null}>
   
   <div class="left" data-tauri-drag-region={!hideDecorations || null}>
     <!-- Makes sure you can always drag the window -->
-    {#if !hideDecorations} <div class="drag-square"> <Icon name="app/logo" size="24px" /> </div> {/if}
+    <!-- {#if !hideDecorations} <div class="drag-square"> <Icon name="app/logo" size="24px" /> </div> {/if}
 
     <div class="profile { maximized || hideDecorations ? 'ml' : '' }">
 
       <Modal orientation="se" margins="6px 0 0 5px" arrow="false">
-        <div class="img" slot="btn" style="{ profileImage }">
+        <div class="profile-picture" slot="btn" style="{ profileImage }">
         
         </div>
 
         <div class="details" slot="mdl">
           <div class="media">
             <div class="banner" />
-            <div class="picture" on:click={uploadPicture} style="{ profileImage }">
+            <div class="profile-picture lg" on:click={uploadPicture} style="{ profileImage }">
               <Icon name="file/upload" size="32px" />
             </div>
           </div>
@@ -129,7 +129,7 @@
                 <button class="btn float-right" on:click={revertUsername}>
                   Revert
                 </button>
-                <button class="btn apply" on:click={applyUsername}>
+                <button class="btn positive" on:click={applyUsername}>
                   Apply
                 </button>
               {:else}
@@ -148,13 +148,13 @@
         <p>#1234</p>
       </div>
 
-    </div>
+    </div> -->
 
   </div>
 
   <div class="right" data-tauri-drag-region={!hideDecorations || null}>
 
-    <Pub />
+    <!-- <Pub /> -->
 
     <div class="button float-right" on:click={minimize}>
       <Icon name="window/minimize" />
@@ -173,286 +173,220 @@
 <style lang="scss">
 
 .titlebar {
+  //position: absolute;
+
   width: 100vw;
-  height: 44px;
-  min-height: 44px;
+  height: 27px;
+  min-height: 27px;
   
   display: flex;
   align-items: flex-start;
-  z-index: 1;
-
-  background-color: #1f2022;
+  z-index: 2;
 
-  .left {
-    width: 248px;
-    min-width: 248px;
-    height: 100%;
+  background-color: transparent;
 
-    display: flex;
+  // .left {
+  //   width: 248px;
+  //   min-width: 248px;
+  //   height: 100%;
+  //   margin-left: 66px;
 
-    .drag-square {
-      width: 44px;
-      min-width: 44px;
-      height: 44px;
+  //   display: flex;
+  //   //border-left: 1.5px solid var(--tb);
 
-      pointer-events: none;
+  //   .drag-square {
+  //     width: 36px;
+  //     min-width: 36px;
+  //     height: 36px;
 
-      display: flex;
-      justify-content: center;
-      align-items: center;
+  //     pointer-events: none;
 
-      color: #fff1;
-    }
+  //     display: flex;
+  //     justify-content: center;
+  //     align-items: center;
 
-    .profile {
-      width: fit-content;
-      max-width: calc(100% - 44px);
-      height: 100%;
+  //     color: #fff1;
+  //   }
 
-      display: flex;
-      align-items: center;
+  //   .profile {
+  //     width: fit-content;
+  //     max-width: calc(100% - 36px);
+  //     height: 100%;
 
-      &.ml {
-        margin-left: 6px;
-      }
+  //     display: flex;
+  //     align-items: center;
 
-      .img {
-        width: 34px;
-        height: 34px;
+  //     &.ml {
+  //       margin-left: 6px;
+  //     }
 
-        margin-right: 8px;
-        margin-top: 5px;
-        position: relative;
+  //     .profile-picture {
+  //       margin-right: 8px;
+  //       margin-top: 5px;
 
-        background-size: contain;
-        border-radius: 8px;
+  //       cursor: pointer;
+  //     }
+
+  //     > .info {
+  //       flex-grow: 1;
+  //       height: 100%;
+
+  //       display: flex;
+  //       flex-direction: column;
+  //       justify-content: center;
+
+  //       h3 {
+  //         width: fit-content;
+  //         max-width: 150px;
+  //         margin: 0;
+  //         font-weight: normal;
+  //         font-size: 0.9em;
+  //         white-space: nowrap;
+  //         overflow: hidden;
+  //         text-overflow: ellipsis;
+  //       }
 
-        cursor: pointer;
+  //       p {
+  //         margin: 0;
+  //         font-size: 0.7em;
+  //       }
+  //     }
 
-        user-select: none;
-        -webkit-user-select: none;
+  //     // ========== User Profile Popup ==========
+  //     .details {
+  //       width: 420px;
+  //       height: 202px;
 
-        &::after {
-          content: "";
-          
-          width: 30px;
-          height: 30px;
+  //       background-color: #323335;
+
+  //       border-radius: 5px;
+  //       overflow: hidden;
 
-          position: absolute;
-          top: 0;
-          left: 0;
+  //       display: flex;
+  //       flex-direction: column;
 
-          border: 2px solid #ffffff20;
-          border-radius: 8px;
-        }
-      }
-
-      > .info {
-        flex-grow: 1;
-        height: 100%;
-
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-
-        h3 {
-          width: fit-content;
-          max-width: 150px;
-          margin: 0;
-          font-weight: normal;
-          font-size: 0.9em;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-
-        p {
-          margin: 0;
-          font-size: 0.7em;
-        }
-      }
-
-      // ========== User Profile Popup ==========
-      .details {
-        width: 420px;
-        height: 202px;
-
-        background-color: #323335;
-
-        border-radius: 5px;
-        overflow: hidden;
-
-        display: flex;
-        flex-direction: column;
-
-        cursor: auto;
-
-        // ========== Profile Media ==========
-        .media {
-          width: 100%;
-          height: 160px;
-
-          background-color: #262729;
-
-          .banner {
-            width: 100%;
-            height: 120px;
-
-            background-image: url('https://c4.wallpaperflare.com/wallpaper/974/623/684/os-x-el-capitan-mountains-5k-macos-wallpaper-preview.jpg');
-            background-size: cover;
-            background-position: center bottom;
-
-            box-shadow: inset 0 0 24px 12px #00000088;
-          }
-
-          .picture {
-            width: 64px;
-            height: 64px;
-
-            position: absolute;
-            top: 80px;
-            left: 50%;
-
-            transform: translateX(-50%);
-
-            background-color: #1f2022;
-            background-size: contain;
-            border-radius: 8px;
-
-            display: flex;
-            justify-content: center;
-            align-items: center;
-
-            cursor: pointer;
-
-            &::after {
-              content: "";
-              
-              width: 56px;
-              height: 56px;
-
-              position: absolute;
-              top: 0;
-              left: 0;
-
-              border: 4px solid #ffffff20;
-              border-radius: 8px;
-
-              box-shadow: 0 0 0 8px #262729;
-              transition: background-color 0.1s;
-            }
-
-            &:hover {
-              &::after {
-                background-color: #0004;
-              }
-
-              :global(svg) {
-                opacity: 1;
-              }
-            }
-
-            :global(svg) {
-              z-index: 1;
-              color: #ddd;
-              opacity: 0;
-
-              transition: opacity 0.1s;
-            }
-          }
-        }
-
-        // ========== Profile Info ==========
-        .info {
-          width: 100%;
-          flex-grow: 1;
-
-          display: flex;
-          flex-direction: column;
-
-          .username {
-            width: 100%;
-            height: 42px;
-
-            display: flex;
-            align-items: center;
-            position: relative;
-
-            &::before {
-              content: "username";
-
-              position: absolute;
-              top: 4px;
-              left: 0;
-
-              font-size: 12px;
-              font-weight: bold;
-              font-variant: small-caps;
-              color: #777;
-
-              margin-left: 12px;
-            }
-
-            input {
-              flex-grow: 1;
-              font-size: 14px;
-              font-weight: normal;
-
-              margin-left: 6px;
-              margin-right: 6px;
-              padding-top: 12px;
-              padding-left: 6px;
-
-              background-color: transparent;
-              border: none;
-              border-radius: 4px;
-              color: #ccc;
-              outline: none;
-
-              &.preview {
-                pointer-events: none;
-              }
-
-              &.editable {
-                background-color: #1f2022;
-              }
-            }
-
-            .btn {
-              width: 64px;
-              height: 32px;
-
-              margin-right: 8px;
-              background-color: #ffffff18;
-              border: 2px solid #ffffff18;
-              color: #ccc;
-
-              border-radius: 4px;
-              font-size: 14px;
-
-              cursor: pointer;
-
-              &.apply {
-                background-color: #125488;
-                border: 2px solid #176bae;
-                color: #f2eee8;
-
-                &:hover {
-                  background-color: #226498;
-                  border: 2px solid #277bbe;
-                }
-              }
-
-              &:hover {
-                background-color: #ffffff28;
-                border: 2px solid #ffffff28;
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+  //       cursor: auto;
+
+  //       // ========== Profile Media ==========
+  //       .media {
+  //         width: 100%;
+  //         height: 160px;
+
+  //         background-color: #262729;
+
+  //         .banner {
+  //           width: 100%;
+  //           height: 120px;
+
+  //           background-image: url('https://c4.wallpaperflare.com/wallpaper/974/623/684/os-x-el-capitan-mountains-5k-macos-wallpaper-preview.jpg');
+  //           background-size: cover;
+  //           background-position: center bottom;
+
+  //           box-shadow: inset 0 0 24px 12px #00000088;
+  //         }
+
+  //         .profile-picture {
+  //           position: absolute;
+  //           top: 80px;
+  //           left: 50%;
+
+  //           transform: translateX(-50%);
+
+  //           display: flex;
+  //           justify-content: center;
+  //           align-items: center;
+
+  //           cursor: pointer;
+
+  //           &::after {
+  //             box-shadow: 0 0 0 8px #262729;
+  //             transition: background-color 0.1s;
+  //           }
+
+  //           &:hover {
+  //             &::after {
+  //               background-color: #0004;
+  //             }
+
+  //             :global(svg) {
+  //               opacity: 1;
+  //             }
+  //           }
+
+  //           :global(svg) {
+  //             z-index: 1;
+  //             color: #ddd;
+  //             opacity: 0;
+
+  //             transition: opacity 0.1s;
+  //           }
+  //         }
+  //       }
+
+  //       // ========== Profile Info ==========
+  //       .info {
+  //         width: 100%;
+  //         flex-grow: 1;
+
+  //         display: flex;
+  //         flex-direction: column;
+
+  //         .username {
+  //           width: 100%;
+  //           height: 42px;
+
+  //           display: flex;
+  //           align-items: center;
+  //           position: relative;
+
+  //           &::before {
+  //             content: "username";
+
+  //             position: absolute;
+  //             top: 4px;
+  //             left: 0;
+
+  //             font-size: 12px;
+  //             font-weight: bold;
+  //             font-variant: small-caps;
+  //             color: #777;
+
+  //             margin-left: 12px;
+  //           }
+
+  //           input {
+  //             flex-grow: 1;
+  //             font-size: 14px;
+  //             font-weight: normal;
+
+  //             margin-left: 6px;
+  //             margin-right: 6px;
+  //             padding-top: 12px;
+  //             padding-left: 6px;
+
+  //             background-color: transparent;
+  //             border: none;
+  //             border-radius: 4px;
+  //             color: #ccc;
+  //             outline: none;
+
+  //             &.preview {
+  //               pointer-events: none;
+  //             }
+
+  //             &.editable {
+  //               background-color: #1f2022;
+  //             }
+  //           }
+
+  //           .btn {
+  //             margin-right: 8px;
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 
   .right {
     flex-grow: 1;
@@ -464,7 +398,7 @@
   .button {
     width: 46.5px;
     min-width: 46.5px;
-    height: 44px;
+    height: 27px;
 
     display: flex;
     justify-content: center;
@@ -474,11 +408,11 @@
     border: none;
     z-index: 1;
 
-    background-color: #1f2022;
+    background-color: #fff0;
     color: #fff;
 
     &:hover {
-      background-color: #2f3032;
+      background-color: #fff1;
     }
 
     &.close:hover {

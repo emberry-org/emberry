@@ -5,11 +5,16 @@
   import { getChatHistory, getUsername, insertChatHistory, onUsernameChanged } from '@store';
   import { toPacket } from '@core/messages/Packet';
   import type Msg from '@core/messages/Msg';
-  import { InputBox } from '@core/input-box';
+  import { fade } from 'svelte/transition';
+  import { Editor, Extension } from '@tiptap/core'
+  import { Bold } from '@core/tiptap-ext/bold';
+  import { Text } from '@core/tiptap-ext/text';
+  import { Document } from '@core/tiptap-ext/doc';
+  import { Paragraph } from '@core/tiptap-ext/p';
 
   export let id: string;
 
-  let input: InputBox;
+  let input: Editor;
   let inputElement: HTMLDivElement;
   
   let myName = 'Me';
@@ -24,12 +29,33 @@
     if (history) messages = history; else messages = [];
 
     // Retrieve the username from the store.
-    myName = getUsername();
+    myName = getUsername() ?? "NoName";
     onUsernameChanged((newName => { myName = newName; sendUsername(); }));
     sendUsername();
 
-    input = new InputBox(inputElement, sendMessage);
-    input.setValue('');
+    input = new Editor({
+      element: inputElement,
+      extensions: [
+        Text,
+        Document,
+        Paragraph,
+        Bold,
+
+        new class extends Extension {
+          keys() {
+            return {
+              Enter(state, dispatch, view) {
+                sendMessage();
+                console.log('test');
+                // return true prevents default behaviour
+                return true
+              },
+            }
+          }
+        }() as any,
+      ],
+      content: `<p>Hello world!</p>`,
+    });
   });
 
   async function updateHistory() {
@@ -71,7 +97,7 @@
   /** Send a message to the peer */
   function sendMessage() {
     const time = getTime();
-    const msg = input.getValue();
+    const msg = input.getText();
 
     // Push the message into the messages array.
     messages.push({ sender: myName, content: msg, time });
@@ -86,7 +112,7 @@
     messages = [...messages];
 
     // Empty the input box.
-    input.setValue('');
+    input.commands.clearContent();
   }
 
   /** Send a new username to the peer */
@@ -96,15 +122,17 @@
 
   function getTime(): String {
     const now = new Date();
-    const current = now.getHours() + ':' + now.getMinutes();
+    const current = (now.getHours() < 10 ? '0' + now.getHours() : now.getHours()) + ':' + (now.getMinutes() < 10 ? '0' + now.getMinutes() : now.getMinutes());
     return current;
   }
 
 </script>
 
-<div class="chat">
+<div class="chat" transition:fade={{ duration: 200 }}>
 
   <div class="toolbar">
+    <div class="profile-picture" style="" />
+
     <span class="username">{ peerName }</span>
   </div>
 
@@ -114,7 +142,8 @@
 
   <div class="input">
     <!-- <input type="text" bind:value={ inputBox } on:keypress={ keyPressed }> -->
-    <div class="inputbox" contenteditable="true" bind:this={inputElement} on:keypress={keyPressed} />
+    <!-- <div class="inputbox" contenteditable="true" bind:this={inputElement} on:keypress={keyPressed} /> -->
+    <div class="inputbox" bind:this={inputElement} />
   </div>
 
 </div>
@@ -127,34 +156,39 @@
 
   display: flex;
   flex-direction: column;
-  position: relative;
+  position: absolute;
+  background-color: var(--fg);
 
   .toolbar {
     pointer-events: all;
 
     width: 100%;
-    height: 30.5px;
-    min-height: 30.5px;
-
-    background-color: #37383a;
-    border-top: 1.5px solid #fff2;
-    border-bottom: 1.5px solid #fff1;
+    height: 52px;
+    min-height: 52px;
+    margin-top: 7px;
 
     display: flex;
     align-items: center;
 
+    .profile-picture {
+      margin-left: 20px;
+    }
+
     .username {
       font-family: Inter;
       font-weight: 500;
-      font-size: 14px;
+      font-size: 16px;
       color: #ddd;
 
-      margin-left: 10px;
+      margin-left: 20px;
       overflow: hidden;
       pointer-events: all;
       background-color: transparent;
       outline: none;
       border: none;
+
+      user-select: none;
+      -webkit-user-select: none;
     }
   }
 

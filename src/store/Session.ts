@@ -1,5 +1,95 @@
 import type AppTab from "@core/AppTab";
+import type Drink from "@core/Drink";
+import type { Snack } from "@core/Snack";
 import { navigate } from "svelte-navigator";
+
+/**
+ * Insert a snack into the application store.
+ * @param snack The snack to insert.
+ */
+ export function addSnack(snack: Snack) {
+  let snacks = getSnacks();
+
+  if (snacks) snacks.push(snack);
+  else snacks = [snack];
+
+  const json = JSON.stringify(snacks);
+
+  sessionStorage.setItem('snacks', json);
+  dispatchEvent( new StorageEvent('storage', { key: 'snacks', storageArea: sessionStorage, newValue: json }) );
+}
+
+/**
+ * Close a snack in the application store.
+ * @param index Index of the snack to close.
+ */
+ export function closeSnack(index: number) {
+  let snacks = getSnacks();
+
+  if (snacks) snacks.splice(index, 1);
+  else snacks = [];
+
+  const json = JSON.stringify(snacks);
+
+  sessionStorage.setItem('snacks', json);
+  dispatchEvent( new StorageEvent('storage', { key: 'snacks', storageArea: sessionStorage, newValue: json }) );
+}
+
+/**
+ * Get the snacks stored in the application store.
+ * @returns An array of application snacks.
+ */
+export function getSnacks(): Array<Snack> {
+  return JSON.parse(sessionStorage.getItem('snacks'));
+}
+
+/**
+ * Calls a callback whenever the snacks store is mutated.
+ */
+export function onSnackBarChanged(callback: (snacks: Array<Snack>) => void) {
+  addEventListener('storage', e => {
+    if (e.storageArea === sessionStorage && e.key === 'snacks') {
+      callback(JSON.parse(e.newValue));
+    }
+  });
+}
+
+
+/**
+ * Insert a drink into the application store.
+ * @param drink The drink to insert.
+ */
+ export function addDrink(drink: Drink) {
+  let drinks = getDrinks();
+
+  if (drinks) drinks.push(drink);
+  else drinks = [drink];
+
+  const json = JSON.stringify(drinks);
+
+  sessionStorage.setItem('drinks', json);
+  dispatchEvent( new StorageEvent('storage', { key: 'drinks', storageArea: sessionStorage, newValue: json }) );
+}
+
+/**
+ * Get the drinks stored in the application store.
+ * @returns An array of application drinks.
+ */
+export function getDrinks(): Array<Drink> {
+  return JSON.parse(sessionStorage.getItem('drinks'));
+}
+
+/**
+ * Calls a callback whenever the drinks store is mutated.
+ */
+export function onDrinksChanged(callback: (drinks: Array<Drink>) => void) {
+  addEventListener('storage', e => {
+    if (e.storageArea === sessionStorage && e.key === 'drinks') {
+      callback(JSON.parse(e.newValue));
+    }
+  });
+}
+
 
 /**
  * Insert a tab into the application store.

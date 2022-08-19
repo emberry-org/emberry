@@ -14,27 +14,28 @@
 <style lang="scss">
 
 .side-panel {
-  width: 248px;
-  min-width: calc(248px - 1.5px);
+  width: 248px; //calc(248px - 3px);
+  min-width: 248px; //calc(248px - 3px);
   flex-grow: 1;
 
   display: flex;
   flex-direction: column;
 
+  
+  //border-left: 1.5px solid #fff2;
+  //border-right: 1.5px solid #fff2;
+
   .toolbar {
     width: 100%;
-    height: 30.5px;
-
-    background-color: #262729;
-    border-top: 1.5px solid #fff2;
-    border-bottom: 1.5px solid #fff1;
+    height: 52px;
+    margin-bottom: 24px;
+    background-color: var(--mg);
   }
 
   .panel {
     width: 100%;
     flex-grow: 1;
-
-    background-color: #1f2022;
+    background-color: var(--mg);
   }
 }
 

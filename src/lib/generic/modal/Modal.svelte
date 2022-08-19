@@ -1,6 +1,6 @@
 <script lang="ts">
   export let arrow: 'true' | 'false' = 'true';
-  export let orientation: 'se' | 'sw' = 'sw';
+  export let orientation: 'ne' | 'se' | 'sw' = 'sw';
   export let margins: string = '0px 0px 0px 0px';
 
   let modal: HTMLDivElement;

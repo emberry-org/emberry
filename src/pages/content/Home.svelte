@@ -2,10 +2,19 @@
   import Icon from "@lib/Icon.svelte";
   import { insertTab, navigateTo } from "@store";
   import { invoke } from "@tauri-apps/api/tauri";
+  import { listen } from '@tauri-apps/api/event';
+  import { fade } from 'svelte/transition';
+  import { onMount } from "svelte";
 
   let chatId: string;
   let error: string = '';
   let connecting: boolean = false;
+
+  onMount(() => {
+    listen("new-room", (event) => {
+      navigateTo('/chat/' + event.payload);
+    });
+  });
 
   function attemptConnect() {
 
@@ -24,8 +33,8 @@
   }
 </script>
 
-<div class="home">
-  <div class="toolbar" />
+<div class="home" transition:fade={{ duration: 200 }}>
+  <!-- <div class="toolbar" /> -->
 
   <div class="card">
 
@@ -37,7 +46,7 @@
 
     <div class="buttons">
       <input type="text" name="chatId" bind:value={chatId}>
-      <button class="card-button start" on:click={attemptConnect} disabled={ connecting ? true : null }>New Chat</button>
+      <button class="btn" on:click={attemptConnect} disabled={ connecting ? true : null }>New Chat</button>
     </div>
 
   </div>
@@ -53,23 +62,41 @@
     align-items: center;
 
     color: #00000033;
+    //background-color: var(--fg);
     position: relative;
+    overflow: hidden;
 
-    .toolbar {
-      position: absolute;
-      pointer-events: none;
+    // &::before {
+    //   content: "";
+    //   position: absolute;
+    //   width: 350px;
+    //   height: 400px;
+    //   pointer-events: none;
+    //   border-radius: 50%;
 
-      top: 0;
-      left: 0;
-      //z-index: 2;
+    //   filter: blur(50px) saturate(150%);
+    //   //background: radial-gradient(at 27% 37%,#3a8bfd 0,transparent 50%),radial-gradient(at 97% 21%,#9772fe 0,transparent 50%),radial-gradient(at 52% 99%,#fd3a4e 0,transparent 50%),radial-gradient(at 10% 29%,#5afc7d 0,transparent 50%),radial-gradient(at 97% 96%,#e4c795 0,transparent 50%),radial-gradient(at 33% 50%,#8ca8e8 0,transparent 50%),radial-gradient(at 79% 53%,#eea5ba 0,transparent 50%);
+    //   background: radial-gradient(at 27% 37%,#fd833a 0,transparent 50%),radial-gradient(at 97% 21%,#feef72 0,transparent 50%),radial-gradient(at 52% 99%,#fd3a4e 0,transparent 50%),radial-gradient(at 10% 29%,#5afc7d 0,transparent 50%),radial-gradient(at 97% 96%,#e4c795 0,transparent 50%),radial-gradient(at 33% 50%,#e88c8c 0,transparent 50%),radial-gradient(at 79% 53%,#eea5ba 0,transparent 50%);
+    //   background-repeat: no-repeat;
+    //   background-position: center;
+    //   opacity: .2;
+    // }
 
-      width: 100%;
-      height: 30.5px;
+    // .toolbar {
+    //   position: absolute;
+    //   pointer-events: none;
 
-      background-color: #37383a;
-      border-top: 1.5px solid #fff2;
-      border-bottom: 1.5px solid #fff1;
-    }
+    //   top: 0;
+    //   left: 0;
+    //   //z-index: 2;
+
+    //   width: 100%;
+    //   height: 30.5px;
+
+    //   background-color: #37383a;
+    //   border-top: 1.5px solid #fff2;
+    //   border-bottom: 1.5px solid #fff1;
+    // }
 
     .card {
       height: fit-content;
@@ -93,31 +120,9 @@
         display: flex;
         justify-content: space-around;
 
-        .card-button {
-          width: 30%;
+        .btn {
           height: 36px;
-
-          background-color: #373739;
-          border: 1px solid #545454;
-          border-radius: 6px;
-
-          padding: 0 12px 0 12px;
-
-          font-family: Inter;
-          font-size: 0.85em;
-          color: #ccc;
-
-          user-select: none;
-          cursor: pointer;
-
-          &.start {
-            width: 40%;
-            min-width: fit-content;
-          }
-
-          &:hover {
-            border: 1px solid #5a5a5a;
-          }
+          padding: 0 12px;
 
           &[disabled] {
             opacity: .5;
@@ -126,8 +131,8 @@
         }
 
         input {
-          background-color: #373739;
-          border: 1px solid #545454;
+          background-color: var(--mg);
+          border: 2px solid var(--tb);
           border-radius: 6px;
           color: #ccc;
           padding: 0 12px 0 12px;
@@ -137,7 +142,8 @@
           outline: none;
 
           &:hover {
-            border: 1px solid #5a5a5a;
+            background-color: var(--fg);
+            border: 2px solid var(--tb);
           }
         }
       }
@@ -145,6 +151,7 @@
       :global(svg) {
         max-width: 200px;
         max-height: 200px;
+        color: #fff1;
       }
     }
   }

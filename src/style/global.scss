@@ -1,3 +1,6 @@
+@import './img.scss';
+@import './btn.scss';
+
 .icon-button {
   width: 32px;
   height: 26px;
@@ -53,6 +56,11 @@ h3,
 p,
 .text-normal {
   color: #aaa;
+}
+
+p {
+  margin-block: 0;
+  margin-inline: 0;
 }
 
 .text-small {

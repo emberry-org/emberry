@@ -18,20 +18,20 @@
 
 <footer class="statusbar">
   <div class="left-side">
-    <div class="item purple">
-      <p>Emberry v{ appVersion }</p>
-    </div>
-
     <div class="item">
-      <Icon name="brand/tauri" size="12px" />
-      <p>Tauri v{ tauriVersion }</p>
+      <Icon name="app/network" size="14px" />
+      <p>12ms</p>
     </div>
   </div>
 
   <div class="right-side">
     <div class="item">
-      <Icon name="app/network" size="14px" />
-      <p>12ms</p>
+      <Icon name="brand/tauri" size="12px" />
+      <p>Tauri v{ tauriVersion }</p>
+    </div>
+
+    <div class="item purple">
+      <p>Emberry v{ appVersion }</p>
     </div>
   </div>
 </footer>
@@ -45,7 +45,8 @@
 
   display: flex;
 
-  background-color: #1f2022;
+  background-color: var(--bg);
+  margin-top: auto;
 
   user-select: none;
   -webkit-user-select: none;
@@ -53,6 +54,9 @@
   .left-side {
     width: 50%;
     height: 100%;
+
+    //margin-left: 66px;
+    //border-left: 1.5px solid var(--tb);
 
     display: flex;
   }
@@ -74,7 +78,7 @@
     align-items: center;
 
     padding: 0 12px 1px 12px;
-    color: #fff6;
+    color: #606060;
 
     :global(svg) {
       margin-right: 6px;
@@ -82,7 +86,7 @@
     }
 
     p {
-      color: #7b7d81;
+      color: #999;
       font-size: 12px;
 
       line-height: 12px;
@@ -90,10 +94,12 @@
   }
 
   .purple {
-    background-color: #273628;
+    //background-color: #3d301f;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
 
     p {
-      color: #7e9781;
+      color: #fff7;
     }
   }
 }

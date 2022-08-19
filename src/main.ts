@@ -1,4 +1,4 @@
-import setupOS from '@core/OppSys';
+import setupOS from '@core/utils/OppSys';
 import { setupPersistentStore } from '@store';
 import App from './App.svelte';
 

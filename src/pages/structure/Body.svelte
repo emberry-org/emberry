@@ -4,11 +4,11 @@
 </script>
 
 <div class="body">
+
+  <Navbar />
   
   <div class="left-side">
     <SidePanel />
-    
-    <!-- <Navbar /> -->
   </div>
 
   <Content />
@@ -26,12 +26,12 @@
 
   .left-side {
     width: 248px;
-    height: calc(100% - 1.5px);
+    height: 100%;
 
     display: flex;
     flex-direction: column;
 
-    border-bottom: 1.5px solid #ffffff10;
+    //border-bottom: 1.5px solid #ffffff10;
   }
 }
 
