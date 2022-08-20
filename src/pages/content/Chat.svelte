@@ -6,15 +6,12 @@
   import { toPacket } from '@core/messages/Packet';
   import type Msg from '@core/messages/Msg';
   import { fade } from 'svelte/transition';
-  import { Editor, Extension } from '@tiptap/core'
-  import { Bold } from '@core/tiptap-ext/bold';
-  import { Text } from '@core/tiptap-ext/text';
-  import { Document } from '@core/tiptap-ext/doc';
-  import { Paragraph } from '@core/tiptap-ext/p';
+  import { attachLemon, LemonEditor } from "lemon-editor";
+
 
   export let id: string;
 
-  let input: Editor;
+  let editor: LemonEditor;
   let inputElement: HTMLDivElement;
   
   let myName = 'Me';
@@ -33,28 +30,10 @@
     onUsernameChanged((newName => { myName = newName; sendUsername(); }));
     sendUsername();
 
-    input = new Editor({
-      element: inputElement,
-      extensions: [
-        Text,
-        Document,
-        Paragraph,
-        Bold,
-
-        new class extends Extension {
-          keys() {
-            return {
-              Enter(state, dispatch, view) {
-                sendMessage();
-                console.log('test');
-                // return true prevents default behaviour
-                return true
-              },
-            }
-          }
-        }() as any,
-      ],
-      content: `<p>Hello world!</p>`,
+    editor = attachLemon({
+      container: inputElement,
+      content: "",
+      onSubmit: sendMessage
     });
   });
 
@@ -89,15 +68,12 @@
     }
   });
 
-  /** Listen for the user to press the enter key */
-  function keyPressed(e: KeyboardEvent) {
-    if (e.key == 'Enter' && e.shiftKey == false) { e.preventDefault(); sendMessage(); }
-  }
-
   /** Send a message to the peer */
   function sendMessage() {
     const time = getTime();
-    const msg = input.getText();
+    const msg = editor.value;
+
+    if (msg.trim().length === 0) return;
 
     // Push the message into the messages array.
     messages.push({ sender: myName, content: msg, time });
@@ -112,7 +88,7 @@
     messages = [...messages];
 
     // Empty the input box.
-    input.commands.clearContent();
+    editor.clear();
   }
 
   /** Send a new username to the peer */
@@ -149,6 +125,10 @@
 </div>
 
 <style lang="scss">
+
+  :global(.cm-scroller) {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+  }
 
 .chat {
   width: 100%;

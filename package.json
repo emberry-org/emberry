@@ -26,8 +26,7 @@
   },
   "dependencies": {
     "@tauri-apps/api": "^1.0.2",
-    "@tiptap/core": "^2.0.0-beta.182",
-    "@tiptap/starter-kit": "^2.0.0-beta.191",
+    "lemon-editor": "^1.0.6",
     "svelte-navigator": "^3.1.6",
     "tauri-plugin-store-api": "github:tauri-apps/tauri-plugin-store#dev"
   }
