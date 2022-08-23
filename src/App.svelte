@@ -1,11 +1,9 @@
 <script lang="ts">
-  import { Body, Titlebar } from "@page/structure";
-  import CommandCenter from '@lib/window/CommandCenter.svelte';
+  import { Body, Titlebar, Statusbar } from "@win";
+  import { CommandCenter, Snackbar } from '@lib/overlays';
   import { commandCenterState } from "@store";
   import setupOS from "@core/utils/OppSys";
   import { onMount } from "svelte";
-  import Snackbar from "@lib/window/Snackbar.svelte";
-import Statusbar from "@page/structure/body/Statusbar.svelte";
 
   onMount(() => {
     setupOS();
@@ -21,14 +19,16 @@ import Statusbar from "@page/structure/body/Statusbar.svelte";
 </script>
 
 <main>
-  
-  <div class="contents">
+
+  <div class="floating">
     <Snackbar />
 
     {#if $commandCenterState}
       <CommandCenter />
     {/if}
-
+  </div>
+  
+  <div class="contents">
     <Titlebar />
 
     <Body />
@@ -42,31 +42,10 @@ import Statusbar from "@page/structure/body/Statusbar.svelte";
   @import './style/vars.scss';
   @import './style/fonts.css';
   @import './style/global.scss';
-  @import './style/inputbox.scss';
 
   :root {
     font-family: Amulya, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
       Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-
-    // --bg: #202020;
-    // --bg-border: #303030;
-    // --mg: #272727;
-    // --mg-border: #1d1d1d;
-    // --fg: #2d2d2d;
-    // --fg-border: #161616;
-
-    // --primary: #60cdff;
-
-    // --logo: #ffffff;
-    // --highlight: #ffffff;
-    // --text: #cccccc;
-    // --lowlight: #888888;
-
-    // --green: #7ce38b;
-    // --red: #fa7970;
-    // --orange: #faa356;
-    // --blue: #60cdff;
-    // --purple: #cea5fb;
   }
 
   html,

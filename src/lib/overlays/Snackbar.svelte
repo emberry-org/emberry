@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Icon from "@lib/Icon.svelte";
+  import Icon from "@icon";
   import type { Snack } from "@core/Snack";
   import { onMount } from "svelte";
   import { addSnack, closeSnack, getSnacks, onSnackBarChanged } from "@store";

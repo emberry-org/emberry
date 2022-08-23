@@ -1,10 +1,9 @@
 <script lang="ts">
-  import Icon from "@lib/Icon.svelte";
+  import Icon from "@icon";
   import ProfileDetails from "@lib/ProfileDetails.svelte";
   import Modal from '@lib/generic/modal/Modal.svelte';
   import { onMount } from "svelte";
   import { getProfilePicture, navigateTo, onProfilePictureChanged } from "@store";
-
 
   $: profileImage = 'background-image: url(data:image/png;base64,' + profilePicture + ')';
 

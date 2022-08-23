@@ -2,17 +2,14 @@
 
   // TODO: The footer will be static for now, the goal is for it to be dynamic in the future.
 
-  import Icon from '@lib/Icon.svelte';
+  import Icon from '@lib/generic/Icon.svelte';
   import { getTauriVersion, getVersion } from '@tauri-apps/api/app';
-  import { platform } from '@tauri-apps/api/os';
 
   let tauriVersion = '0.0.0';
   let appVersion = '0.0.0';
-  let platformName = 'unknown';
 
   getTauriVersion().then((v) => tauriVersion = v);
   getVersion().then((v) => appVersion = v);
-  platform().then((p) => platformName = p);
 
 </script>
 
@@ -55,9 +52,6 @@
     width: 50%;
     height: 100%;
 
-    //margin-left: 66px;
-    //border-left: 1.5px solid var(--tb);
-
     display: flex;
   }
 
@@ -94,7 +88,6 @@
   }
 
   .purple {
-    //background-color: #3d301f;
     border-top-left-radius: 6px;
     border-top-right-radius: 6px;
 

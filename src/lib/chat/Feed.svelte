@@ -52,8 +52,6 @@
   height: calc(100vh - 172px - 16px);
 
   display: block;
-  //flex-direction: column;
-  //justify-content: flex-end;
   margin: 0;
 
   font-family: Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji"; 

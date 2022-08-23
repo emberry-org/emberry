@@ -3,9 +3,8 @@
   import { getProfilePicture, getUsername, onProfilePictureChanged, onUsernameChanged, setProfilePicture, setUsername } from "@store";
   import { readBinaryFile } from '@tauri-apps/api/fs';
   import { resizeBase64Image } from '@core/utils/Img';
-  import Icon from './Icon.svelte';
+  import Icon from "@icon";
   import { onMount } from 'svelte';
-
 
   $: profileImage = 'background-image: url(data:image/png;base64,' + profilePicture + ')';
 

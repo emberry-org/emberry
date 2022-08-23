@@ -5,7 +5,7 @@
   import fetch from "@core/cmd-center/CmdFetcher";
   import { onDestroy, onMount } from "svelte";
   import { commandCenterState } from "@store";
-  import Icon from '@lib/Icon.svelte';
+  import Icon from "@icon";
 
   let panel: HTMLDivElement;
   let input: HTMLInputElement;

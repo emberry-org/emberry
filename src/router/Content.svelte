@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Home, Chat } from "@page/content";
+  import { Home, Chat } from "@pages";
   import { Router, Route } from "svelte-navigator";
 
 </script>
@@ -29,9 +29,6 @@
 
   background-color: var(--bg);
   position: relative;
-  //border-left: 1.5px solid var(--fg);
-  //border-bottom-left-radius: 12px;
-  //border-bottom: 1.5px solid #37393d;
 
   .wrapper {
     position: absolute;
