@@ -28,6 +28,20 @@
   }
 
   // Large Size
+  &.md {
+    width: 42px;
+    height: 42px;
+
+    &::after {
+      width: 34px;
+      height: 34px;
+
+      border: 4px solid #ffffff20;
+      border-radius: 8px;
+    }
+  }
+
+  // Large Size
   &.lg {
     width: 64px;
     height: 64px;

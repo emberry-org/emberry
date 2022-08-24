@@ -34,22 +34,19 @@
 </script>
 
 <div class="home" transition:fade={{ duration: 200 }}>
-  <!-- <div class="toolbar" /> -->
 
-  <div class="card">
-
-    <Icon name="app/logo" size="40vh" />
-    
-    {#if error !== ''}
-      <div class="error">{ error }</div>
-    {/if}
-
-    <div class="buttons">
-      <input type="text" name="chatId" bind:value={chatId}>
-      <button class="btn" on:click={attemptConnect} disabled={ connecting ? true : null }>New Chat</button>
-    </div>
+  <div class="left-panel">
 
   </div>
+
+  <div class="center-panel">
+
+  </div>
+
+  <div class="right-panel">
+
+  </div>
+
 </div>
 
 <style lang="scss">
@@ -58,69 +55,35 @@
     height: 100%;
 
     display: flex;
-    justify-content: center;
-    align-items: center;
 
-    background-color: var(--mg);
-    color: #00000033;
-    position: relative;
-    overflow: hidden;
+    .left-panel {
+      width: 270px;
+      height: 100%;
 
-    .card {
-      height: fit-content;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      margin-right: 24px;
 
-      .error {
-        font-size: 14px;
-        font-family: Inter;
-        font-weight: 500;
-        color: #b06363;
-      }
+      background-color: var(--mg);
+      border-bottom-left-radius: 12px;
+      border-bottom-right-radius: 12px;
+    }
 
-      .buttons {
-        width: 100%;
-        height: 36px;
+    .center-panel {
+      flex-grow: 1;
+      height: 100%;
 
-        margin-top: 24px;
+      background-color: var(--fg);
+      border-bottom-left-radius: 12px;
+      border-bottom-right-radius: 12px;
+    }
 
-        display: flex;
-        justify-content: space-around;
+    .right-panel {
+      width: 270px;
+      height: 100%;
 
-        .btn {
-          height: 36px;
-          padding: 0 12px;
+      margin-left: 24px;
 
-          &[disabled] {
-            opacity: .5;
-            pointer-events: none;
-          }
-        }
-
-        input {
-          background-color: var(--mg);
-          border: 2px solid var(--tb);
-          border-radius: 6px;
-          color: #ccc;
-          padding: 0 12px 0 12px;
-          margin-right: 12px;
-          font-family: Inter;
-          font-size: 0.85em;
-          outline: none;
-
-          &:hover {
-            background-color: var(--fg);
-            border: 2px solid var(--tb);
-          }
-        }
-      }
-
-      :global(svg) {
-        max-width: 200px;
-        max-height: 200px;
-        color: #fff1;
-      }
+      background-color: var(--mg);
+      border-bottom-left-radius: 12px;
     }
   }
 </style>

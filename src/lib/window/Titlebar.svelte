@@ -50,6 +50,7 @@
   z-index: 2;
 
   background-color: transparent;
+  border-bottom: 1.5px solid #333;
 
   .right {
     flex-grow: 1;

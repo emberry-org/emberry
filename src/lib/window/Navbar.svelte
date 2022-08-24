@@ -20,19 +20,16 @@
 </script>
 
 <div class="navbar">
-  <div class="item logo">
-    <Icon name="app/logo" size="28px" />
-  </div>
   <div class="item" on:click={() => navigateTo('/')}>
-    <Icon name="navigation/home" size="24px" />
+    <Icon name="navigation/home" size="26px" />
   </div>
 
   <div class="item top-auto">
-    <Icon name="navigation/settings" size="24px" />
+    <Icon name="navigation/settings" size="26px" />
   </div>
   <div class="item profile">
     <Modal orientation="ne" margins="0 0 -30px 72px" arrow="false">
-      <div class="profile-picture" slot="btn" style="{ profileImage }" />
+      <div class="profile-picture md" slot="btn" style="{ profileImage }" />
 
       <ProfileDetails slot="mdl" />
     </Modal>
@@ -43,7 +40,7 @@
 
 .navbar {
   width: 72px;
-  height: 100%;
+  height: calc(100% - 16px);
   min-width: 72px;
 
   display: flex;
@@ -51,43 +48,45 @@
   align-items: center;
 
   background-color: var(--bg);
+  padding: 2px 0 12px 0;
 
   .item {
-    width: 52px;
-    height: 52px;
+    width: 42px;
+    height: 42px;
 
-    margin-top: 4px;
+    margin-top: 14px;
 
     display: flex;
     justify-content: center;
     align-items: center;
 
-    color: #888;
+    color: #999;
+    background-color: var(--mg);
     border-radius: 8px;
+    cursor: pointer;
 
     &:hover {
-      background-color: #ffffff0b;
-      color: #ccc;
+      background-color: var(--fg);
+      color: #ddd;
     }
 
     &.top-auto {
       margin-top: auto;
     }
 
-    &.logo {
-      background-color: transparent !important;
-      color: #fff2;
-      margin-top: 1px;
-    }
-
     &.profile {
       background-color: transparent !important;
-      margin-bottom: 12px;
 
       .profile-picture {
         cursor: pointer;
-        margin-left: 9px;
-        margin-top: 9px;
+        width: 42px;
+        height: 42px;
+      }
+
+      .profile-picture:hover {
+        &::after {
+          background-color: #fff1;
+        }
       }
     }
   }
