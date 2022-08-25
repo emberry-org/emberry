@@ -1,6 +1,6 @@
 <script lang="ts">
   import Icon from "@icon";
-  import ProfileDetails from "@lib/ProfileDetails.svelte";
+  import ProfileDetails from "@lib/generic/users/ProfileDetails.svelte";
   import Modal from '@lib/generic/modal/Modal.svelte';
   import { onMount } from "svelte";
   import { getProfilePicture, navigateTo, onProfilePictureChanged } from "@store";
