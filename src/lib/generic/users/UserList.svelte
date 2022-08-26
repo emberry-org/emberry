@@ -5,40 +5,7 @@
 <div class="user-list">
 
   <div class="user">
-    <div class="profile-picture md" />
-    <div class="details">
-      <div class="info">
-        <p class="username">Username</p>
-        <span class="last-active">00:00</span>
-      </div>
-      <div class="status">Status</div>
-    </div>
-  </div>
-
-  <div class="user">
-    <div class="profile-picture md" />
-    <div class="details">
-      <div class="info">
-        <p class="username">Username</p>
-        <span class="last-active">00:00</span>
-      </div>
-      <div class="status">Status</div>
-    </div>
-  </div>
-
-  <div class="user">
-    <div class="profile-picture md" />
-    <div class="details">
-      <div class="info">
-        <p class="username">Username</p>
-        <span class="last-active">00:00</span>
-      </div>
-      <div class="status">Status</div>
-    </div>
-  </div>
-
-  <div class="user">
-    <div class="profile-picture md" />
+    <div class="profile-picture" />
     <div class="details">
       <div class="info">
         <p class="username">Username</p>
@@ -62,7 +29,7 @@
 
   .user {
     width: 100%;
-    height: 52px;
+    height: 42px;
 
     border-radius: 8px;
 
@@ -91,14 +58,14 @@
         display: flex;
 
         .username {
-          font-size: 16px;
-          font-weight: bold;
+          font-size: 15px;
+          margin-top: 2px;
         }
 
         .last-active {
           font-size: 11px;
           margin: 6px 12px 0 auto;
-          color: #aaa;
+          color: #888;
         }
       }
 
@@ -107,7 +74,7 @@
         height: 50%;
 
         color: #888;
-        font-size: 14px;
+        font-size: 12px;
       }
     }
   }

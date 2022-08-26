@@ -36,7 +36,7 @@
     display: flex;
 
     .left-panel {
-      width: 270px;
+      width: 240px;
       height: 100%;
 
       margin-right: 24px;
@@ -56,7 +56,7 @@
     }
 
     .right-panel {
-      width: 270px;
+      width: 240px;
       height: 100%;
 
       margin-left: 24px;
