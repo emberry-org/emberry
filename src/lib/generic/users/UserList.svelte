@@ -1,11 +1,25 @@
 <script lang="ts">
+  import Icon from "@icon";
+
 
 </script>
 
 <div class="user-list">
 
   <div class="user">
-    <div class="profile-picture" />
+    <div class="profile-picture">
+      <svg width="0" height="0">
+        <defs>
+          <clipPath id="picture-clip">
+            <rect x="0" y="0" width="18" height="60" fill="#000" />
+            <rect x="0" y="0" width="60" height="20" fill="#000" />
+          </clipPath>
+        </defs>
+      </svg>
+    </div>
+    <div class="profile-picure-status">
+      <Icon name="status/pc" size="12px" />
+    </div>
     <div class="details">
       <div class="info">
         <p class="username">Username</p>
@@ -36,6 +50,7 @@
     display: flex;
     align-items: center;
     margin-bottom: 3px;
+    position: relative;
 
     cursor: pointer;
 
@@ -45,6 +60,22 @@
 
     .profile-picture {
       margin: 0 6px;
+      display: flex;
+
+      -webkit-clip-path: url(#picture-clip);
+      clip-path: url(#picture-clip);
+    }
+
+    .profile-picure-status {
+      position: absolute;
+
+      bottom: 9px;
+      left: 26px;
+
+      width: 12px;
+      height: 12px;
+
+      color: #8e8;
     }
 
     .details {
