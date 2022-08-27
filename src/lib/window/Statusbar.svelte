@@ -97,7 +97,7 @@
   }
 
   .purple {
-    background-color: #1c2e19;
+    background-color: #ffffff0b;
 
     p {
       color: #fff7;

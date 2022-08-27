@@ -59,7 +59,7 @@
         width: calc(100% - 32px);
         height: 42px;
 
-        margin-top: 15px;
+        margin-top: 8px;
         padding: 0 16px;
 
         display: flex;
@@ -88,14 +88,16 @@
 
         .search-bar {
           width: 100%;
-          height: 26px;
+          height: 30px;
 
           border-right: none;
           border-top-right-radius: 0;
           border-bottom-right-radius: 0;
 
-          padding-left: 6px;
+          padding-left: 10px;
           font-size: 14px;
+
+          background-color: var(--bg);
         }
       }
     }
