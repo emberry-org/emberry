@@ -30,6 +30,10 @@
     <div class="item purple">
       <p>Emberry v{ appVersion }</p>
     </div>
+
+    <div class="item connection">
+      <Icon name="rhizome/connected" size="16px" />
+    </div>
   </div>
 </footer>
 
@@ -87,9 +91,13 @@
     }
   }
 
+  .connection {
+    color: #707070;
+    padding: 0 0 0 6px;
+  }
+
   .purple {
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
+    background-color: #1c2e19;
 
     p {
       color: #fff7;
