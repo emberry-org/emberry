@@ -5,6 +5,7 @@
   import { onMount } from "svelte";
   import UserList from "@lib/generic/users/UserList.svelte";
   import Icon from "@icon";
+  import Chat from "@lib/chat/Chat.svelte";
 
   onMount(() => {
     listen("new-room", (event) => {
@@ -29,7 +30,7 @@
   </div>
 
   <div class="center-panel">
-
+    <Chat />
   </div>
 
   <div class="right-panel">
