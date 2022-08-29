@@ -53,8 +53,8 @@
       margin-right: 24px;
 
       background-color: var(--mg);
-      border-bottom-left-radius: 12px;
-      border-bottom-right-radius: 12px;
+      border-bottom-left-radius: 10px;
+      border-bottom-right-radius: 10px;
 
       .toolbar {
         width: calc(100% - 32px);
@@ -108,8 +108,8 @@
       height: 100%;
 
       background-color: var(--fg);
-      border-bottom-left-radius: 12px;
-      border-bottom-right-radius: 12px;
+      border-bottom-left-radius: 10px;
+      border-bottom-right-radius: 10px;
     }
 
     .right-panel {
@@ -119,7 +119,7 @@
       margin-left: 24px;
 
       background-color: var(--mg);
-      border-bottom-left-radius: 12px;
+      border-bottom-left-radius: 10px;
     }
   }
 </style>
