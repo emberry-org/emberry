@@ -14,7 +14,7 @@
 </script>
 
 <div class="chat">
-  <SmartList {items} let:item>
+  <SmartList {items} reverse={true} let:item>
     <MessageItem {...item}/>
   </SmartList>
 </div>

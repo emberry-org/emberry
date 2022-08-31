@@ -7,6 +7,7 @@
 	export let items: any[];
 	export let height = '100%';
 	export let itemHeight: number = undefined;
+  export let reverse: boolean = false;
 
 	// An array of all the heights of the elements.
 	let heights: Array<number> = [];
@@ -18,6 +19,7 @@
 	let viewportHeight = 0, average_height: number;
 	
 	let mounted: boolean;
+  let setup: boolean;
 
   // Offset from the top and bottom of the list.
 	let topOffset = 0, bottomOffset = 0;
@@ -69,6 +71,13 @@
 
 		bottomOffset = remaining * average_height;
 		heights.length = items.length;
+
+    if (!setup && reverse) {
+      setup = true;
+      await tick(); // Wait a tick for DOM
+      viewport.scrollTop = viewport.scrollHeight;
+      await refresh(items, viewportHeight, itemHeight);
+    }
 	}
 
   /**
@@ -137,7 +146,7 @@
 	}
 
 	// trigger initial refresh
-	onMount(() => {
+	onMount(async () => {
 		elements = list.getElementsByTagName('li');
 		mounted = true;
 	});
