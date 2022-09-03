@@ -27,7 +27,18 @@
     border-radius: 8px;
   }
 
-  // Large Size
+  // Small Size
+  &.sm {
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+
+    &::after {
+      display: none;
+    }
+  }
+
+  // Medium Size
   &.md {
     width: 42px;
     height: 42px;

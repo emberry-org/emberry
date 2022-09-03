@@ -63,14 +63,14 @@
       let time = getTime();
 
       // Push the message into the messages array.
-      messages.push({ sender: peerName, content: packet.content, time });
+      //messages.push({ sender: peerName, content: packet.content, time });
 
       // Update the persistent store.
-      insertChatHistory(id, {
-        sender: peerName,
-        content: packet.content,
-        time,
-      });
+      // insertChatHistory(id, {
+      //   sender: peerName,
+      //   content: packet.content,
+      //   time,
+      // });
 
       // Force update the Feed.
       messages = [...messages];
@@ -89,10 +89,10 @@
     if (msg.trim().length === 0) return;
 
     // Push the message into the messages array.
-    messages.push({ sender: myName, content: msg, time });
+    //messages.push({ sender: myName, content: msg, time });
 
     // Update the persistent store.
-    insertChatHistory(id, { sender: myName, content: msg, time });
+    //insertChatHistory(id, { sender: myName, content: msg, time });
 
     // Tell the backend to send the message.
     emit(`send_message_${id}`, { type: "Chat", content: msg });

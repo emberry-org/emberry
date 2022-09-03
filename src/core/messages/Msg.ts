@@ -10,6 +10,8 @@ export interface Msg {
   content: String,
   /** The time at which this message was send. */
   time: String,
+  /** Whether this message is part of a chain of messages send by the same user. */
+  chain: Boolean,
   
   /** Reaction emojis. ``(undefined if there are no emoji reactions)`` */
   remojis?: Array<Remoji> | undefined,

@@ -2,6 +2,7 @@
 
 <script lang="ts">
 	import { onMount, tick } from 'svelte';
+import { dataset_dev } from 'svelte/internal';
 
 
 	export let items: any[];
@@ -162,6 +163,7 @@
 >
 	<ol style="padding-top: { topOffset }px; padding-bottom: { bottomOffset }px;" bind:this={ list }>
 
+    <li class="spacer" />
 		{#each visible as row (row.index)}
     <li>
       <slot item={ row.data }>Missing template</slot>
@@ -186,6 +188,15 @@
 	ol, li {
 		display: block;
 	}
+
+  ol {
+    min-height: calc(100% - 32px);
+    padding: 0 20px 0 20px;
+  }
+
+  ol .spacer {
+    min-height: calc(100vh - 145px);    
+  }
 
 	li {
 		overflow: hidden;
