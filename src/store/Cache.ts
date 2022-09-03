@@ -1,4 +1,4 @@
-import type Msg from '@core/messages/Msg';
+import type { Msg } from '@core/messages/Msg';
 import { Store } from 'tauri-plugin-store-api';
 
 let chatHistory: Store;

@@ -9,7 +9,7 @@
     onUsernameChanged,
   } from "@store";
   import { toPacket } from "@core/messages/Packet";
-  import type Msg from "@core/messages/Msg";
+  import type { Msg } from "@core/messages/Msg";
   import { fade } from "svelte/transition";
   import { attachLemon, LemonEditor } from "lemon-editor";
 
