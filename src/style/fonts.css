@@ -1,5 +1,5 @@
 
-@font-face {
+/* @font-face {
   font-family: Inter;
   font-weight: bolder;
   src: url(../assets/fonts/Inter-Black.ttf);
@@ -15,6 +15,13 @@
   font-family: Inter;
   font-weight: normal;
   src: url(../assets/fonts/Inter-Regular.ttf);
+} */
+
+@font-face {
+  font-family: Inter;
+  src: url(../assets/fonts/Inter-VariableFont_slnt\,wght.ttf) format("ttf supports variations"),
+       url(../assets/fonts/Inter-VariableFont_slnt\,wght.ttf) format("ttf-variations");
+  font-weight: 100 1000;
 }
 
 @font-face {
