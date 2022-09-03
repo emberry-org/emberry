@@ -12,6 +12,7 @@ use tauri::Manager;
 #[cfg(not(target_os = "linux"))]
 mod window;
 
+mod history;
 mod network;
 use network::ctrl_chnl::{connect, requests::*, responses::*, State};
 use network::{chat_exists, Networking};
@@ -48,6 +49,7 @@ fn main() {
       connect,
       request_room,
       accept_room,
+      history::save_history,
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

@@ -6,11 +6,13 @@
   import UserList from "@lib/generic/users/UserList.svelte";
   import Icon from "@icon";
   import Chat from "@lib/chat/Chat.svelte";
+  import { invoke } from "@tauri-apps/api/tauri";
 
   onMount(() => {
     listen("new-room", (event) => {
       navigateTo('/chat/' + event.payload);
     });
+    invoke('save_history');
   });
 </script>
 
