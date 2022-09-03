@@ -15,6 +15,8 @@
       snacks = newSnacks;
     });
 
+    if (!snacks) snacks = [];
+
     // Setup the wants-room event listener.
     // TODO: Move this to a better place.
     listen('wants-room', (e: any) => {
