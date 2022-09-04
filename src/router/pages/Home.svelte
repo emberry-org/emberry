@@ -35,7 +35,12 @@ import SidePanel from "@lib/generic/SidePanel.svelte";
   </SidePanel>
 
   <div class="center-panel">
-    <Chat />
+    <div class="banner">
+
+    </div>
+    <div class="body">
+      <Chat />
+    </div>
   </div>
 
   <SidePanel position="right">
@@ -112,9 +117,28 @@ import SidePanel from "@lib/generic/SidePanel.svelte";
       flex-grow: 1;
       height: 100%;
 
-      background-color: var(--fg);
-      border-bottom-left-radius: 10px;
-      border-bottom-right-radius: 10px;
+      display: flex;
+      flex-direction: column;
+
+      .banner {
+        flex: 0 1 auto;
+        min-height: 142px;
+        width: 100%;
+        margin-bottom: 12px;
+
+        background-color: var(--mg);
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+      }
+
+      .body {
+        flex: 1 1 auto;
+        min-height: 0;
+        width: 100%;
+
+        background-color: var(--fg);
+        border-radius: 10px;
+      }
     }
 
     .right-panel {

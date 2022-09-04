@@ -190,7 +190,6 @@ import { dataset_dev } from 'svelte/internal';
 	}
 
   ol {
-    min-height: calc(100% - 32px);
     padding: 0 20px 0 20px;
   }
 
