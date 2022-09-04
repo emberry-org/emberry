@@ -7,6 +7,7 @@
   import Icon from "@icon";
   import Chat from "@lib/chat/Chat.svelte";
   import { invoke } from "@tauri-apps/api/tauri";
+import SidePanel from "@lib/generic/SidePanel.svelte";
 
   onMount(() => {
     listen("new-room", (event) => {
@@ -18,26 +19,30 @@
 
 <div class="home" transition:fade={{ duration: 200 }}>
 
-  <div class="left-panel">
-    <div class="toolbar">
-      <button class="btn add-friend">
-        <Icon name="add-friend" size="24px" />
-      </button>
-      <input class="input search-bar" placeholder="Lookup friends..." />
-      <button class="btn search">
-        <Icon name="search" size="18px" />
-      </button>
+  <SidePanel>
+    <div class="left-panel">
+      <div class="toolbar">
+        <button class="btn add-friend">
+          <Icon name="add-friend" size="24px" />
+        </button>
+        <input class="input search-bar" placeholder="Lookup friends..." />
+        <button class="btn search">
+          <Icon name="search" size="18px" />
+        </button>
+      </div>
+      <UserList />
     </div>
-    <UserList />
-  </div>
+  </SidePanel>
 
   <div class="center-panel">
     <Chat />
   </div>
 
-  <div class="right-panel">
+  <SidePanel position="right">
+    <div class="right-panel">
 
-  </div>
+    </div>
+  </SidePanel>
 
 </div>
 
@@ -49,20 +54,18 @@
     display: flex;
 
     .left-panel {
-      width: 240px;
-      height: 100%;
-
-      margin-right: 24px;
+      width: 100%;
+      height: calc(100% - 8px);
 
       background-color: var(--mg);
       border-bottom-left-radius: 10px;
       border-bottom-right-radius: 10px;
+      padding-top: 8px;
 
       .toolbar {
         width: calc(100% - 32px);
         height: 42px;
 
-        margin-top: 8px;
         padding: 0 16px;
 
         display: flex;
@@ -115,10 +118,8 @@
     }
 
     .right-panel {
-      width: 240px;
+      width: 100%;
       height: 100%;
-
-      margin-left: 24px;
 
       background-color: var(--mg);
       border-bottom-left-radius: 10px;
