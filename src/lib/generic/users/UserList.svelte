@@ -23,7 +23,7 @@
     <div class="details">
       <div class="info">
         <p class="username">Username</p>
-        <span class="last-active">00:00</span>
+        <span class="last-active">Today at 00:00</span>
       </div>
       <div class="status">Status</div>
     </div>
