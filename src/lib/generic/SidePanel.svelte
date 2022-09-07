@@ -61,12 +61,12 @@
   height: 100%;
 
   &.left {
-    margin-right: 24px;
+    margin-right: 12px;
 
     .handle {
       position: absolute;
       top: 0;
-      right: -18px;
+      right: -12px;
 
       width: 12px;
       height: 100%;
@@ -76,12 +76,12 @@
   }
 
   &.right {
-    margin-left: 24px;
+    margin-left: 12px;
 
     .handle {
       position: absolute;
       top: 0;
-      left: -18px;
+      left: -12px;
       
       width: 12px;
       height: 100%;
