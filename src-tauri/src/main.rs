@@ -9,9 +9,6 @@ extern crate dotenv_codegen;
 #[cfg(not(target_os = "linux"))]
 use tauri::Manager;
 
-#[cfg(not(target_os = "linux"))]
-mod window;
-
 mod history;
 mod network;
 use network::ctrl_chnl::{connect, requests::*, responses::*, State};
@@ -26,7 +23,7 @@ fn main() {
   let builder = builder.setup(|app| {
     let window = app.get_window("main").unwrap();
 
-    window::set_shadow(&window, true).expect("Unsupported platform!");
+    window_shadows::set_shadow(&window, true).expect("Unsupported platform!");
 
     // #[cfg(target_os = "windows")]
     // if let Err(_) = window_vibrancy::apply_mica(&window) {

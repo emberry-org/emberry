@@ -57,7 +57,7 @@
       {
         "fullscreen": false,
         "decorations": false,
-        "transparent": true,
+        "transparent": false,
         "height": 600,
         "resizable": true,
         "title": "Emberry",
