@@ -69,6 +69,7 @@ pub async fn hole_punch(
 
   let arc_sock = Arc::new(socket);
 
+  tokio::time::sleep(std::time::Duration::from_millis(500)).await;
   let mut buf = [0u8; 6];
   if other_key.as_ref() < ENV.public_key.as_bytes() {
     trace!("client mode");
