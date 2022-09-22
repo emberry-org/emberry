@@ -17,6 +17,7 @@ use tauri_plugin_store::PluginBuilder;
 use tokio::sync::RwLock;
 
 fn main() {
+  env_logger::init();
   let builder = tauri::Builder::default();
 
   #[cfg(not(target_os = "linux"))]

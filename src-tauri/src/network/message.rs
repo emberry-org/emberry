@@ -2,6 +2,7 @@ use std::io::{self, ErrorKind};
 
 use tokio::net::UdpSocket;
 use Message::*;
+use log::trace;
 
 #[derive(Clone, serde::Serialize, serde::Deserialize)]
 #[serde(tag = "type", content = "content")]
@@ -15,13 +16,9 @@ pub enum Message {
 
 impl Message {
   pub async fn recv_from(socket: &UdpSocket, buf: &mut [u8]) -> io::Result<Message> {
-    #[cfg(feature = "debug")]
     let (len, addr) = socket.recv_from(buf).await?;
-    #[cfg(not(feature = "debug"))]
-    let len = socket.recv(buf).await?;
 
-    #[cfg(feature = "debug")]
-    println!("got msg from {addr}");
+    trace!("got msg from {addr}");
 
     if len == 0 {
       return Ok(Kap);
@@ -50,8 +47,7 @@ impl Message {
       }
     };
 
-    #[cfg(feature = "debug")]
-    println!("sent msg");
+    trace!("sent msg");
     socket.send(&buf).await
   }
 }
