@@ -69,7 +69,7 @@
 
     margin-bottom: 6px;
     padding-left: 42px;
-    font-family: Inter;
+    font-family: LocalInter;
     font-weight: 400;
 
     .profile-picture {
@@ -175,7 +175,7 @@
     height: 50px;
 
     margin-bottom: 6px;
-    font-family: Inter;
+    font-family: LocalInter;
     font-weight: 400;
 
     display: flex;

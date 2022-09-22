@@ -182,7 +182,7 @@
   .suggestions {
     flex-grow: 1;
     width: 100%;
-    font-family: Inter;
+    font-family: LocalInter;
 
     .command {
       width: 100%;

@@ -18,10 +18,9 @@
 } */
 
 @font-face {
-  font-family: Inter;
-  src: url(../assets/fonts/Inter-VariableFont_slnt\,wght.ttf) format("ttf supports variations"),
-       url(../assets/fonts/Inter-VariableFont_slnt\,wght.ttf) format("ttf-variations");
+  font-family: LocalInter;
   font-weight: 100 1000;
+  src: url('../assets/fonts/Inter-VariableFont.ttf');
 }
 
 @font-face {
