@@ -4,14 +4,14 @@ use std::net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr};
 use std::sync::{Arc, Mutex};
 
 use smoke::messages::RoomId;
-use smoke::User;
+use smoke::{PubKey, User};
 use tauri::EventHandler;
 
 use tokio::net::UdpSocket;
 use tokio::select;
 use tokio::sync::oneshot;
 
-use log::trace;
+use log::{error, trace};
 
 pub mod ctrl_chnl;
 pub mod message;
@@ -22,13 +22,15 @@ pub const ENV: Config = Config {
   server_address: dotenv!("SERVER_ADDRESS"),
 };
 
+const HELLO: [u8; 6] = [1, 3, 3, 7, 4, 2];
+
 type ConnectionMap = HashMap<RoomId, Connection>;
 pub struct Connection {
   pub send_handle: EventHandler,
   pub recv_handle: oneshot::Sender<()>,
 }
 
-pub enum RRState{
+pub enum RRState {
   Pending,
   Agreement,
 }
@@ -52,6 +54,7 @@ pub async fn hole_punch(
   window: tauri::Window,
   state: tauri::State<'_, Networking>,
   room_id: RoomId,
+  other_key: PubKey,
 ) -> tauri::Result<()> {
   /* Get the server ip from .env */
 
@@ -65,6 +68,28 @@ pub async fn hole_punch(
   let socket = punch_hole(ENV.server_address, &room_id.0).await?;
 
   let arc_sock = Arc::new(socket);
+
+  let mut buf = [0u8; 6];
+  if other_key.as_ref() < ENV.public_key.as_bytes() {
+    trace!("client mode");
+    arc_sock.send(&HELLO).await?;
+    arc_sock.recv(&mut buf).await?;
+    if buf != HELLO {
+      error!("error hello unequal");
+      Err(Error::new(ErrorKind::Other, "unmatched hello"))?;
+    }
+    trace!("hello matched");
+
+  } else {
+    trace!("server mode");
+    arc_sock.recv(&mut buf).await?;
+    if buf != HELLO {
+      error!("error hello unequal");
+      Err(Error::new(ErrorKind::Other, "unmatched hello"))?;
+    }
+    arc_sock.send(&HELLO);
+    trace!("hello matched");
+  }
 
   /* Setup the send event for the frontend */
   let sender = arc_sock.clone();
