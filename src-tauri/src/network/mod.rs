@@ -87,7 +87,7 @@ pub async fn hole_punch(
       error!("error hello unequal");
       Err(Error::new(ErrorKind::Other, "unmatched hello"))?;
     }
-    arc_sock.send(&HELLO);
+    arc_sock.send(&HELLO).await?;
     trace!("hello matched");
   }
 
