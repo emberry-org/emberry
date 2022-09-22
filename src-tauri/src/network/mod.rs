@@ -89,21 +89,41 @@ pub async fn hole_punch(
   let spawn_window = window.clone();
   tokio::spawn(async move {
     let event_name = format!("message_recieved_{}", emit_identity);
-    loop {
-      select! {
-          Ok(msg) = Message::recv_from(&arc_sock, &mut buf) => {
-
-        /* Emit the message_recieved event when a message is recieved */
-        spawn_window
-          .emit(&event_name, MessageRecievedPayload { message: msg })
-          .expect("Failed to emit event");
-
-        },
-        Ok(_) = &mut rx => {
-          break;
-        }
+    //loop {
+    let mut buf = [0u8; 6];
+    if other_key.as_ref() < ENV.public_key.as_bytes() {
+      trace!("client mode");
+      arc_sock2.send(&HELLO).await.unwrap();
+      arc_sock2.recv(&mut buf).await.unwrap();
+      if buf != HELLO {
+        error!("error hello unequal");
+        panic!();
       }
+      trace!("hello matched");
+    } else {
+      trace!("server mode");
+      arc_sock2.recv(&mut buf).await.unwrap();
+      if buf != HELLO {
+        error!("error hello unequal");
+        panic!();
+      }
+      arc_sock2.send(&HELLO).await.unwrap();
+      trace!("hello matched");
     }
+    /*select! {
+        Ok(msg) = Message::recv_from(&arc_sock, &mut buf) => {
+
+      /* Emit the message_recieved event when a message is recieved */
+      spawn_window
+        .emit(&event_name, MessageRecievedPayload { message: msg })
+        .expect("Failed to emit event");
+
+      },
+      Ok(_) = &mut rx => {
+        break;
+      }
+    }*/
+    //}
   });
 
   let con = Connection {
@@ -111,28 +131,6 @@ pub async fn hole_punch(
     send_handle,
   };
   state.chats.lock().unwrap().insert(room_id.clone(), con);
-
-  let mut buf = [0u8; 6];
-  if other_key.as_ref() < ENV.public_key.as_bytes() {
-    trace!("client mode");
-    arc_sock2.send(&HELLO).await?;
-    arc_sock2.recv(&mut buf).await?;
-    if buf != HELLO {
-      error!("error hello unequal");
-      Err(Error::new(ErrorKind::Other, "unmatched hello"))?;
-    }
-    trace!("hello matched");
-
-  } else {
-    trace!("server mode");
-    arc_sock2.recv(&mut buf).await?;
-    if buf != HELLO {
-      error!("error hello unequal");
-      Err(Error::new(ErrorKind::Other, "unmatched hello"))?;
-    }
-    arc_sock2.send(&HELLO).await?;
-    trace!("hello matched");
-  }
 
   window
     .emit("new-room", &identity)
