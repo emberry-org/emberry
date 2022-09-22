@@ -68,29 +68,7 @@ pub async fn hole_punch(
   let socket = punch_hole(ENV.server_address, &room_id.0).await?;
 
   let arc_sock = Arc::new(socket);
-
-  tokio::time::sleep(std::time::Duration::from_millis(500)).await;
-  let mut buf = [0u8; 6];
-  if other_key.as_ref() < ENV.public_key.as_bytes() {
-    trace!("client mode");
-    arc_sock.send(&HELLO).await?;
-    arc_sock.recv(&mut buf).await?;
-    if buf != HELLO {
-      error!("error hello unequal");
-      Err(Error::new(ErrorKind::Other, "unmatched hello"))?;
-    }
-    trace!("hello matched");
-
-  } else {
-    trace!("server mode");
-    arc_sock.recv(&mut buf).await?;
-    if buf != HELLO {
-      error!("error hello unequal");
-      Err(Error::new(ErrorKind::Other, "unmatched hello"))?;
-    }
-    arc_sock.send(&HELLO).await?;
-    trace!("hello matched");
-  }
+  let arc_sock2 = arc_sock.clone();
 
   /* Setup the send event for the frontend */
   let sender = arc_sock.clone();
@@ -133,6 +111,29 @@ pub async fn hole_punch(
     send_handle,
   };
   state.chats.lock().unwrap().insert(room_id.clone(), con);
+
+  let mut buf = [0u8; 6];
+  if other_key.as_ref() < ENV.public_key.as_bytes() {
+    trace!("client mode");
+    arc_sock2.send(&HELLO).await?;
+    arc_sock2.recv(&mut buf).await?;
+    if buf != HELLO {
+      error!("error hello unequal");
+      Err(Error::new(ErrorKind::Other, "unmatched hello"))?;
+    }
+    trace!("hello matched");
+
+  } else {
+    trace!("server mode");
+    arc_sock2.recv(&mut buf).await?;
+    if buf != HELLO {
+      error!("error hello unequal");
+      Err(Error::new(ErrorKind::Other, "unmatched hello"))?;
+    }
+    arc_sock2.send(&HELLO).await?;
+    trace!("hello matched");
+  }
+
   window
     .emit("new-room", &identity)
     .expect("Failed to emit WantsRoom event");
