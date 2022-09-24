@@ -2809,7 +2809,7 @@ checksum = "2fd0db749597d91ff862fd1d55ea87f7855a744a8425a64695b6fca237d1dad1"
 [[package]]
 name = "smoke"
 version = "0.1.1"
-source = "git+https://github.com/emberry-org/smoke#4f03dea3fd380e065802b9cdd381b09b125158e0"
+source = "git+https://github.com/emberry-org/smoke#ecdc10be74eb75519f2a9b338e738d26d0fa1c52"
 dependencies = [
  "log",
  "postcard",

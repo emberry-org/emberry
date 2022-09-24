@@ -4,5 +4,8 @@ export interface Packet {
 }
 
 export function toPacket(event: any): Packet {
-  return event.payload.message as Packet;
+
+  const type: string = Object.keys(event.payload.message)[0];
+
+  return { type, content: event.payload.message[type] };
 }
