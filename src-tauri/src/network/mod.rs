@@ -5,8 +5,10 @@ use std::sync::{Arc, Mutex};
 
 use smoke::messages::RoomId;
 use smoke::{PubKey, User};
+use smoke::Signal;
 use tauri::EventHandler;
 
+use tokio::io::BufReader;
 use tokio::net::UdpSocket;
 use tokio::select;
 use tokio::sync::{mpsc, oneshot};
@@ -16,8 +18,6 @@ use tokio_kcp::{KcpConfig, KcpStream};
 use log::{error, trace};
 
 pub mod ctrl_chnl;
-pub mod message;
-use message::Message;
 
 pub const ENV: Config = Config {
   public_key: dotenv!("PUBLIC_KEY"),
@@ -64,7 +64,7 @@ pub struct Config<'a> {
 
 #[derive(Clone, serde::Serialize)]
 struct MessageRecievedPayload {
-  message: Message,
+  message: Signal,
 }
 
 pub async fn hole_punch(
@@ -113,7 +113,7 @@ pub async fn hole_punch(
   }
   assert!(success, "PING PONG manouver was not successfull");
 
-  let mut stream: KcpStream;
+  let stream: KcpStream;
   if other_key.as_ref() < ENV.public_key.as_bytes() {
     trace!("client mode");
     stream = KcpStream::wrap_client(&KCP_CONF, socket)
@@ -127,12 +127,13 @@ pub async fn hole_punch(
       .map_err(|e| Error::new(ErrorKind::Other, e))
       .unwrap(); //TODO: error handle
   }
+  let mut stream = BufReader::new(stream);
 
   /* Setup the send event for the frontend */
-  let (sender, mut msg_rx) = mpsc::channel::<Message>(100);
+  let (sender, mut msg_rx) = mpsc::channel::<Signal>(100);
   let send_handle = window.listen(format!("send_message_{}", identity), move |e| {
     let sender = sender.clone();
-    let msg = serde_json::from_str::<Message>(
+    let msg = serde_json::from_str::<Signal>(
       e.payload()
         .expect("Invalid payload in send_message_<id> event"),
     )
@@ -142,14 +143,14 @@ pub async fn hole_punch(
 
   /* Setup the receive loop */
   let (recv_handle, mut rx) = oneshot::channel::<()>();
-  let mut buf = [0u8; 512];
+  let mut buf = Vec::new();
   let emit_identity = identity.clone();
   let spawn_window = window.clone();
   tokio::spawn(async move {
     let event_name = format!("message_recieved_{}", emit_identity);
     loop {
       select! {
-        Ok(msg) = Message::recv_from(&mut stream, &mut buf) => {
+        Ok(msg) = Signal::recv_with(&mut stream, &mut buf) => {
           /* Emit the message_recieved event when a message is recieved */
           trace!("Received message: {:?}", msg);
           spawn_window

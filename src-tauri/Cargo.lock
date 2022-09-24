@@ -2809,8 +2809,9 @@ checksum = "2fd0db749597d91ff862fd1d55ea87f7855a744a8425a64695b6fca237d1dad1"
 [[package]]
 name = "smoke"
 version = "0.1.1"
-source = "git+https://github.com/emberry-org/smoke#571bd7ed9af425fe76778efcb39dd62a48643615"
+source = "git+https://github.com/emberry-org/smoke#3f198430e7dc3cae3e4e34fa7fcae5eb9a9b7fe2"
 dependencies = [
+ "log",
  "postcard",
  "serde",
  "tokio",
