@@ -65,30 +65,27 @@ pub async fn hole_punch(
   /* Holepunch using rhizome */
   let socket = punch_hole(ENV.server_address, &room_id.0).await?;
 
-  let arc_sock = Arc::new(socket);
-  let arc_sock2 = arc_sock.clone();
-
   let mut buf = [0u8; 4];
   if other_key.as_ref() < ENV.public_key.as_bytes() {
     trace!("client mode");
   } else {
     trace!("server mode");
   }
-  arc_sock2.send(b"PING").await.unwrap();
+  socket.send(b"PING").await.unwrap();
   trace!("sent ping");
   let mut ping = false;
   let mut success = false;
   for i in 0..3 {
-    arc_sock2.recv(&mut buf).await.unwrap();
+    socket.recv(&mut buf).await.unwrap();
     trace!("{}: got {}", i, String::from_utf8_lossy(&buf));
     match &buf {
       b"PING" => {
         ping = true;
-        arc_sock2.send(b"PONG").await.unwrap();
+        socket.send(b"PONG").await.unwrap();
       }
       b"PONG" => {
         if !ping {
-          arc_sock2.send(b"PENG").await.unwrap();
+          socket.send(b"PENG").await.unwrap();
         }
         success = true;
         break;
@@ -123,7 +120,7 @@ pub async fn hole_punch(
     let event_name = format!("message_recieved_{}", emit_identity);
     loop {
       select! {
-        Ok(msg) = Message::recv_from(&arc_sock, &mut buf) => {
+        Ok(msg) = Message::recv_from(&socket, &mut buf) => {
           /* Emit the message_recieved event when a message is recieved */
           spawn_window
             .emit(&event_name, MessageRecievedPayload { message: msg })
@@ -133,7 +130,7 @@ pub async fn hole_punch(
           break;
         },
         Some(msg) = msg_rx.recv() => {
-          msg.send_with(&arc_sock).await.unwrap();
+          msg.send_with(&socket).await.unwrap();
         },
       }
     }
