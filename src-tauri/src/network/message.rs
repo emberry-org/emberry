@@ -5,7 +5,7 @@ use Message::*;
 use log::trace;
 use tokio_kcp::KcpStream;
 
-#[derive(Clone, serde::Serialize, serde::Deserialize)]
+#[derive(Clone, serde::Serialize, serde::Deserialize, Debug)]
 #[serde(tag = "type", content = "content")]
 pub enum Message {
   Kap,               // &[]

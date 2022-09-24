@@ -151,6 +151,7 @@ pub async fn hole_punch(
       select! {
         Ok(msg) = Message::recv_from(&mut stream, &mut buf) => {
           /* Emit the message_recieved event when a message is recieved */
+          trace!("Received message: {:?}", msg);
           spawn_window
             .emit(&event_name, MessageRecievedPayload { message: msg })
             .expect("Failed to emit event");
