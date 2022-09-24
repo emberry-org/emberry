@@ -105,15 +105,13 @@ pub async fn hole_punch(
   /* Setup the send event for the frontend */
   let (sender, mut msg_rx) = mpsc::channel::<Message>(100);
   let send_handle = window.listen(format!("send_message_{}", identity), move |e| {
+    let sender = sender.clone();
     let msg = serde_json::from_str::<Message>(
       e.payload()
         .expect("Invalid payload in send_message_<id> event"),
     )
     .expect("Invalid Json inside of payload from send_message_<id> event");
-    sender
-      .blocking_send(msg)
-      .map_err(|_| "async context even though i thought its not async context")
-      .unwrap();
+    tokio::spawn(async move { sender.send(msg).await });
   });
 
   /* Setup the receive loop */
