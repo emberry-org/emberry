@@ -4,8 +4,8 @@ use std::net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr};
 use std::sync::{Arc, Mutex};
 
 use smoke::messages::RoomId;
-use smoke::{PubKey, User};
 use smoke::Signal;
+use smoke::{PubKey, User};
 use tauri::EventHandler;
 
 use tokio::io::BufReader;
@@ -113,21 +113,26 @@ pub async fn hole_punch(
   }
   assert!(success, "PING PONG manouver was not successfull");
 
-  let stream: KcpStream;
-  if other_key.as_ref() < ENV.public_key.as_bytes() {
+  let mut stream = if other_key.as_ref() < ENV.public_key.as_bytes() {
     trace!("client mode");
-    stream = KcpStream::wrap_client(&KCP_CONF, socket)
-      .await
-      .map_err(|e| Error::new(ErrorKind::Other, e))
-      .unwrap(); //TODO: error handle
+    let mut tmp = BufReader::new(
+      KcpStream::wrap_client(&KCP_CONF, socket)
+        .await
+        .map_err(|e| Error::new(ErrorKind::Other, e))
+        .unwrap(),
+    ); //TODO: error handle
+    // send kap as initializer for the wrap server
+    Signal::Kap.send_with(&mut tmp).await.unwrap();
+    tmp
   } else {
     trace!("server mode");
-    stream = KcpStream::wrap_server(&KCP_CONF, socket)
-      .await
-      .map_err(|e| Error::new(ErrorKind::Other, e))
-      .unwrap(); //TODO: error handle
-  }
-  let mut stream = BufReader::new(stream);
+    BufReader::new(
+      KcpStream::wrap_server(&KCP_CONF, socket)
+        .await
+        .map_err(|e| Error::new(ErrorKind::Other, e))
+        .unwrap(),
+    ) //TODO: error handle
+  };
 
   /* Setup the send event for the frontend */
   let (sender, mut msg_rx) = mpsc::channel::<Signal>(100);
