@@ -3,6 +3,7 @@ use std::io::{self, ErrorKind};
 use tokio::net::UdpSocket;
 use Message::*;
 use log::trace;
+use tokio_kcp::KcpStream;
 
 #[derive(Clone, serde::Serialize, serde::Deserialize)]
 #[serde(tag = "type", content = "content")]
@@ -15,10 +16,10 @@ pub enum Message {
 }
 
 impl Message {
-  pub async fn recv_from(socket: &UdpSocket, buf: &mut [u8]) -> io::Result<Message> {
-    let (len, addr) = socket.recv_from(buf).await?;
+  pub async fn recv_from(socket: &mut KcpStream, buf: &mut [u8]) -> io::Result<Message> {
+    let len = socket.recv(buf).await?;
 
-    trace!("got msg from {addr}");
+    trace!("got msg");
 
     if len == 0 {
       return Ok(Kap);
@@ -32,7 +33,7 @@ impl Message {
     })
   }
 
-  pub async fn send_with(&self, socket: &UdpSocket) -> io::Result<usize> {
+  pub async fn send_with(&self, socket: &mut KcpStream) -> io::Result<usize> {
     let mut buf = vec![];
     match self {
       Kap => (),
@@ -48,7 +49,7 @@ impl Message {
     };
 
     trace!("sent msg");
-    socket.send(&buf).await
+    socket.send(&buf).await.map_err(|e| io::Error::new(ErrorKind::Other, e))
   }
 }
 

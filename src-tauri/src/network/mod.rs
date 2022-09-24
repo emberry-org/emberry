@@ -11,6 +11,8 @@ use tokio::net::UdpSocket;
 use tokio::select;
 use tokio::sync::{mpsc, oneshot};
 
+use tokio_kcp::{KcpConfig, KcpStream};
+
 use log::{error, trace};
 
 pub mod ctrl_chnl;
@@ -20,6 +22,23 @@ use message::Message;
 pub const ENV: Config = Config {
   public_key: dotenv!("PUBLIC_KEY"),
   server_address: dotenv!("SERVER_ADDRESS"),
+};
+
+/// Default kcp conf as from KcpConfig::default()
+/// default is not const and therefore needs to be inlined manually
+const KCP_CONF: KcpConfig = KcpConfig {
+  mtu: 1400,
+  nodelay: tokio_kcp::KcpNoDelayConfig {
+    nodelay: false,
+    interval: 40,
+    resend: 0,
+    nc: false,
+  },
+  wnd_size: (256, 256),
+  session_expire: std::time::Duration::from_secs(90),
+  flush_write: false,
+  flush_acks_input: false,
+  stream: true,
 };
 
 type ConnectionMap = HashMap<RoomId, Connection>;
@@ -66,11 +85,6 @@ pub async fn hole_punch(
   let socket = punch_hole(ENV.server_address, &room_id.0).await?;
 
   let mut buf = [0u8; 4];
-  if other_key.as_ref() < ENV.public_key.as_bytes() {
-    trace!("client mode");
-  } else {
-    trace!("server mode");
-  }
   socket.send(b"PING").await.unwrap();
   trace!("sent ping");
   let mut ping = false;
@@ -99,6 +113,21 @@ pub async fn hole_punch(
   }
   assert!(success, "PING PONG manouver was not successfull");
 
+  let mut stream: KcpStream;
+  if other_key.as_ref() < ENV.public_key.as_bytes() {
+    trace!("client mode");
+    stream = KcpStream::wrap_client(&KCP_CONF, socket)
+      .await
+      .map_err(|e| Error::new(ErrorKind::Other, e))
+      .unwrap(); //TODO: error handle
+  } else {
+    trace!("server mode");
+    stream = KcpStream::wrap_server(&KCP_CONF, socket)
+      .await
+      .map_err(|e| Error::new(ErrorKind::Other, e))
+      .unwrap(); //TODO: error handle
+  }
+
   /* Setup the send event for the frontend */
   let (sender, mut msg_rx) = mpsc::channel::<Message>(100);
   let send_handle = window.listen(format!("send_message_{}", identity), move |e| {
@@ -120,7 +149,7 @@ pub async fn hole_punch(
     let event_name = format!("message_recieved_{}", emit_identity);
     loop {
       select! {
-        Ok(msg) = Message::recv_from(&socket, &mut buf) => {
+        Ok(msg) = Message::recv_from(&mut stream, &mut buf) => {
           /* Emit the message_recieved event when a message is recieved */
           spawn_window
             .emit(&event_name, MessageRecievedPayload { message: msg })
@@ -130,7 +159,7 @@ pub async fn hole_punch(
           break;
         },
         Some(msg) = msg_rx.recv() => {
-          msg.send_with(&socket).await.unwrap();
+          msg.send_with(&mut stream).await.unwrap();
         },
       }
     }
