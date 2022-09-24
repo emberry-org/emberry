@@ -9,7 +9,7 @@ use tauri::EventHandler;
 
 use tokio::net::UdpSocket;
 use tokio::select;
-use tokio::sync::oneshot;
+use tokio::sync::{mpsc, oneshot};
 
 use log::{error, trace};
 
@@ -103,15 +103,17 @@ pub async fn hole_punch(
   assert!(success, "PING PONG manouver was not successfull");
 
   /* Setup the send event for the frontend */
-  let sender = arc_sock.clone();
+  let (sender, mut msg_rx) = mpsc::channel::<Message>(100);
   let send_handle = window.listen(format!("send_message_{}", identity), move |e| {
-    let sender = sender.clone();
     let msg = serde_json::from_str::<Message>(
       e.payload()
         .expect("Invalid payload in send_message_<id> event"),
     )
     .expect("Invalid Json inside of payload from send_message_<id> event");
-    tokio::spawn(async move { msg.send_with(&sender).await });
+    sender
+      .blocking_send(msg)
+      .map_err(|_| "async context even though i thought its not async context")
+      .unwrap();
   });
 
   /* Setup the receive loop */
@@ -123,17 +125,18 @@ pub async fn hole_punch(
     let event_name = format!("message_recieved_{}", emit_identity);
     loop {
       select! {
-          Ok(msg) = Message::recv_from(&arc_sock, &mut buf) => {
-
-        /* Emit the message_recieved event when a message is recieved */
-        spawn_window
-          .emit(&event_name, MessageRecievedPayload { message: msg })
-          .expect("Failed to emit event");
-
+        Ok(msg) = Message::recv_from(&arc_sock, &mut buf) => {
+          /* Emit the message_recieved event when a message is recieved */
+          spawn_window
+            .emit(&event_name, MessageRecievedPayload { message: msg })
+            .expect("Failed to emit event");
         },
         Ok(_) = &mut rx => {
           break;
-        }
+        },
+        Some(msg) = msg_rx.recv() => {
+          msg.send_with(&arc_sock).await.unwrap();
+        },
       }
     }
   });
