@@ -22,8 +22,6 @@ pub const ENV: Config = Config {
   server_address: dotenv!("SERVER_ADDRESS"),
 };
 
-const HELLO: [u8; 6] = [1, 3, 3, 7, 4, 2];
-
 type ConnectionMap = HashMap<RoomId, Connection>;
 pub struct Connection {
   pub send_handle: EventHandler,
@@ -70,6 +68,40 @@ pub async fn hole_punch(
   let arc_sock = Arc::new(socket);
   let arc_sock2 = arc_sock.clone();
 
+  let mut buf = [0u8; 4];
+  if other_key.as_ref() < ENV.public_key.as_bytes() {
+    trace!("client mode");
+  } else {
+    trace!("server mode");
+  }
+  arc_sock2.send(b"PING").await.unwrap();
+  trace!("sent ping");
+  let mut ping = false;
+  let mut success = false;
+  for i in 0..3 {
+    arc_sock2.recv(&mut buf).await.unwrap();
+    trace!("{}: got {}", i, String::from_utf8_lossy(&buf));
+    match &buf {
+      b"PING" => {
+        ping = true;
+        arc_sock2.send(b"PONG").await.unwrap();
+      }
+      b"PONG" => {
+        if !ping {
+          arc_sock2.send(b"PENG").await.unwrap();
+        }
+        success = true;
+        break;
+      }
+      b"PENG" => {
+        success = true;
+        break;
+      }
+      _ => panic!("neither PING nor PONG during greet"),
+    }
+  }
+  assert!(success, "PING PONG manouver was not successfull");
+
   /* Setup the send event for the frontend */
   let sender = arc_sock.clone();
   let send_handle = window.listen(format!("send_message_{}", identity), move |e| {
@@ -89,41 +121,21 @@ pub async fn hole_punch(
   let spawn_window = window.clone();
   tokio::spawn(async move {
     let event_name = format!("message_recieved_{}", emit_identity);
-    //loop {
-    let mut buf = [0u8; 6];
-    if other_key.as_ref() < ENV.public_key.as_bytes() {
-      trace!("client mode");
-      arc_sock2.send(&HELLO).await.unwrap();
-      arc_sock2.recv(&mut buf).await.unwrap();
-      if buf != HELLO {
-        error!("error hello unequal");
-        panic!();
+    loop {
+      select! {
+          Ok(msg) = Message::recv_from(&arc_sock, &mut buf) => {
+
+        /* Emit the message_recieved event when a message is recieved */
+        spawn_window
+          .emit(&event_name, MessageRecievedPayload { message: msg })
+          .expect("Failed to emit event");
+
+        },
+        Ok(_) = &mut rx => {
+          break;
+        }
       }
-      trace!("hello matched");
-    } else {
-      trace!("server mode");
-      arc_sock2.recv(&mut buf).await.unwrap();
-      if buf != HELLO {
-        error!("error hello unequal");
-        panic!();
-      }
-      arc_sock2.send(&HELLO).await.unwrap();
-      trace!("hello matched");
     }
-    /*select! {
-        Ok(msg) = Message::recv_from(&arc_sock, &mut buf) => {
-
-      /* Emit the message_recieved event when a message is recieved */
-      spawn_window
-        .emit(&event_name, MessageRecievedPayload { message: msg })
-        .expect("Failed to emit event");
-
-      },
-      Ok(_) = &mut rx => {
-        break;
-      }
-    }*/
-    //}
   });
 
   let con = Connection {
