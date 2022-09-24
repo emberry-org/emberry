@@ -95,7 +95,7 @@
     //insertChatHistory(id, { sender: myName, content: msg, time });
 
     // Tell the backend to send the message.
-    emit(`send_message_${id}`, { type: "Chat", content: msg });
+    emit(`send_message_${id}`, { Chat: msg });
 
     // Force update the Feed.
     messages = [...messages];
@@ -106,7 +106,7 @@
 
   /** Send a new username to the peer */
   function sendUsername() {
-    emit(`send_message_${id}`, { type: "Username", content: myName });
+    emit(`send_message_${id}`, { Username: myName });
   }
 
   function getTime(): String {
