@@ -198,6 +198,7 @@ async fn punch_hole<A>(server_addr: A, ident: &[u8]) -> Result<UdpSocket, Error>
 where
   A: tokio::net::ToSocketAddrs,
 {
+  trace!("initiating ip exchange");
   // Create, bind, and connect the socket:
   let socket = UdpSocket::bind("0.0.0.0:0").await?;
   socket.connect(server_addr).await?;
@@ -205,20 +206,24 @@ where
   // Send the server our identity (Used to match us with a peer)
   socket.send(ident).await?;
 
-  trace!("HolePunching: Waiting on response from server");
   // Wait for the server to send us a peer:
   let mut b = [0u8; 512];
   let size = socket.recv(&mut b).await?;
 
-  // Try parse the recieved peer address.
-  let addr = parse_addr(&b, size).expect("Failed to parse address");
+  if size == 0 {
+    return Err(Error::new(
+      ErrorKind::UnexpectedEof,
+      "rhizome didn't transmit peer address",
+    ));
+  }
 
-  trace!("HolePunching: connect to {}", &addr);
+  // Try parse the recieved peer address.
+  let addr = parse_addr(&b, size)?;
+
+  trace!("connecting to peer: {}", &addr);
 
   // Swap the connection from the server to the peer.
   socket.connect(addr).await?;
-
-  trace!("HolePunching: connected");
 
   Ok(socket)
 }
