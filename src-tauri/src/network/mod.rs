@@ -234,19 +234,15 @@ fn parse_addr(b: &[u8; 512], size: usize) -> Result<SocketAddr, Error> {
   let ip = match b[0] {
     4 => {
       if size < 7 {
-        return Err(Error::new(
-          ErrorKind::InvalidData,
-          "Not enough bytes to parse to an Ipv4",
-        ));
+        error!("parsing sock addr: '{:x?}' failed", &b[..size]);
+        return Err(Error::new(ErrorKind::InvalidData, "peer address malformed"));
       }
       IpAddr::V4(Ipv4Addr::new(b[1], b[2], b[3], b[4]))
     }
     6 => {
       if size < 19 {
-        return Err(Error::new(
-          ErrorKind::InvalidData,
-          "Not enough bytes to parse to an Ipv6",
-        ));
+        error!("parsing sock addr: '{:x?}' failed", &b[..size]);
+        return Err(Error::new(ErrorKind::InvalidData, "peer address malformed"));
       }
       IpAddr::V6(Ipv6Addr::from([
         b[1], b[2], b[3], b[4], b[5], b[6], b[7], b[8], b[9], b[10], b[11], b[12], b[13], b[14],
@@ -254,10 +250,8 @@ fn parse_addr(b: &[u8; 512], size: usize) -> Result<SocketAddr, Error> {
       ]))
     }
     _ => {
-      return Err(Error::new(
-        ErrorKind::InvalidData,
-        "Ip format not recognized",
-      ))
+      error!("parsing peer addr: '{:x?}' failed", &b[..size]);
+      return Err(Error::new(ErrorKind::InvalidData, "peer address malformed"));
     }
   };
 
