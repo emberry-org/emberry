@@ -54,7 +54,7 @@
   display: block;
   margin: 0;
 
-  font-family: Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji"; 
+  font-family: LocalInter,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji"; 
   overflow-y: auto;
   overflow-x: hidden;
 

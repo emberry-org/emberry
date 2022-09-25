@@ -103,7 +103,7 @@
     .name {
       color: #aaa;
       font-size: 14px;
-      font-family: Inter;
+      font-family: LocalInter;
       margin-left: 8px;
       z-index: 1;
     }
