@@ -17,7 +17,10 @@ use tokio_kcp::{KcpConfig, KcpStream};
 
 use log::{error, trace};
 
+use self::p3::ping_pong_peng;
+
 pub mod ctrl_chnl;
+mod p3;
 
 pub const ENV: Config = Config {
   public_key: dotenv!("PUBLIC_KEY"),
@@ -84,34 +87,10 @@ pub async fn hole_punch(
   /* Holepunch using rhizome */
   let socket = punch_hole(ENV.server_address, &room_id.0).await?;
 
-  let mut buf = [0u8; 4];
-  socket.send(b"PING").await.unwrap();
-  trace!("sent ping");
-  let mut ping = false;
-  let mut success = false;
-  for i in 0..3 {
-    socket.recv(&mut buf).await.unwrap();
-    trace!("{}: got {}", i, String::from_utf8_lossy(&buf));
-    match &buf {
-      b"PING" => {
-        ping = true;
-        socket.send(b"PONG").await.unwrap();
-      }
-      b"PONG" => {
-        if !ping {
-          socket.send(b"PENG").await.unwrap();
-        }
-        success = true;
-        break;
-      }
-      b"PENG" => {
-        success = true;
-        break;
-      }
-      _ => panic!("neither PING nor PONG during greet"),
-    }
+  if let Err(err) = ping_pong_peng(&socket).await {
+    error!("P3 failure: {}", err);
+    return Err(tauri::Error::Io(Error::new(ErrorKind::Other, "P3 failure")));
   }
-  assert!(success, "PING PONG manouver was not successfull");
 
   let mut stream = if other_key.as_ref() < ENV.public_key.as_bytes() {
     trace!("client mode");
