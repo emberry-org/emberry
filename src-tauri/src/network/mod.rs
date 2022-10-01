@@ -13,7 +13,7 @@ use tokio::sync::{mpsc, oneshot};
 
 use tokio_kcp::{KcpConfig, KcpStream};
 
-use log::{trace};
+use log::{error, trace};
 
 use self::holepunch::punch_hole;
 
@@ -85,26 +85,29 @@ pub async fn hole_punch(
   /* Holepunch using rhizome */
   let socket = punch_hole(ENV.server_address, &room_id.0).await?;
 
-  let mut stream = if other_key.as_ref() < ENV.public_key.as_bytes() {
-    trace!("client mode");
-    let mut tmp = BufReader::new(
-      KcpStream::wrap_client(&KCP_CONF, socket)
-        .await
-        .map_err(|e| Error::new(ErrorKind::Other, e))
-        .unwrap(),
-    ); //TODO: error handle
-    // send kap as initializer for the wrap server
-    Signal::Kap.send_with(&mut tmp).await.unwrap();
-    tmp
-  } else {
-    trace!("server mode");
-    BufReader::new(
-      KcpStream::wrap_server(&KCP_CONF, socket)
-        .await
-        .map_err(|e| Error::new(ErrorKind::Other, e))
-        .unwrap(),
-    ) //TODO: error handle
-  };
+  let mut stream =
+    if other_key.as_ref() < ENV.public_key.as_bytes() {
+      trace!("client mode");
+      let mut tmp = BufReader::new(KcpStream::wrap_client(&KCP_CONF, socket).await.map_err(
+        |e| {
+          error!("Kcp error: {}", e);
+          Error::new(ErrorKind::Other, "Kcp error")
+        },
+      )?);
+      // send kap as initializer for the wrap server
+      Signal::Kap.send_with(&mut tmp).await.unwrap();
+      tmp
+    } else {
+      trace!("server mode");
+      BufReader::new(
+        KcpStream::wrap_server(&KCP_CONF, socket)
+          .await
+          .map_err(|e| {
+            error!("Kcp error: {}", e);
+            Error::new(ErrorKind::Other, "Kcp error")
+          })?,
+      )
+    };
 
   /* Setup the send event for the frontend */
   let (sender, mut msg_rx) = mpsc::channel::<Signal>(100);
