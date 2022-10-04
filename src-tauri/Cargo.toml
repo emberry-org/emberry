@@ -18,6 +18,7 @@ smoke = { git = "https://github.com/emberry-org/smoke" }
 log = "0.4"
 env_logger = "0.9"
 tokio_kcp = { git = "https://github.com/devensiv/tokio_kcp" }
+kcp = "0.4"
 bs58 = "0.4"
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
