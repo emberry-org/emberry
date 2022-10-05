@@ -18,6 +18,7 @@
     // TODO: get the user that we've connected too
     listen("new-room", (_: any) => {
       users.push({ key: "unknown", status: UserStatus.Connected });
+      users = [...users];
     });
   });
 

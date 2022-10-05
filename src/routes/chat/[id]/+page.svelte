@@ -117,6 +117,10 @@
       &::-webkit-scrollbar {
         display: none;
       }
+
+      li {
+        color: #eee;
+      }
     }
   }
 
