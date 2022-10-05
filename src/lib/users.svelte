@@ -12,6 +12,7 @@
       const usrkey = e.payload.key;
 
       users.push({ key: usrkey, status: UserStatus.Pending });
+      users = [...users];
     });
 
     // TODO: get the user that we've connected too

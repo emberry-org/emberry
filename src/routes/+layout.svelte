@@ -6,7 +6,6 @@
   import Users from "../lib/users.svelte";
   import Me from "../lib/user.me.svelte";
   import { onMount } from "svelte";
-  import { UserStatus } from "$lib/user.status";
 
   let chat: string | undefined = undefined;
 
