@@ -1,5 +1,6 @@
 <script lang="ts">
   import "../app.css";
+  import { goto } from '$app/navigation';
   import { invoke } from "@tauri-apps/api/tauri";
   import { listen } from "@tauri-apps/api/event";
   import Users from "../lib/users.svelte";
@@ -13,6 +14,17 @@
 
     listen("new-room", (e: any) => {
       chat = e.payload;
+      console.log('new room : ' + chat);
+
+      listen(`message_recieved_${chat}`, (e: any) => {
+        const type: string = Object.keys(e.payload.message)[0];
+
+        const msg = { type, content: e.payload.message[type] };
+
+        console.log("received msg: ", msg);
+      });
+
+      goto('/chat/' + chat);
     });
   });
 </script>

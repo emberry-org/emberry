@@ -1,24 +1,26 @@
 <script lang="ts">
   import { invoke } from "@tauri-apps/api/tauri"
+  import { emit } from "@tauri-apps/api/event"
 
-  let name = "";
-  let greetMsg = ""
+  /** @type {import('./$types').PageData} */
+  export let data;
 
-  async function greet() {
-    let utf8Encode = new TextEncoder();
-    invoke("request_room", { usr: { key: Array.from(utf8Encode.encode(name)) } })
-    console.log('send room request to : ' + name);
+  let msg = "";
+
+  async function send() {
+    emit(`send_message_${id}`, { Chat: msg });
+    msg = "";
   }
 </script>
 
 <section class="body">
   <div class="col">
-    <input id="greet-input" placeholder="Enter a user key..." bind:value={name} />
-    <button on:click={greet}>
-      Send Request
+    <h2>{ data.id }</h2>
+    <input id="greet-input" placeholder="Enter a message..." bind:value={msg} />
+    <button on:click={send}>
+      Send Msg
     </button>
   </div>
-  <p>{greetMsg}</p>
 </section>
 
 <style>
