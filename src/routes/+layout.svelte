@@ -4,7 +4,9 @@
   import { invoke } from "@tauri-apps/api/tauri";
   import { listen } from "@tauri-apps/api/event";
   import Users from "../lib/users.svelte";
+  import Me from "../lib/user.me.svelte";
   import { onMount } from "svelte";
+  import { UserStatus } from "$lib/user.status";
 
   let chat: string | undefined = undefined;
 
@@ -52,7 +54,7 @@
     <!-- Application Right Bar -->
     <div class="sidebar">
 
-      <nav class="header"></nav>
+      <nav class="header"> <Me /> </nav>
 
       <section class="list"></section>
 
@@ -110,8 +112,8 @@
 
       .sidebar {
         height: 100%;
-        width: 200px;
-        min-width: 280px;
+        width: 240px;
+        min-width: 240px;
 
         display: flex;
         flex-direction: column;
@@ -119,7 +121,8 @@
 
         .header {
           width: 100%;
-          height: 160px;
+          height: fit-content;
+          margin-bottom: 12px;
         }
 
         .list {
@@ -144,7 +147,7 @@
         margin: 0 12px;
 
         .header {
-          height: 200px;
+          height: 160px;
 
           border-radius: 12px;
 
