@@ -1,14 +1,13 @@
 <script lang="ts">
-  import { invoke } from "@tauri-apps/api/tauri"
   import { emit } from "@tauri-apps/api/event"
 
   /** @type {import('./$types').PageData} */
-  export let data;
+  export let data: any;
 
   let msg = "";
 
   async function send() {
-    emit(`send_message_${id}`, { Chat: msg });
+    emit(`send_message_${data.id}`, { Chat: msg });
     msg = "";
   }
 </script>
