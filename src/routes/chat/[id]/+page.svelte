@@ -7,23 +7,31 @@
   export let data: any;
 
   let msg = "";
-  let messages: any[] = [{ content: 'Hello there!', sender: 'Me' }, { content: 'Wassup!', sender: 'Them' }];
+  let messages: any[] = [];
+
   let feed: HTMLOListElement;
+  let input: HTMLInputElement;
 
   onMount(() => {
     // Listen for incoming messages.
     listen(`message_recieved_${data.id}`, (e: any) => {
       const type: string = Object.keys(e.payload.message)[0];
-
       const msg = { type, content: e.payload.message[type], sender: 'Them' };
 
-      messages.push(msg);
+      addMessage(msg, "Them");
 
       console.log("received msg: ", msg);
     });
 
     // Set the list to scroll to the bottom of the messages.
     feed.scrollTop = feed.scrollHeight;
+
+    // Send a message when the enter key is pressed.
+    input.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (e.key === "Enter" && e.shiftKey === false) {
+        sendMessage();
+      }
+    });
   });
 
   async function addMessage(content: any, sender: string) {
@@ -40,6 +48,9 @@
   }
 
   async function sendMessage() {
+    // Don't send anything if the message is whitespace.
+    if (msg.trim().length === 0) return;
+
     // Send the message and add it to our own feed.
     emit(`send_message_${data.id}`, { Chat: msg });
     addMessage(msg, "Me");
@@ -70,7 +81,7 @@
 
   <div class="bar">
 
-    <input placeholder="Enter a message..." bind:value={msg} />
+    <input placeholder="Enter a message..." bind:value={msg} bind:this={input} />
     <button on:click={sendMessage}>
       Send Msg
     </button>
