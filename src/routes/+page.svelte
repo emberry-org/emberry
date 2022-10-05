@@ -1,33 +1,180 @@
-<script>
-  import Greet from "$lib/Greet.svelte";
+<script lang="ts">
+  import { invoke } from "@tauri-apps/api/tauri";
+  import { listen } from "@tauri-apps/api/event";
+  import Home from "../lib/home.svelte";
+  import Users from "../lib/users.svelte";
+  import { onMount } from "svelte";
+
+  let chat: string | undefined = undefined;
+
+  onMount(() => {
+    // TODO: check if already connected to tls
+    invoke('connect');
+
+    listen("new-room", (e: any) => {
+      chat = e.payload;
+    });
+  });
+
 </script>
 
-<h1>Welcome to Tauri!</h1>
 
-<div class="row">
-  <a href="https://vitejs.dev" target="_blank">
-    <img src="/vite.svg" class="logo vite" alt="Vite Logo" />
-  </a>
-  <a href="https://tauri.app" target="_blank">
-    <img src="/tauri.svg" class="logo tauri" alt="Tauri Logo" />
-  </a>
-  <a href="https://kit.svelte.dev" target="_blank">
-    <img src="/svelte.svg" class="logo svelte" alt="Svelte Logo" />
-  </a>
-</div>
+<main class="container">
+  
+  <!-- Application Titlebar -->
+  <nav></nav>
 
-<p>Click on the Tauri, Vite, and Svelte logos to learn more.</p>
+  <!-- Application -->
+  <section>
 
-<div class="row">
-  <Greet />
-</div>
+    <nav class="navbar"></nav>
 
-<style>
-  .logo.vite:hover {
-    filter: drop-shadow(0 0 2em #747bff);
+    <!-- Application Left Bar -->
+    <section class="sidebar">
+
+      <Users users={[]} />
+
+    </section>
+
+    <!-- Application Body -->
+    {#if !chat}
+
+    <Home />
+
+    {:else}
+
+    <section class="body">
+
+      <nav class="header">{ chat }</nav>
+
+      <section class="chat"></section>
+
+    </section>
+
+    {/if}
+    
+
+    <!-- Application Right Bar -->
+    <section class="sidebar">
+
+      <nav class="header"></nav>
+
+      <section class="list"></section>
+
+    </section>
+
+  </section>
+
+  <!-- Application Status Bar -->
+  <footer></footer>
+
+</main>
+
+
+<style lang="scss" global>
+  html, body, main {
+    width: 100vw;
+    height: 100vh;
+
+    padding: 0 !important;
+    margin: 0 !important;
   }
 
-  .logo.svelte:hover {
-    filter: drop-shadow(0 0 2em #ff3e00);
+  .container {
+    width: 100vw;
+    height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+
+    background-color: #1E1E1E;
+
+    > nav {
+      width: 100%;
+      height: 12px;
+    }
+
+    > section {
+      width: 100%;
+      flex-grow: 1;
+
+      display: flex;
+
+      .navbar {
+        height: 100%;
+        width: 72px;
+      }
+
+      .sidebar:nth-child(2) {
+        background-color: #2C2C2C;
+      }
+
+      .sidebar:nth-child(4) {
+        margin-right: 22px;
+      }
+
+      .sidebar {
+        height: 100%;
+        width: 280px;
+
+        display: flex;
+        flex-direction: column;
+        border-radius: 12px;
+
+        .header {
+          width: 100%;
+          height: 160px;
+        }
+
+        .list {
+          width: 100%;
+          flex-grow: 1;
+
+          margin-top: 12px;
+          border-radius: 12px;
+
+          background-color: #2C2C2C;
+        }
+      }
+
+      .body {
+        height: 100%;
+        flex-grow: 1;
+
+        display: flex;
+        flex-direction: column;
+
+        margin: 0 12px;
+
+        .header {
+          width: 100%;
+          height: 240px;
+
+          border-radius: 12px;
+
+          background-color: #242424;
+        }
+
+        .chat {
+          width: 100%;
+          flex-grow: 1;
+
+          margin-top: 12px;
+          border-radius: 12px;
+
+          background-color: #383838;
+        }
+      }
+    }
+
+    > footer {
+      width: 100%;
+      height: 22px;
+    }
+  }
+
+  .col {
+    display: flex;
+    flex-direction: column;
   }
 </style>

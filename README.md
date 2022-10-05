@@ -20,7 +20,7 @@
 For the frontend setup install the node packages using the following command :
 
 ```
-$ npm i
+$ yarn
 ```
 
 <br>
@@ -65,5 +65,5 @@ $ pacman -S webkit2gtk
 To run Emberry in developer mode use the following command :
 
 ```
-$ npm run tauri dev
+$ yarn tauri dev
 ```

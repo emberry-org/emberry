@@ -17,6 +17,23 @@ tauri-build = { version = "1.1", features = [] }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 tauri = { version = "1.1", features = ["api-all"] }
+smoke = { git = "https://github.com/emberry-org/smoke" }
+dotenv_codegen = "0.15.0"
+bs58 = "0.4"
+
+# kcp dependencies (maybe combine these into one later)
+tokio = { version = "1.18.2", features = ["net", "macros", "rt", "sync"] }
+tokio_kcp = { git = "https://github.com/devensiv/tokio_kcp" }
+kcp = "0.4"
+
+# tls dependencies
+tokio-rustls = "0.23"
+rustls = { version = "0.20" }
+rustls-pemfile = { version="0.2" }
+
+# logging / debugging
+log = "0.4"
+env_logger = "0.9"
 
 [features]
 # by default Tauri runs in production mode
