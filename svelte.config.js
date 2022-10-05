@@ -8,7 +8,10 @@ const config = {
   preprocess: preprocess(),
 
   kit: {
-    adapter: staticAdapter(),
+    adapter: staticAdapter({
+      // Fallback page has to be named `index.html` otherwise build won't work.
+      fallback: 'index.html'
+    }),
   },
 };
 
