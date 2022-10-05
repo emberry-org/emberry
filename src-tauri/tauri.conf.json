@@ -56,10 +56,14 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 600,
         "resizable": true,
-        "title": "emberry",
-        "width": 800
+        "title": "Emberry",
+
+        "width": 1000,
+        "height": 650,
+
+        "minWidth": 1000,
+        "minHeight": 600
       }
     ]
   }
