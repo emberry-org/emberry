@@ -1,14 +1,14 @@
 {
-  "$schema": "..\\node_modules/@tauri-apps/cli\\schema.json",
   "build": {
-    "beforeBuildCommand": "npm run build",
     "beforeDevCommand": "npm run dev",
-    "devPath": "http://localhost:3000",
-    "distDir": "../dist"
+    "beforeBuildCommand": "npm run build",
+    "devPath": "http://localhost:1420",
+    "distDir": "../dist",
+    "withGlobalTauri": false
   },
   "package": {
-    "productName": "Emberry",
-    "version": "0.1.0"
+    "productName": "emberry-new",
+    "version": "0.0.0"
   },
   "tauri": {
     "allowlist": {
@@ -29,7 +29,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.emberry.app",
+      "identifier": "com.tauri.dev",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
@@ -56,14 +56,10 @@
     "windows": [
       {
         "fullscreen": false,
-        "decorations": false,
-        "transparent": false,
         "height": 600,
         "resizable": true,
-        "title": "Emberry",
-        "width": 900,
-        "minWidth": 900,
-        "minHeight": 600
+        "title": "emberry-new",
+        "width": 800
       }
     ]
   }

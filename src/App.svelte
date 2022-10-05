@@ -1,78 +1,174 @@
 <script lang="ts">
-  import { Body, Titlebar, Statusbar } from "@win";
-  import { CommandCenter, Snackbar } from '@lib/overlays';
-  import { commandCenterState } from "@store";
-  import setupOS from "@core/utils/OppSys";
-  import { onMount } from "svelte";
+  import { invoke } from "@tauri-apps/api/tauri";
+  import { listen } from "@tauri-apps/api/event";
+  import Home from "./lib/home.svelte";
+  import Users from "./lib/users.svelte";
 
-  onMount(() => {
-    setupOS();
-  });
+  let chat: string | undefined = undefined;
 
-  /** Check for local shortcuts */
-  document.addEventListener("keydown", function(e) {
-    if (e.ctrlKey && e.shiftKey && e.code === "KeyP") {
-      e.preventDefault();
-      commandCenterState.update(state => !state);
-    }
+  // TODO: check if already connected to tls
+  invoke('connect');
+
+  listen("new-room", (e: any) => {
+    chat = e.payload;
   });
 </script>
 
-<main>
-
-  <div class="floating">
-    <Snackbar />
-
-    {#if $commandCenterState}
-      <CommandCenter />
-    {/if}
-  </div>
+<main class="container">
   
-  <div class="contents">
-    <Titlebar />
+  <!-- Application Titlebar -->
+  <nav></nav>
 
-    <Body />
+  <!-- Application -->
+  <section>
 
-    <Statusbar />
-  </div>
+    <nav class="navbar"></nav>
+
+    <!-- Application Left Bar -->
+    <section class="sidebar">
+
+      <Users users={[]} />
+
+    </section>
+
+    <!-- Application Body -->
+    {#if !chat}
+
+    <Home />
+
+    {:else}
+
+    <section class="body">
+
+      <nav class="header">{ chat }</nav>
+
+      <section class="chat"></section>
+
+    </section>
+
+    {/if}
+    
+
+    <!-- Application Right Bar -->
+    <section class="sidebar">
+
+      <nav class="header"></nav>
+
+      <section class="list"></section>
+
+    </section>
+
+  </section>
+
+  <!-- Application Status Bar -->
+  <footer></footer>
 
 </main>
 
 <style lang="scss" global>
-  @import './style/vars.scss';
-  @import './style/fonts.css';
-  @import './style/global.scss';
-
-  :root {
-    font-family: Amulya, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-      Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-  }
-
-  html,
-  body {
-    padding: 0;
-    margin: 0;
-    background-color: var(--bg) !important;
-    overflow: hidden;
-    text-rendering: optimizeLegibility !important;
-  }
-
-  main {
+  html, body, main {
     width: 100vw;
     height: 100vh;
 
-    .contents {
-      width: 100vw;
-      height: 100vh;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
 
-      display: flex;
-      flex-direction: column;
-    }
+  .container {
+    width: 100vw;
+    height: 100vh;
 
-    .body {
+    display: flex;
+    flex-direction: column;
+
+    background-color: #1E1E1E;
+
+    > nav {
       width: 100%;
-      height: 100%;
-      display: flex;
+      height: 12px;
     }
+
+    > section {
+      width: 100%;
+      flex-grow: 1;
+
+      display: flex;
+
+      .navbar {
+        height: 100%;
+        width: 72px;
+      }
+
+      .sidebar:nth-child(2) {
+        background-color: #2C2C2C;
+      }
+
+      .sidebar:nth-child(4) {
+        margin-right: 22px;
+      }
+
+      .sidebar {
+        height: 100%;
+        width: 280px;
+
+        display: flex;
+        flex-direction: column;
+        border-radius: 12px;
+
+        .header {
+          width: 100%;
+          height: 160px;
+        }
+
+        .list {
+          width: 100%;
+          flex-grow: 1;
+
+          margin-top: 12px;
+          border-radius: 12px;
+
+          background-color: #2C2C2C;
+        }
+      }
+
+      .body {
+        height: 100%;
+        flex-grow: 1;
+
+        display: flex;
+        flex-direction: column;
+
+        margin: 0 12px;
+
+        .header {
+          width: 100%;
+          height: 240px;
+
+          border-radius: 12px;
+
+          background-color: #242424;
+        }
+
+        .chat {
+          width: 100%;
+          flex-grow: 1;
+
+          margin-top: 12px;
+          border-radius: 12px;
+
+          background-color: #383838;
+        }
+      }
+    }
+
+    > footer {
+      width: 100%;
+      height: 22px;
+    }
+  }
+
+  .col {
+    display: flex;
+    flex-direction: column;
   }
 </style>

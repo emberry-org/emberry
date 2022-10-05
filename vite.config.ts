@@ -1,34 +1,27 @@
-import { defineConfig } from 'vite'
-import { svelte } from '@sveltejs/vite-plugin-svelte'
-import tsconfigPaths from 'vite-tsconfig-paths'
+import { defineConfig } from "vite";
+import { svelte } from "@sveltejs/vite-plugin-svelte";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [svelte(), tsconfigPaths()],
-  optimizeDeps: { exclude: ["svelte-navigator"] },
-  server: {
-    hmr: { overlay: false },
-    port: 3000
-  },
-  build: {
-    rollupOptions: {
-      output: {
-        manualChunks: (id) => {
-          if (id.includes("node_modules")) {
-            if (id.includes("@tauri-apps")) {
-              return "tauri";
+  plugins: [svelte()],
 
-            // Code Mirror & Lezer are very large // Code Mirror requires style-mod
-            } else if (id.includes("codemirror") || id.includes("style-mod")) {
-              return "codemirror";
-            } else if (id.includes("@lezer")) {
-              return "lezer"
-            }
-        
-            return "vendor"; // all other package goes here
-          }
-        }
-      }
-    }
-  }
-})
+  // Vite optons tailored for Tauri development and only applied in `tauri dev` or `tauri build`
+  // prevent vite from obscuring rust errors
+  clearScreen: false,
+  // tauri expects a fixed port, fail if that port is not available
+  server: {
+    port: 1420,
+    strictPort: true,
+  },
+  // to make use of `TAURI_DEBUG` and other env variables
+  // https://tauri.studio/v1/api/config#buildconfig.beforedevcommand
+  envPrefix: ["VITE_", "TAURI_"],
+  build: {
+    // Tauri supports es2021
+    target: ["es2021", "chrome100", "safari13"],
+    // don't minify for debug builds
+    minify: !process.env.TAURI_DEBUG ? "esbuild" : false,
+    // produce sourcemaps for debug builds
+    sourcemap: !!process.env.TAURI_DEBUG,
+  },
+});
