@@ -4,7 +4,7 @@
   let name = "";
   let greetMsg = ""
 
-  async function greet() {
+  function greet() {
     let utf8Encode = new TextEncoder();
     invoke("request_room", { usr: { key: Array.from(utf8Encode.encode(name)) } })
     console.log('send room request to : ' + name);
