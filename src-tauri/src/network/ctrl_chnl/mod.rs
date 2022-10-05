@@ -12,6 +12,7 @@ use std::{
 use crate::network::hole_punch;
 
 pub use self::state::RwOption;
+use log::trace;
 pub use messages::EmberryMessage;
 use rustls::{ClientConfig, RootCertStore, ServerName};
 use serde_json::json;
@@ -113,6 +114,7 @@ async fn handle_rhiz_msg(
   net: &tauri::State<'_, Networking>,
   rc: &tauri::State<'_, RhizomeConnection>,
 ) -> tauri::Result<()> {
+  trace!("ctrl recv: {:?}", msg);
   match msg? {
     Shutdown() => return Ok(()),
     HasRoute(usr) => {

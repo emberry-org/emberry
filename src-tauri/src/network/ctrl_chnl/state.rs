@@ -1,6 +1,7 @@
 use std::io::{self, Error, ErrorKind};
 
 use super::EmberryMessage;
+use log::trace;
 use smoke::messages::EmbMessage;
 use tokio::sync::mpsc::Sender;
 use tokio::sync::RwLock;
@@ -14,6 +15,7 @@ pub struct State {
 
 /// Tries to send msg using the inner "channel" if it is there returning io error if not
 pub async fn send(rc: &RhizomeConnection, msg: EmbMessage) -> io::Result<()> {
+  trace!("ctrl send: {:?}", msg);
   let guard = rc.read().await;
 
   let tx = match &*guard {
