@@ -12,17 +12,11 @@
     // TODO: check if already connected to tls
     invoke('connect');
 
+    //goto('/chat/' + 'ldslfjsljfsljlejrlqwjelwqjeqlkjeskawkrospaeosafdksaldsajdjsaldss');
+
     listen("new-room", (e: any) => {
       chat = e.payload;
       console.log('new room : ' + chat);
-
-      listen(`message_recieved_${chat}`, (e: any) => {
-        const type: string = Object.keys(e.payload.message)[0];
-
-        const msg = { type, content: e.payload.message[type] };
-
-        console.log("received msg: ", msg);
-      });
 
       goto('/chat/' + chat);
     });
@@ -30,7 +24,7 @@
 </script>
 
 
-<main class="container">
+<main class="app">
   
   <!-- Application Titlebar -->
   <nav></nav>
@@ -41,28 +35,28 @@
     <nav class="navbar"></nav>
 
     <!-- Application Left Bar -->
-    <section class="sidebar">
+    <div class="sidebar">
 
       <Users users={[]} />
 
-    </section>
+    </div>
 
     <!-- Application Body -->
-    <section class="body">
+    <div class="body">
 
       <slot />
 
-    </section>
+    </div>
     
 
     <!-- Application Right Bar -->
-    <section class="sidebar">
+    <div class="sidebar">
 
       <nav class="header"></nav>
 
       <section class="list"></section>
 
-    </section>
+    </div>
 
   </section>
 
@@ -81,7 +75,7 @@
     margin: 0 !important;
   }
 
-  .container {
+  .app {
     width: 100vw;
     height: 100vh;
 
@@ -96,7 +90,6 @@
     }
 
     > section {
-      width: 100%;
       flex-grow: 1;
 
       display: flex;
@@ -104,6 +97,7 @@
       .navbar {
         height: 100%;
         width: 72px;
+        min-width: 72px;
       }
 
       .sidebar:nth-child(2) {
@@ -116,7 +110,8 @@
 
       .sidebar {
         height: 100%;
-        width: 280px;
+        width: 200px;
+        min-width: 280px;
 
         display: flex;
         flex-direction: column;
@@ -139,6 +134,7 @@
       }
 
       .body {
+        min-width: 0;
         height: 100%;
         flex-grow: 1;
 
@@ -148,8 +144,7 @@
         margin: 0 12px;
 
         .header {
-          width: 100%;
-          height: 240px;
+          height: 200px;
 
           border-radius: 12px;
 
@@ -157,7 +152,6 @@
         }
 
         .chat {
-          width: 100%;
           flex-grow: 1;
 
           margin-top: 12px;
