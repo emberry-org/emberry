@@ -1,13 +1,13 @@
 {
   "build": {
-    "beforeDevCommand": "npm run dev",
-    "beforeBuildCommand": "npm run build",
+    "beforeDevCommand": "yarn dev",
+    "beforeBuildCommand": "yarn build",
     "devPath": "http://localhost:1420",
-    "distDir": "../dist",
+    "distDir": "../build",
     "withGlobalTauri": false
   },
   "package": {
-    "productName": "emberry-new",
+    "productName": "test-tauri-app",
     "version": "0.0.0"
   },
   "tauri": {
@@ -58,7 +58,7 @@
         "fullscreen": false,
         "height": 600,
         "resizable": true,
-        "title": "emberry-new",
+        "title": "test-tauri-app",
         "width": 800
       }
     ]

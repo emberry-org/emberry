@@ -1,33 +1,17 @@
 #![cfg_attr(
-  all(not(debug_assertions), target_os = "windows"),
-  windows_subsystem = "windows"
+    all(not(debug_assertions), target_os = "windows"),
+    windows_subsystem = "windows"
 )]
 
-#[macro_use]
-extern crate dotenv_codegen;
-
-mod network;
-use network::ctrl_chnl::{connect, requests::*, responses::*, State};
-use network::{chat_exists, Networking};
-use tokio::sync::RwLock;
+// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
+#[tauri::command]
+fn greet(name: &str) -> String {
+    format!("Hello, {}! You've been greeted from Rust!", name)
+}
 
 fn main() {
-  env_logger::init();
-
-  tauri::Builder::default()
-    // Application State
-    .manage(Networking {
-      chats: Default::default(),
-      pending: Default::default(),
-    })
-    .manage(RwLock::<Option<State>>::new(None))
-    // Tauri Commands
-    .invoke_handler(tauri::generate_handler![
-      chat_exists,
-      connect,
-      request_room,
-      accept_room,
-    ])
-    .run(tauri::generate_context!())
-    .expect("error while running tauri application");
+    tauri::Builder::default()
+        .invoke_handler(tauri::generate_handler![greet])
+        .run(tauri::generate_context!())
+        .expect("error while running tauri application");
 }

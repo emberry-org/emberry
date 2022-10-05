@@ -1,11 +1,11 @@
 import { defineConfig } from "vite";
-import { svelte } from "@sveltejs/vite-plugin-svelte";
+import { sveltekit } from "@sveltejs/kit/vite";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [svelte()],
+  plugins: [sveltekit()],
 
-  // Vite optons tailored for Tauri development and only applied in `tauri dev` or `tauri build`
+  // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   // prevent vite from obscuring rust errors
   clearScreen: false,
   // tauri expects a fixed port, fail if that port is not available
