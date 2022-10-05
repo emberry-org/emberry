@@ -18,7 +18,7 @@
       const type: string = Object.keys(e.payload.message)[0];
       const msg = { type, content: e.payload.message[type], sender: 'Them' };
 
-      addMessage(msg, "Them");
+      addMessage(msg.content, "Them");
 
       console.log("received msg: ", msg);
     });
