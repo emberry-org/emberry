@@ -41,7 +41,7 @@ const KCP_CONF: KcpConfig = KcpConfig {
   session_expire: std::time::Duration::from_secs(90),
   flush_write: false,
   flush_acks_input: false,
-  stream: true,
+  stream: false,
 };
 
 type ConnectionMap = HashMap<RoomId, Connection>;
