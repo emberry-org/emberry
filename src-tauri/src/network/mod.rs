@@ -4,15 +4,13 @@ use std::sync::Mutex;
 
 use smoke::messages::RoomId;
 use smoke::Signal;
-use smoke::{PubKey, User};
+use smoke::User;
 use tauri::EventHandler;
 
 use tokio::io::BufReader;
-use tokio::net::UdpSocket;
 use tokio::select;
 use tokio::sync::{mpsc, oneshot};
 
-use kcp::Error as KcpError;
 use tokio_kcp::{KcpConfig, KcpStream};
 
 use log::{error, trace};
@@ -41,7 +39,7 @@ const KCP_CONF: KcpConfig = KcpConfig {
   session_expire: std::time::Duration::from_secs(90),
   flush_write: false,
   flush_acks_input: false,
-  stream: true,
+  stream: false,
 };
 
 type ConnectionMap = HashMap<RoomId, Connection>;
@@ -74,7 +72,6 @@ pub async fn hole_punch(
   window: tauri::Window,
   state: tauri::State<'_, Networking>,
   room_id: RoomId,
-  other_key: PubKey,
 ) -> tauri::Result<()> {
   /* Get the server ip from .env */
 
@@ -86,13 +83,16 @@ pub async fn hole_punch(
 
   /* Holepunch using rhizome */
   let socket = punch_hole(ENV.server_address, &room_id.0).await?;
+  let addr = socket.peer_addr()?;
 
-  let mut stream = wrap_kcp(socket, other_key.as_ref() < ENV.public_key.as_bytes())
+  let stream = KcpStream::connect_with_socket(&KCP_CONF, socket, addr)
     .await
     .map_err(|e| {
       error!("Kcp error: {}", e);
       Error::new(ErrorKind::Other, "Kcp error")
     })?;
+
+  let mut stream = BufReader::new(stream);
 
   /* Setup the send event for the frontend */
   let (sender, mut msg_rx) = mpsc::channel::<Signal>(100);
@@ -145,37 +145,6 @@ pub async fn hole_punch(
     .emit("new-room", &identity)
     .expect("Failed to emit WantsRoom event");
   Ok(())
-}
-
-/// Creates a new KcpStream wrapping the given socket.
-/// Uses the underlying wrap_client/wrap_server methods from [KcpStream]
-/// depending on the "is_client" argument.
-///
-/// # Cancel safety
-/// This method is probably not cancellation safe and is therefore to be treated
-/// as if it were not. If it is used as the event in a tokio::select statement
-/// and some other branch completes first, the kcp may be partially initialized
-/// and subsequent calls do not reset the remote end of the connection.
-///
-/// # Errors
-/// This function will return:</br>
-/// The first error returned by calling wrap_client/wrap_server on [KcpStream]
-async fn wrap_kcp(socket: UdpSocket, is_client: bool) -> Result<BufReader<KcpStream>, KcpError> {
-  if is_client {
-    trace!("client mode");
-    let mut tmp = BufReader::new(KcpStream::wrap_client(&KCP_CONF, socket).await?);
-    // send kap as initializer for the wrap server
-    Signal::Kap
-      .send_with(&mut tmp)
-      .await
-      .map_err(KcpError::IoError)?;
-    Ok(tmp)
-  } else {
-    trace!("server mode");
-    Ok(BufReader::new(
-      KcpStream::wrap_server(&KCP_CONF, socket).await?,
-    ))
-  }
 }
 
 #[tauri::command]
