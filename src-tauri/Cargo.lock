@@ -707,7 +707,7 @@ dependencies = [
  "bs58",
  "dotenv_codegen",
  "env_logger",
- "kcp",
+ "kcp 0.4.16",
  "log",
  "rustls",
  "rustls-pemfile",
@@ -1463,6 +1463,17 @@ name = "kcp"
 version = "0.4.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6aeec81bb2a05d439a83be620f96c19e44778664f11ea9551402f08fa67f49e4"
+dependencies = [
+ "bytes",
+ "log",
+ "thiserror",
+]
+
+[[package]]
+name = "kcp"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6c5d83fb15f764713284e68ce0c3173d549b8da8a29375e54cce8a3945ad86e5"
 dependencies = [
  "bytes",
  "log",
@@ -3353,13 +3364,14 @@ dependencies = [
 
 [[package]]
 name = "tokio_kcp"
-version = "0.8.1"
-source = "git+https://github.com/devensiv/tokio_kcp#7bcc9aa30fa729f3cb63fba6308b987ff084bb6a"
+version = "0.9.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dadc5e6c504aaea23702542a2606dac8ef3c5d6a54ee7d02f4c046e8ad3e4ec6"
 dependencies = [
  "byte_string",
  "bytes",
  "futures",
- "kcp",
+ "kcp 0.5.0",
  "log",
  "rand 0.8.5",
  "spin 0.9.4",

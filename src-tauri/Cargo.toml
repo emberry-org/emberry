@@ -21,8 +21,8 @@ bs58 = "0.4"
 
 tokio = { version = "1.18.2", features = ["net", "macros", "rt", "sync"] }
 
-# kcp dependencies (maybe combine these into one later)
-tokio_kcp = { git = "https://github.com/devensiv/tokio_kcp" }
+# kcp dependencies
+tokio_kcp = "0.9"
 kcp = "0.4"
 
 # tls dependencies
