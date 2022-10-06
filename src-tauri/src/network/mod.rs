@@ -1,23 +1,47 @@
 use std::collections::HashMap;
 use std::io::{Error, ErrorKind};
-use std::net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr};
-use std::sync::{Arc, Mutex};
+use std::sync::Mutex;
 
 use smoke::messages::RoomId;
-use smoke::User;
+use smoke::Signal;
+use smoke::{PubKey, User};
 use tauri::EventHandler;
 
+use tokio::io::BufReader;
 use tokio::net::UdpSocket;
 use tokio::select;
-use tokio::sync::oneshot;
+use tokio::sync::{mpsc, oneshot};
+
+use kcp::Error as KcpError;
+use tokio_kcp::{KcpConfig, KcpStream};
+
+use log::{error, trace};
+
+use self::holepunch::punch_hole;
 
 pub mod ctrl_chnl;
-pub mod message;
-use message::Message;
+mod holepunch;
 
 pub const ENV: Config = Config {
   public_key: dotenv!("PUBLIC_KEY"),
   server_address: dotenv!("SERVER_ADDRESS"),
+};
+
+/// Default kcp conf as from KcpConfig::default()
+/// default is not const and therefore needs to be inlined manually
+const KCP_CONF: KcpConfig = KcpConfig {
+  mtu: 1400,
+  nodelay: tokio_kcp::KcpNoDelayConfig {
+    nodelay: false,
+    interval: 40,
+    resend: 0,
+    nc: false,
+  },
+  wnd_size: (256, 256),
+  session_expire: std::time::Duration::from_secs(90),
+  flush_write: false,
+  flush_acks_input: false,
+  stream: true,
 };
 
 type ConnectionMap = HashMap<RoomId, Connection>;
@@ -26,7 +50,7 @@ pub struct Connection {
   pub recv_handle: oneshot::Sender<()>,
 }
 
-pub enum RRState{
+pub enum RRState {
   Pending,
   Agreement,
 }
@@ -43,13 +67,14 @@ pub struct Config<'a> {
 
 #[derive(Clone, serde::Serialize)]
 struct MessageRecievedPayload {
-  message: Message,
+  message: Signal,
 }
 
 pub async fn hole_punch(
   window: tauri::Window,
   state: tauri::State<'_, Networking>,
   room_id: RoomId,
+  other_key: PubKey,
 ) -> tauri::Result<()> {
   /* Get the server ip from .env */
 
@@ -62,40 +87,50 @@ pub async fn hole_punch(
   /* Holepunch using rhizome */
   let socket = punch_hole(ENV.server_address, &room_id.0).await?;
 
-  let arc_sock = Arc::new(socket);
+  let mut stream = wrap_kcp(socket, other_key.as_ref() < ENV.public_key.as_bytes())
+    .await
+    .map_err(|e| {
+      error!("Kcp error: {}", e);
+      Error::new(ErrorKind::Other, "Kcp error")
+    })?;
 
   /* Setup the send event for the frontend */
-  let sender = arc_sock.clone();
+  let (sender, mut msg_rx) = mpsc::channel::<Signal>(100);
   let send_handle = window.listen(format!("send_message_{}", identity), move |e| {
     let sender = sender.clone();
-    let msg = serde_json::from_str::<Message>(
+    let msg = serde_json::from_str::<Signal>(
       e.payload()
         .expect("Invalid payload in send_message_<id> event"),
     )
     .expect("Invalid Json inside of payload from send_message_<id> event");
-    tokio::spawn(async move { msg.send_with(&sender).await });
+    tokio::spawn(async move { sender.send(msg).await });
   });
 
   /* Setup the receive loop */
   let (recv_handle, mut rx) = oneshot::channel::<()>();
-  let mut buf = [0u8; 512];
+  let mut buf = Vec::new();
   let emit_identity = identity.clone();
   let spawn_window = window.clone();
   tokio::spawn(async move {
     let event_name = format!("message_recieved_{}", emit_identity);
     loop {
       select! {
-          Ok(msg) = Message::recv_from(&arc_sock, &mut buf) => {
-
-        /* Emit the message_recieved event when a message is recieved */
-        spawn_window
-          .emit(&event_name, MessageRecievedPayload { message: msg })
-          .expect("Failed to emit event");
-
+        Ok(msg) = Signal::recv_with(&mut stream, &mut buf) => {
+          /* Emit the message_recieved event when a message is recieved */
+          trace!("Received message: {:?}", msg);
+          spawn_window
+            .emit(&event_name, MessageRecievedPayload { message: msg })
+            .expect("Failed to emit event");
         },
         Ok(_) = &mut rx => {
           break;
-        }
+        },
+        Some(msg) = msg_rx.recv() => {
+          if let Err(e) = msg.send_with(&mut stream).await{
+            error!("Kcp send error: {}", e);
+            break;
+          }
+        },
       }
     }
   });
@@ -105,10 +140,42 @@ pub async fn hole_punch(
     send_handle,
   };
   state.chats.lock().unwrap().insert(room_id.clone(), con);
+
   window
     .emit("new-room", &identity)
     .expect("Failed to emit WantsRoom event");
   Ok(())
+}
+
+/// Creates a new KcpStream wrapping the given socket.
+/// Uses the underlying wrap_client/wrap_server methods from [KcpStream]
+/// depending on the "is_client" argument.
+///
+/// # Cancel safety
+/// This method is probably not cancellation safe and is therefore to be treated
+/// as if it were not. If it is used as the event in a tokio::select statement
+/// and some other branch completes first, the kcp may be partially initialized
+/// and subsequent calls do not reset the remote end of the connection.
+///
+/// # Errors
+/// This function will return:</br>
+/// The first error returned by calling wrap_client/wrap_server on [KcpStream]
+async fn wrap_kcp(socket: UdpSocket, is_client: bool) -> Result<BufReader<KcpStream>, KcpError> {
+  if is_client {
+    trace!("client mode");
+    let mut tmp = BufReader::new(KcpStream::wrap_client(&KCP_CONF, socket).await?);
+    // send kap as initializer for the wrap server
+    Signal::Kap
+      .send_with(&mut tmp)
+      .await
+      .map_err(KcpError::IoError)?;
+    Ok(tmp)
+  } else {
+    trace!("server mode");
+    Ok(BufReader::new(
+      KcpStream::wrap_server(&KCP_CONF, socket).await?,
+    ))
+  }
 }
 
 #[tauri::command]
@@ -118,80 +185,4 @@ pub fn chat_exists(state: tauri::State<'_, Networking>, id: RoomId) -> bool {
     Ok(chats) => chats.contains_key(&id),
     Err(_) => false,
   }
-}
-
-/** Create a new socket and holepunch it! */
-async fn punch_hole<A>(server_addr: A, ident: &[u8]) -> Result<UdpSocket, Error>
-where
-  A: tokio::net::ToSocketAddrs,
-{
-  // Create, bind, and connect the socket:
-  let socket = UdpSocket::bind("0.0.0.0:0").await?;
-  socket.connect(server_addr).await?;
-
-  // Send the server our identity (Used to match us with a peer)
-  socket.send(ident).await?;
-
-  #[cfg(feature = "debug")]
-  println!("HolePunching: Waiting on response from server");
-  // Wait for the server to send us a peer:
-  let mut b = [0u8; 512];
-  let size = socket.recv(&mut b).await?;
-
-  // Try parse the recieved peer address.
-  let addr = parse_addr(&b, size).expect("Failed to parse address");
-
-  #[cfg(feature = "debug")]
-  println!("HolePunching: connect to {}", &addr);
-
-  // Swap the connection from the server to the peer.
-  socket.connect(addr).await?;
-
-  #[cfg(feature = "debug")]
-  println!("HolePunching: connected");
-
-  Ok(socket)
-}
-
-/** Parse a collection of bytes to a valid IP address. */
-fn parse_addr(b: &[u8; 512], size: usize) -> Result<SocketAddr, Error> {
-  // Parse the bytes into a valid socket address:
-  let ip = match b[0] {
-    4 => {
-      if size < 7 {
-        return Err(Error::new(
-          ErrorKind::InvalidData,
-          "Not enough bytes to parse to an Ipv4",
-        ));
-      }
-      IpAddr::V4(Ipv4Addr::new(b[1], b[2], b[3], b[4]))
-    }
-    6 => {
-      if size < 19 {
-        return Err(Error::new(
-          ErrorKind::InvalidData,
-          "Not enough bytes to parse to an Ipv6",
-        ));
-      }
-      IpAddr::V6(Ipv6Addr::from([
-        b[1], b[2], b[3], b[4], b[5], b[6], b[7], b[8], b[9], b[10], b[11], b[12], b[13], b[14],
-        b[15], b[16],
-      ]))
-    }
-    _ => {
-      return Err(Error::new(
-        ErrorKind::InvalidData,
-        "Ip format not recognized",
-      ))
-    }
-  };
-
-  // Parse the remaining bytes to a valid port number:
-  let port = match b[0] {
-    4 => ((b[5] as u16) << 8) | b[6] as u16,
-    6 => ((b[17] as u16) << 8) | b[18] as u16,
-    _ => unreachable!(),
-  };
-
-  Ok(SocketAddr::new(ip, port))
 }

@@ -12,6 +12,7 @@ use std::{
 use crate::network::hole_punch;
 
 pub use self::state::RwOption;
+use log::trace;
 pub use messages::EmberryMessage;
 use rustls::{ClientConfig, RootCertStore, ServerName};
 use serde_json::json;
@@ -113,6 +114,7 @@ async fn handle_rhiz_msg(
   net: &tauri::State<'_, Networking>,
   rc: &tauri::State<'_, RhizomeConnection>,
 ) -> tauri::Result<()> {
+  trace!("ctrl recv: {:?}", msg);
   match msg? {
     Shutdown() => return Ok(()),
     HasRoute(usr) => {
@@ -177,7 +179,7 @@ async fn try_holepunch(
   if let Some(room_id) = room_id {
     if net_state.pending.lock().unwrap().remove(&usr).is_some() {
       // only hole punch if there is a connection pending
-      hole_punch(window, net_state, room_id).await?;
+      hole_punch(window, net_state, room_id, usr.key).await?;
     } else {
       // This is rather weak protection as a compromized rhizome server could still just send a different room id with a valid user
       // Room id procedure is subject to change in the future. (plan is to use cryptographic signatures to mitigated unwanted ip leak)

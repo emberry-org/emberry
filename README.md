@@ -20,7 +20,7 @@
 For the frontend setup install the node packages using the following command :
 
 ```
-$ npm i
+$ yarn
 ```
 
 <br>
@@ -33,15 +33,18 @@ For the backend setup add a ``.env`` file to the ``src-tauri`` directory :
 /src-tauri/.env
 
 SERVER_ADDRESS=<server_ip>:<udp_port>
+SERVER_DOMAIN=<certificate domain name>
+CONTROL_ADDRESS=<server_ip>:<ctrl_chnl_port>
 PUBLIC_KEY=<32 byte string>
+CERT=<X509Certificate>
 ```
 
 <br>
 
-Then add a ``dist/`` directory on the same level as ``src/`` and ``src-tauri/`` as shown below :
+Then add a ``build/`` directory on the same level as ``src/`` and ``src-tauri/`` as shown below :
 ```
 .
-├─ dist/
+├─ build/
 ├─ src/
 ├─ src-tauri/
 ├─ public/
@@ -65,5 +68,5 @@ $ pacman -S webkit2gtk
 To run Emberry in developer mode use the following command :
 
 ```
-$ npm run tauri dev
+$ yarn tauri dev
 ```
