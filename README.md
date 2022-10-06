@@ -11,7 +11,7 @@
     
 Emberry is a peer to peer chat application with the mission<br>
 To create a **secure** and **efficient** chat platform for everyone.<br>
-<sub>⠿ <i>Emberry is still very early in its development, if <b>you</b> want to make a difference <a href="https://mxcop.github.io/portfolio">contact me</a> :D</i></sub>
+<sub>⠿ <i>Emberry is still very early in its development, if <b>you</b> want to contribute <a href="https://mxcop.github.io/portfolio">contact me</a> :D</i></sub>
 
 <br>
 
