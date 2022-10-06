@@ -51,9 +51,18 @@ pub fn craft_key() -> rustls::PrivateKey {
 mod tests {
 
   #[test]
-  fn server_cert_creation() {
+  fn user_key_creation() {
     super::craft_key();
+  }
+
+
+  #[test]
+  fn user_cert_creation() {
     super::craft_cert();
+  }
+
+  #[test]
+  fn peer_cert_creation() {
     super::craft_peer_cert();
   }
 }
