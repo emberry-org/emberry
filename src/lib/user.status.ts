@@ -11,3 +11,4 @@ export enum UserStatus {
   /** This user is connected to us */
   Connected,
 }
+

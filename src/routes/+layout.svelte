@@ -13,8 +13,6 @@
     // TODO: check if already connected to tls
     invoke('connect');
 
-    //goto('/chat/' + 'ldslfjsljfsljlejrlqwjelwqjeqlkjeskawkrospaeosafdksaldsajdjsaldss');
-
     listen("new-room", (e: any) => {
       chat = e.payload;
       console.log('new room : ' + chat);
@@ -175,3 +173,4 @@
     flex-direction: column;
   }
 </style>
+

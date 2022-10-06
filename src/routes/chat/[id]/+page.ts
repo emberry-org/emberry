@@ -4,3 +4,4 @@ export function load({ params }: any) {
     id: params.id
   }
 }
+
