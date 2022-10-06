@@ -128,7 +128,7 @@ pub async fn hole_punch(
             Notification::new(&app_handle.config().tauri.bundle.identifier)
               .title(&msg_from)
               .body(text)
-              .show();
+              .show().expect("Failed to send desktop notification");
           }
           
           /* Emit the message recieved event */
