@@ -1,17 +1,15 @@
 [package]
-name = "test-tauri-app"
-version = "0.0.0"
-description = "A Tauri App"
-authors = ["you"]
-license = ""
-repository = ""
+name = "emberry-rs"
+version = "0.1.0"
+description = "emberry rust backend"
+authors = ["devensiv <devensiv@gmail.com>", "max <mx.coppen@gmail.com>"]
+license = "GPLv3"
+repository = "https://github.com/emberry-org/emberry.git"
 edition = "2021"
 rust-version = "1.57"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [build-dependencies]
-tauri-build = { version = "1.1", features = [] }
+tauri-build = "1.1"
 
 [dependencies]
 serde_json = "1.0"
@@ -21,8 +19,9 @@ smoke = { git = "https://github.com/emberry-org/smoke" }
 dotenv_codegen = "0.15.0"
 bs58 = "0.4"
 
-# kcp dependencies (maybe combine these into one later)
 tokio = { version = "1.18.2", features = ["net", "macros", "rt", "sync"] }
+
+# kcp dependencies (maybe combine these into one later)
 tokio_kcp = { git = "https://github.com/devensiv/tokio_kcp" }
 kcp = "0.4"
 
