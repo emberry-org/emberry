@@ -17,7 +17,7 @@ To create a **secure** and **efficient** chat platform for everyone.<br>
 
 <div align="left">
     <img width="80%" src="https://github.com/emberry-org/emberry-rework/blob/main/.github/assets/dev-banner.png"> 
-    <img align="right" height="80px" src="https://github.com/emberry-org/emberry-rework/blob/main/.github/assets/logo.png"> 
+    <img align="right" width="8%" src="https://github.com/emberry-org/emberry-rework/blob/main/.github/assets/logo.png"> 
 </div>
 
 <h3>Frontend</h3>
