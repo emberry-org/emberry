@@ -1,5 +1,8 @@
 use log::{error, trace};
-use std::{io::{self, Error, ErrorKind}, net::{IpAddr, Ipv6Addr, SocketAddr, Ipv4Addr}};
+use std::{
+  io::{self, Error, ErrorKind},
+  net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr},
+};
 use tokio::net::UdpSocket;
 
 /** Create a new socket and holepunch it! */
