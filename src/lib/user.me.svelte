@@ -45,6 +45,7 @@
     h3 {
       font-size: 16px;
       line-height: 21px;
+      color: #eee;
     }
 
     p {
