@@ -1,23 +1,28 @@
-<h1 align="center">
-    <div align="center">
-        <img width=140 src="https://github.com/emberry-org/emberry-rework/blob/main/.github/assets/logo.png"> 
-    </div>
-</h1>
-
-
 <div align="center">
-    <b>Emberry</b> - Chatting directly with friends <b>in privacy!</b><br>
+    <img src="https://github.com/emberry-org/emberry-rework/blob/main/.github/assets/banner.png"> 
 </div>
+<div align="right"><sup>Powered by <a href="https://github.com/tauri-apps/tauri">Tauri</a> & <a href="https://github.com/sveltejs/kit">SvelteKit</a> ⠿</sup></div>
+
+<h3 align="center">
+    A new way to Chat with Friends
+</h3>
     
 <br>
-
-<h1><samp>Development</samp></h1>
+    
+Emberry is a peer to peer chat application with the mission<br>
+To create a **secure** and **efficient** chat platform for everyone.<br>
+<sub>⠿ <i>Emberry is still very early in its development, if <b>you</b> want to make a difference <a href="MAX#0000">contact me</a> :D</i></sub>
 
 <br>
 
-<h3><samp>Frontend</samp></h3>
+<div align="left">
+    <img width="80%" src="https://github.com/emberry-org/emberry-rework/blob/main/.github/assets/dev-banner.png"> 
+    <img align="right" height="80px" src="https://github.com/emberry-org/emberry-rework/blob/main/.github/assets/logo.png"> 
+</div>
 
-For the frontend setup install the node packages using the following command :
+<h3>Frontend</h3>
+Install Javascript dependencies :
+<div align="right"><sup>We use Yarn as our package manager ⠿</sup></div>
 
 ```
 $ yarn
@@ -25,7 +30,14 @@ $ yarn
 
 <br>
 
-<h3><samp>Backend</samp></h3>
+Start the development environment :
+```
+$ yarn tauri dev
+```
+
+<br>
+
+<h3>Backend</h3>
 
 For the backend setup add a ``.env`` file to the ``src-tauri`` directory :
 
@@ -42,20 +54,20 @@ CERT=<X509Certificate>
 <br>
 
 Then add a ``build/`` directory on the same level as ``src/`` and ``src-tauri/`` as shown below :
-```
-.
-├─ build/
-├─ src/
-├─ src-tauri/
-├─ public/
-└─ README.md
+```graphql
+./emberry/* 
+  ├─ build/      - # Vite build output
+  ├─ src/        - # Frontend codebase
+  ├─ src-tauri/  - # Backend codebase
+  ├─ static/     - # Production assets (included within the build)
+  └─ README.md
 ```
 
 <br>
 
-<h3><samp>Dependencies</samp></h3>
+<h3>Dependencies</h3>
 
-To build emberry on arch based systems the following packages need to be installed:
+To build Emberry on arch based systems the following packages need to be installed :
 
 ```
 $ pacman -S webkit2gtk
@@ -63,7 +75,7 @@ $ pacman -S webkit2gtk
 
 <br>
 
-<h3><samp>Running</samp></h3>
+<h3>Running</h3>
 
 To run Emberry in developer mode use the following command :
 
