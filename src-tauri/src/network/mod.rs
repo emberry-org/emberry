@@ -19,6 +19,7 @@ use self::holepunch::punch_hole;
 
 pub mod ctrl_chnl;
 mod holepunch;
+mod tls_kcp;
 
 pub const ENV: Config = Config {
   public_key: dotenv!("PUBLIC_KEY"),
