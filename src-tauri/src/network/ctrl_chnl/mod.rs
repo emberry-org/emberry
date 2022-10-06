@@ -39,6 +39,7 @@ use super::{Networking, RRState, ENV};
 #[tauri::command(async)]
 pub async fn connect(
   window: tauri::Window,
+  app_handle: tauri::AppHandle,
   net: tauri::State<'_, Networking>,
   rc: tauri::State<'_, RhizomeConnection>,
 ) -> tauri::Result<()> {
@@ -80,7 +81,7 @@ pub async fn connect(
   let conn = State { channel: tx };
   rc.write().await.replace(conn);
 
-  let res = run_channel_result(&window, rx, tls, net, &rc).await;
+  let res = run_channel_result(&window, &app_handle, rx, tls, net, &rc).await;
 
   *rc.write().await = None;
 
@@ -89,6 +90,7 @@ pub async fn connect(
 
 async fn run_channel_result<'a>(
   window: &tauri::Window,
+  app_handle: &tauri::AppHandle,
   mut rx: Receiver<EmberryMessage>,
   mut tls: BufReader<TlsStream<TcpStream>>,
   net: tauri::State<'_, Networking>,
@@ -103,7 +105,7 @@ async fn run_channel_result<'a>(
             EmberryMessage::Close() => return Ok(()),
         }
       }
-      msg = RhizMessage::recv_with(&mut tls, &mut buf) => handle_rhiz_msg(msg, window, &net, rc).await?
+      msg = RhizMessage::recv_with(&mut tls, &mut buf) => handle_rhiz_msg(msg, window, app_handle, &net, rc).await?
     }
   }
 }
@@ -111,6 +113,7 @@ async fn run_channel_result<'a>(
 async fn handle_rhiz_msg(
   msg: Result<RhizMessage, io::Error>,
   window: &Window,
+  app_handle: &tauri::AppHandle,
   net: &tauri::State<'_, Networking>,
   rc: &tauri::State<'_, RhizomeConnection>,
 ) -> tauri::Result<()> {
@@ -158,7 +161,7 @@ async fn handle_rhiz_msg(
         state::send(rc, msg).await?;
       }
     }
-    AcceptedRoom(id, usr) => try_holepunch(window.clone(), net.clone(), id, usr).await?,
+    AcceptedRoom(id, usr) => try_holepunch(window.clone(), app_handle,net.clone(), id, usr).await?,
     ServerError(err) => {
       return Err(tauri::Error::Io(io::Error::new(
         ErrorKind::Other,
@@ -172,6 +175,7 @@ async fn handle_rhiz_msg(
 
 async fn try_holepunch(
   window: tauri::Window,
+  app_handle: &tauri::AppHandle,
   net_state: tauri::State<'_, Networking>,
   room_id: Option<RoomId>,
   usr: User,
@@ -179,7 +183,7 @@ async fn try_holepunch(
   if let Some(room_id) = room_id {
     if net_state.pending.lock().unwrap().remove(&usr).is_some() {
       // only hole punch if there is a connection pending
-      hole_punch(window, net_state, room_id).await?;
+      hole_punch(window, app_handle, net_state, room_id).await?;
     } else {
       // This is rather weak protection as a compromized rhizome server could still just send a different room id with a valid user
       // Room id procedure is subject to change in the future. (plan is to use cryptographic signatures to mitigated unwanted ip leak)

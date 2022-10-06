@@ -71,7 +71,7 @@ struct MessageRecievedPayload {
 
 pub async fn hole_punch(
   window: tauri::Window,
-  app_handle: tauri::AppHandle,
+  app_handle: &tauri::AppHandle,
   state: tauri::State<'_, Networking>,
   room_id: RoomId,
 ) -> tauri::Result<()> {
@@ -113,6 +113,7 @@ pub async fn hole_punch(
   let mut buf = Vec::new();
   let emit_identity = identity.clone();
   let spawn_window = window.clone();
+  let app_handle = app_handle.clone();
   tokio::spawn(async move {
     let event_name = format!("message_recieved_{}", emit_identity);
     let msg_from = format!("Message from {}", emit_identity);
