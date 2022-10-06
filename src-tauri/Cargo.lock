@@ -3365,8 +3365,7 @@ dependencies = [
 [[package]]
 name = "tokio_kcp"
 version = "0.9.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dadc5e6c504aaea23702542a2606dac8ef3c5d6a54ee7d02f4c046e8ad3e4ec6"
+source = "git+https://github.com/devensiv/tokio_kcp?branch=bugfix/raw_socket#c04a82a9d57fd19d9a091040abb0a53cd0f941b2"
 dependencies = [
  "byte_string",
  "bytes",

@@ -34,6 +34,9 @@ rustls-pemfile = { version="0.2" }
 log = "0.4"
 env_logger = "0.9"
 
+[patch.crates-io]
+tokio_kcp = { git = "https://github.com/devensiv/tokio_kcp", branch = "bugfix/raw_socket" }
+
 [features]
 # by default Tauri runs in production mode
 # when `tauri dev` runs it is executed with `cargo run --no-default-features` if `devPath` is an URL
