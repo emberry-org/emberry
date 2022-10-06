@@ -23,7 +23,6 @@ tokio = { version = "1.18.2", features = ["net", "macros", "rt", "sync"] }
 
 # kcp dependencies
 tokio_kcp = "0.9"
-kcp = "0.4"
 
 # tls dependencies
 tokio-rustls = "0.23"

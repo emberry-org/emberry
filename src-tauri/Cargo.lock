@@ -707,7 +707,6 @@ dependencies = [
  "bs58",
  "dotenv_codegen",
  "env_logger",
- "kcp 0.4.16",
  "log",
  "rustls",
  "rustls-pemfile",
@@ -1456,17 +1455,6 @@ dependencies = [
  "serde",
  "serde_json",
  "treediff",
-]
-
-[[package]]
-name = "kcp"
-version = "0.4.16"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6aeec81bb2a05d439a83be620f96c19e44778664f11ea9551402f08fa67f49e4"
-dependencies = [
- "bytes",
- "log",
- "thiserror",
 ]
 
 [[package]]
@@ -3370,7 +3358,7 @@ dependencies = [
  "byte_string",
  "bytes",
  "futures",
- "kcp 0.5.0",
+ "kcp",
  "log",
  "rand 0.8.5",
  "spin 0.9.4",

@@ -4,15 +4,13 @@ use std::sync::Mutex;
 
 use smoke::messages::RoomId;
 use smoke::Signal;
-use smoke::{PubKey, User};
+use smoke::User;
 use tauri::EventHandler;
 
 use tokio::io::BufReader;
-use tokio::net::UdpSocket;
 use tokio::select;
 use tokio::sync::{mpsc, oneshot};
 
-use kcp::Error as KcpError;
 use tokio_kcp::{KcpConfig, KcpStream};
 
 use log::{error, trace};
@@ -74,7 +72,6 @@ pub async fn hole_punch(
   window: tauri::Window,
   state: tauri::State<'_, Networking>,
   room_id: RoomId,
-  other_key: PubKey,
 ) -> tauri::Result<()> {
   /* Get the server ip from .env */
 
