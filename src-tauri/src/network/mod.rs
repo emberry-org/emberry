@@ -21,7 +21,7 @@ use self::holepunch::punch_hole;
 pub mod ctrl_chnl;
 mod holepunch;
 mod p2p_tunl;
-mod tls_kcp;
+use p2p_tunl::tls_kcp;
 
 pub const ENV: Config = Config {
   public_key: dotenv!("PUBLIC_KEY"),

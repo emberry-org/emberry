@@ -1,6 +1,7 @@
 use std::{io, sync::Arc};
 
-use rustls::{Certificate, ClientConfig, RootCertStore};
+use super::resolver::ClientCertResolver;
+use rustls::{server::AllowAnyAuthenticatedClient, Certificate, ClientConfig, RootCertStore};
 use tokio_kcp::KcpStream;
 use tokio_rustls::{TlsAcceptor, TlsConnector, TlsStream};
 
@@ -11,10 +12,14 @@ pub async fn wrap_client(stream: KcpStream) -> TlsStream<KcpStream> {
 
   root_store.add(&cert).unwrap();
 
+  let cert = craft_cert();
+  let key = craft_key();
+  let cac_resolver = Arc::new(ClientCertResolver::new(cert, key));
+
   let config = ClientConfig::builder()
     .with_safe_defaults()
     .with_root_certificates(root_store)
-    .with_no_client_auth();
+    .with_client_cert_resolver(cac_resolver);
 
   let server_name = dotenv!("PEER_NAME").try_into().unwrap();
   let conn = TlsConnector::from(Arc::new(config));
@@ -23,6 +28,11 @@ pub async fn wrap_client(stream: KcpStream) -> TlsStream<KcpStream> {
 }
 
 pub async fn wrap_server(stream: KcpStream) -> TlsStream<KcpStream> {
+  let mut client_cert_store = RootCertStore::empty();
+  client_cert_store.add(&craft_peer_cert()).unwrap();
+
+  let client_cert_verifier = AllowAnyAuthenticatedClient::new(client_cert_store);
+
   // Build TLS configuration.
   let tls_cfg = {
     // Load public certificate.
@@ -32,7 +42,7 @@ pub async fn wrap_server(stream: KcpStream) -> TlsStream<KcpStream> {
     // Do not use client certificate authentication.
     let cfg = rustls::ServerConfig::builder()
       .with_safe_defaults()
-      .with_no_client_auth()
+      .with_client_cert_verifier(client_cert_verifier)
       .with_single_cert(certs, key)
       .unwrap();
     std::sync::Arc::new(cfg)
@@ -90,6 +100,7 @@ pub fn craft_key() -> rustls::PrivateKey {
 
 #[cfg(test)]
 mod tests {
+  use rustls::RootCertStore;
 
   #[test]
   fn user_key_creation() {
@@ -104,5 +115,13 @@ mod tests {
   #[test]
   fn peer_cert_creation() {
     super::craft_peer_cert();
+  }
+
+  #[test]
+  fn peer_cert_trust_anchor() {
+    let mut store = RootCertStore::empty();
+    store
+      .add(&super::craft_peer_cert())
+      .expect("could not use cert as trust anchor");
   }
 }
