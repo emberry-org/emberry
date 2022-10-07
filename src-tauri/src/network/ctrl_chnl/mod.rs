@@ -6,7 +6,7 @@ mod state;
 
 use std::{
   io::{self, Error, ErrorKind},
-  sync::Arc,
+  sync::Arc, time::Instant,
 };
 
 use crate::network::hole_punch;
@@ -43,6 +43,8 @@ pub async fn connect(
   net: tauri::State<'_, Networking>,
   rc: tauri::State<'_, RhizomeConnection>,
 ) -> tauri::Result<()> {
+
+  let start = Instant::now();
   if rc.read().await.is_some() {
     return Err(tauri::Error::Io(io::Error::new(
       io::ErrorKind::Unsupported,
@@ -73,6 +75,7 @@ pub async fn connect(
       "Server did greet with rhizome signature",
     )));
   }
+  window.emit("rz-con", start.elapsed().as_millis()).expect("Failed to emit event");
 
   tls.write_all(dotenv!("PUBLIC_KEY").as_bytes()).await?;
 
@@ -84,6 +87,8 @@ pub async fn connect(
   let res = run_channel_result(&window, &app_handle, rx, tls, net, &rc).await;
 
   *rc.write().await = None;
+
+  window.emit("rz-dc", start.elapsed().as_millis()).expect("Failed to emit event");
 
   res
 }
@@ -161,7 +166,9 @@ async fn handle_rhiz_msg(
         state::send(rc, msg).await?;
       }
     }
-    AcceptedRoom(id, usr) => try_holepunch(window.clone(), app_handle,net.clone(), id, usr).await?,
+    AcceptedRoom(id, usr) => {
+      try_holepunch(window.clone(), app_handle, net.clone(), id, usr).await?
+    }
     ServerError(err) => {
       return Err(tauri::Error::Io(io::Error::new(
         ErrorKind::Other,
