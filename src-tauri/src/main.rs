@@ -9,7 +9,7 @@ extern crate dotenv_codegen;
 mod network;
 use std::sync::atomic::AtomicBool;
 
-use log::{error, trace};
+use log::trace;
 use network::ctrl_chnl::{connect, requests::*, responses::*, State};
 use network::{chat_exists, Networking};
 use std::sync::atomic::Ordering;
