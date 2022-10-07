@@ -6,7 +6,8 @@ mod state;
 
 use std::{
   io::{self, Error, ErrorKind},
-  sync::Arc, time::Instant,
+  sync::Arc,
+  time::Instant,
 };
 
 use crate::network::hole_punch;
@@ -43,7 +44,6 @@ pub async fn connect(
   net: tauri::State<'_, Networking>,
   rc: tauri::State<'_, RhizomeConnection>,
 ) -> tauri::Result<()> {
-
   let start = Instant::now();
   if rc.read().await.is_some() {
     return Err(tauri::Error::Io(io::Error::new(
@@ -75,7 +75,9 @@ pub async fn connect(
       "Server did greet with rhizome signature",
     )));
   }
-  window.emit("rz-con", start.elapsed().as_millis()).expect("Failed to emit event");
+  window
+    .emit("rz-con", start.elapsed().as_millis())
+    .expect("Failed to emit event");
 
   tls.write_all(dotenv!("PUBLIC_KEY").as_bytes()).await?;
 
@@ -88,7 +90,9 @@ pub async fn connect(
 
   *rc.write().await = None;
 
-  window.emit("rz-dc", start.elapsed().as_millis()).expect("Failed to emit event");
+  window
+    .emit("rz-dc", start.elapsed().as_millis())
+    .expect("Failed to emit event");
 
   res
 }
@@ -190,7 +194,7 @@ async fn try_holepunch(
   if let Some(room_id) = room_id {
     if net_state.pending.lock().unwrap().remove(&usr).is_some() {
       // only hole punch if there is a connection pending
-      hole_punch(window, app_handle, net_state, room_id).await?;
+      hole_punch(window, app_handle, net_state, room_id, usr.key).await?;
     } else {
       // This is rather weak protection as a compromized rhizome server could still just send a different room id with a valid user
       // Room id procedure is subject to change in the future. (plan is to use cryptographic signatures to mitigated unwanted ip leak)

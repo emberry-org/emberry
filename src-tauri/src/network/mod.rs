@@ -3,8 +3,8 @@ use std::io::{Error, ErrorKind};
 use std::sync::Mutex;
 
 use smoke::messages::RoomId;
-use smoke::Signal;
 use smoke::User;
+use smoke::{PubKey, Signal};
 use tauri::EventHandler;
 
 use tauri::api::notification::Notification;
@@ -20,6 +20,8 @@ use self::holepunch::punch_hole;
 
 pub mod ctrl_chnl;
 mod holepunch;
+mod p2p_tunl;
+use p2p_tunl::tls_kcp;
 
 pub const ENV: Config = Config {
   public_key: dotenv!("PUBLIC_KEY"),
@@ -74,6 +76,7 @@ pub async fn hole_punch(
   app_handle: &tauri::AppHandle,
   state: tauri::State<'_, Networking>,
   room_id: RoomId,
+  peer_key: PubKey,
 ) -> tauri::Result<()> {
   /* Get the server ip from .env */
 
@@ -93,6 +96,12 @@ pub async fn hole_punch(
       error!("Kcp error: {}", e);
       Error::new(ErrorKind::Other, "Kcp error")
     })?;
+
+  let stream = if peer_key.as_ref() < ENV.public_key.as_bytes() {
+    tls_kcp::wrap_client(stream).await
+  } else {
+    tls_kcp::wrap_server(stream).await
+  };
 
   let mut stream = BufReader::new(stream);
 
