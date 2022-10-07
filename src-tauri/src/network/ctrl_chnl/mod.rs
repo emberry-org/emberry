@@ -76,7 +76,7 @@ pub async fn connect(
     )));
   }
   window
-    .emit("rz-con", start.elapsed().as_millis())
+    .emit("rz-con", start.elapsed().as_millis() as u64)
     .expect("Failed to emit event");
 
   tls.write_all(dotenv!("PUBLIC_KEY").as_bytes()).await?;
@@ -91,7 +91,7 @@ pub async fn connect(
   *rc.write().await = None;
 
   window
-    .emit("rz-dc", start.elapsed().as_millis())
+    .emit("rz-dc", start.elapsed().as_millis() as u64)
     .expect("Failed to emit event");
 
   res
