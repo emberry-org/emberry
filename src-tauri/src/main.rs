@@ -31,6 +31,10 @@ fn main() {
       request_room,
       accept_room,
     ])
+    .setup(|app| {
+      // dev pls add atomic bool here
+      Ok(())
+    })
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }
