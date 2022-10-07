@@ -7,10 +7,10 @@
 extern crate dotenv_codegen;
 
 mod network;
+use log::trace;
 use network::ctrl_chnl::{connect, requests::*, responses::*, State};
 use network::{chat_exists, Networking};
 use tokio::sync::RwLock;
-use log::trace;
 
 fn main() {
   env_logger::init();
