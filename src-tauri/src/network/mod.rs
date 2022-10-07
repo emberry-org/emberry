@@ -136,7 +136,7 @@ pub async fn hole_punch(
           /* Create a new notification for the message */
           if let Signal::Chat(text) = &msg {
 
-            if crate::FOCUS.load(Ordering::SeqCst) {
+            if !crate::FOCUS.load(Ordering::SeqCst) {
               Notification::new(&app_handle.config().tauri.bundle.identifier)
                 .title(&msg_from)
                 .body(text)
