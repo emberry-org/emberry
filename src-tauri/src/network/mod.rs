@@ -125,12 +125,15 @@ pub async fn hole_punch(
 
           /* Create a new notification for the message */
           if let Signal::Chat(text) = &msg {
-            Notification::new(&app_handle.config().tauri.bundle.identifier)
-              .title(&msg_from)
-              .body(text)
-              .show().expect("Failed to send desktop notification");
+
+            if let Ok(false) = spawn_window.is_visible(){
+              Notification::new(&app_handle.config().tauri.bundle.identifier)
+                .title(&msg_from)
+                .body(text)
+                .show().expect("Failed to send desktop notification");
+            }
           }
-          
+
           /* Emit the message recieved event */
           spawn_window
             .emit(&event_name, MessageRecievedPayload { message: msg })
