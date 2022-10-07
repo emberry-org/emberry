@@ -36,6 +36,7 @@ fn main() {
       request_room,
       accept_room,
     ])
+    // TEMP / TODO : This will be obsolete once the `window.is_focused()` function is released from Tauri.
     .on_window_event(|event| {
       if let tauri::WindowEvent::Focused(focused) = event.event() {
         FOCUS.store(*focused, Ordering::SeqCst);
