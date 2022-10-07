@@ -13,8 +13,8 @@
 
 <section class="body">
   <div class="col">
-    <input id="greet-input" placeholder="Enter a user key..." bind:value={name} />
-    <button on:click={greet}>
+    <input class="default" id="greet-input" placeholder="Enter a user key..." bind:value={name} />
+    <button class="default" on:click={greet}>
       Send Request
     </button>
   </div>
@@ -42,31 +42,6 @@ input {
 button {
   width: fit-content;
   margin-top: 16px;
-}
-
-input,
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  transition: border-color 0.25s;
-  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
-}
-
-button {
-  cursor: pointer;
-}
-
-button:hover {
-  border-color: #396cd8;
-}
-
-input,
-button {
-  outline: none;
 }
 
 </style>

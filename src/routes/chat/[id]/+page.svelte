@@ -81,8 +81,8 @@
 
   <div class="bar">
 
-    <input placeholder="Enter a message..." bind:value={msg} bind:this={input} />
-    <button on:click={sendMessage}>
+    <input class="default" placeholder="Enter a message..." bind:value={msg} bind:this={input} />
+    <button class="default" on:click={sendMessage}>
       Send Msg
     </button>
 
