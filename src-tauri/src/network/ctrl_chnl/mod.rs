@@ -6,7 +6,8 @@ mod state;
 
 use std::{
   io::{self, Error, ErrorKind},
-  sync::Arc, time::Instant,
+  sync::Arc,
+  time::Instant,
 };
 
 use crate::network::hole_punch;
@@ -43,7 +44,6 @@ pub async fn connect(
   net: tauri::State<'_, Networking>,
   rc: tauri::State<'_, RhizomeConnection>,
 ) -> tauri::Result<()> {
-
   let start = Instant::now();
   if rc.read().await.is_some() {
     return Err(tauri::Error::Io(io::Error::new(
@@ -75,7 +75,9 @@ pub async fn connect(
       "Server did greet with rhizome signature",
     )));
   }
-  window.emit("rz-con", start.elapsed().as_millis()).expect("Failed to emit event");
+  window
+    .emit("rz-con", start.elapsed().as_millis())
+    .expect("Failed to emit event");
 
   tls.write_all(dotenv!("PUBLIC_KEY").as_bytes()).await?;
 
@@ -88,7 +90,9 @@ pub async fn connect(
 
   *rc.write().await = None;
 
-  window.emit("rz-dc", start.elapsed().as_millis()).expect("Failed to emit event");
+  window
+    .emit("rz-dc", start.elapsed().as_millis())
+    .expect("Failed to emit event");
 
   res
 }

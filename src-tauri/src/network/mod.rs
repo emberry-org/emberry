@@ -3,8 +3,8 @@ use std::io::{Error, ErrorKind};
 use std::sync::Mutex;
 
 use smoke::messages::RoomId;
-use smoke::{Signal, PubKey};
 use smoke::User;
+use smoke::{PubKey, Signal};
 use tauri::EventHandler;
 
 use tauri::api::notification::Notification;
@@ -99,10 +99,10 @@ pub async fn hole_punch(
 
   let stream = if peer_key.as_ref() < ENV.public_key.as_bytes() {
     tls_kcp::wrap_client(stream).await
-  }else{
+  } else {
     tls_kcp::wrap_server(stream).await
   };
-  
+
   let mut stream = BufReader::new(stream);
 
   /* Setup the send event for the frontend */
@@ -139,7 +139,7 @@ pub async fn hole_punch(
               .body(text)
               .show().expect("Failed to send desktop notification");
           }
-          
+
           /* Emit the message recieved event */
           spawn_window
             .emit(&event_name, MessageRecievedPayload { message: msg })
