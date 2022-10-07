@@ -31,9 +31,11 @@ fn main() {
       request_room,
       accept_room,
     ])
-    .setup(|app| {
-      // dev pls add atomic bool here
-      Ok(())
+    .on_window_event(|event| match event.event() {
+      tauri::WindowEvent::Focused(focused) => {
+        // dev pls add atomic bool here
+      }
+      _ => {}
     })
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
