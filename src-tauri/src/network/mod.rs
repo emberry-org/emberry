@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::io::{Error, ErrorKind};
+use std::sync::atomic::Ordering;
 use std::sync::Mutex;
 
 use smoke::messages::RoomId;
@@ -135,7 +136,7 @@ pub async fn hole_punch(
           /* Create a new notification for the message */
           if let Signal::Chat(text) = &msg {
 
-            if let Ok(false) = spawn_window.is_visible(){
+            if crate::FOCUS.load(Ordering::SeqCst) {
               Notification::new(&app_handle.config().tauri.bundle.identifier)
                 .title(&msg_from)
                 .body(text)

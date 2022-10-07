@@ -7,10 +7,15 @@
 extern crate dotenv_codegen;
 
 mod network;
-use log::trace;
+use std::sync::atomic::AtomicBool;
+
+use log::{error, trace};
 use network::ctrl_chnl::{connect, requests::*, responses::*, State};
 use network::{chat_exists, Networking};
+use std::sync::atomic::Ordering;
 use tokio::sync::RwLock;
+
+pub static FOCUS: AtomicBool = AtomicBool::new(false);
 
 fn main() {
   env_logger::init();
@@ -31,11 +36,10 @@ fn main() {
       request_room,
       accept_room,
     ])
-    .on_window_event(|event| match event.event() {
-      tauri::WindowEvent::Focused(focused) => {
-        // dev pls add atomic bool here
+    .on_window_event(|event| {
+      if let tauri::WindowEvent::Focused(focused) = event.event() {
+        FOCUS.store(*focused, Ordering::SeqCst);
       }
-      _ => {}
     })
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
