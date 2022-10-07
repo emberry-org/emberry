@@ -1,6 +1,47 @@
-use std::io;
+use std::{io, sync::Arc};
 
-use rustls::Certificate;
+use rustls::{Certificate, ClientConfig, RootCertStore};
+use tokio_kcp::KcpStream;
+use tokio_rustls::{TlsAcceptor, TlsConnector, TlsStream};
+
+pub async fn wrap_client(stream: KcpStream) -> TlsStream<KcpStream> {
+  let mut root_store = RootCertStore::empty();
+
+  let cert = craft_peer_cert();
+
+  root_store.add(&cert).unwrap();
+
+  let config = ClientConfig::builder()
+    .with_safe_defaults()
+    .with_root_certificates(root_store)
+    .with_no_client_auth();
+
+  let server_name = dotenv!("PEER_NAME").try_into().unwrap();
+  let conn = TlsConnector::from(Arc::new(config));
+
+  TlsStream::Client(conn.connect(server_name, stream).await.unwrap())
+}
+
+pub async fn wrap_server(stream: KcpStream) -> TlsStream<KcpStream> {
+  // Build TLS configuration.
+  let tls_cfg = {
+    // Load public certificate.
+    let certs = vec![craft_cert()];
+    // Load private key.
+    let key = craft_key();
+    // Do not use client certificate authentication.
+    let cfg = rustls::ServerConfig::builder()
+      .with_safe_defaults()
+      .with_no_client_auth()
+      .with_single_cert(certs, key)
+      .unwrap();
+    std::sync::Arc::new(cfg)
+  };
+
+  let tls_acceptor = TlsAcceptor::from(tls_cfg);
+
+  TlsStream::Server(tls_acceptor.accept(stream).await.unwrap())
+}
 
 // Load public certificate from file.
 pub fn craft_peer_cert() -> rustls::Certificate {
@@ -54,7 +95,6 @@ mod tests {
   fn user_key_creation() {
     super::craft_key();
   }
-
 
   #[test]
   fn user_cert_creation() {

@@ -10,9 +10,12 @@ mod network;
 use network::ctrl_chnl::{connect, requests::*, responses::*, State};
 use network::{chat_exists, Networking};
 use tokio::sync::RwLock;
+use log::trace;
 
 fn main() {
   env_logger::init();
+
+  trace!("Running as: {}", dotenv!("PUBLIC_KEY"));
 
   tauri::Builder::default()
     // Application State

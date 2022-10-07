@@ -3,7 +3,7 @@ use std::io::{Error, ErrorKind};
 use std::sync::Mutex;
 
 use smoke::messages::RoomId;
-use smoke::Signal;
+use smoke::{Signal, PubKey};
 use smoke::User;
 use tauri::EventHandler;
 
@@ -73,6 +73,7 @@ pub async fn hole_punch(
   window: tauri::Window,
   state: tauri::State<'_, Networking>,
   room_id: RoomId,
+  peer_key: PubKey,
 ) -> tauri::Result<()> {
   /* Get the server ip from .env */
 
@@ -93,6 +94,12 @@ pub async fn hole_punch(
       Error::new(ErrorKind::Other, "Kcp error")
     })?;
 
+  let stream = if peer_key.as_ref() < ENV.public_key.as_bytes() {
+    tls_kcp::wrap_client(stream).await
+  }else{
+    tls_kcp::wrap_server(stream).await
+  };
+  
   let mut stream = BufReader::new(stream);
 
   /* Setup the send event for the frontend */
