@@ -10,8 +10,10 @@ const config = {
   kit: {
     adapter: staticAdapter({
       // Fallback page has to be named `index.html` otherwise build won't work.
+      // The fallback page will be loaded if svelte cannot work out a dynamic route.
       fallback: 'index.html'
     }),
+    trailingSlash: 'never',
   },
 };
 
