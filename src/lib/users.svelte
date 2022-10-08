@@ -4,6 +4,7 @@
   import type { User } from "./user";
   import { UserStatus } from "./user.status";
   import { onMount } from "svelte";
+  import { storeUser } from "./user.store";
 
   export let users: User[];
 
@@ -11,14 +12,12 @@
     listen('wants-room', (e: any) => {
       const usrkey = e.payload.key;
 
-      users.push({ key: usrkey, status: UserStatus.Pending });
-      users = [...users];
+      users = storeUser({ key: usrkey, status: UserStatus.Pending });
     });
 
-    // TODO: get the user that we've connected too
     listen("new-room", (_: any) => {
-      users.push({ key: "unknown", status: UserStatus.Connected });
-      users = [...users];
+      // todo : retrieve the usrkey from the event.payload once that has been added.
+      users = storeUser({ key: "unknown", status: UserStatus.Connected });
     });
   });
 

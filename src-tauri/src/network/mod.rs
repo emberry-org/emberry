@@ -168,6 +168,7 @@ pub async fn hole_punch(
   };
   state.chats.lock().unwrap().insert(room_id.clone(), con);
 
+  // todo : send the public key of the other peer along with the `new-room` event.
   window
     .emit("new-room", &identity)
     .expect("Failed to emit WantsRoom event");

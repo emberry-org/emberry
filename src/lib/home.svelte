@@ -1,24 +1,24 @@
 <script lang="ts">
   import { invoke } from "@tauri-apps/api/tauri"
+  import { UserStatus } from "./user.status";
+  import { storeUser } from "./user.store";
 
-  let name = "";
-  let greetMsg = ""
+  let usrkey = "";
 
-  function greet() {
+  function send() {
     let utf8Encode = new TextEncoder();
-    invoke("request_room", { usr: { key: Array.from(utf8Encode.encode(name)) } })
-    console.log('send room request to : ' + name);
+    invoke("request_room", { usr: { key: Array.from(utf8Encode.encode(usrkey)) } });
+    storeUser({ key: usrkey, status: UserStatus.Pending });
   }
 </script>
 
 <section class="body">
   <div class="col">
-    <input class="default" id="greet-input" placeholder="Enter a user key..." bind:value={name} />
-    <button class="default" on:click={greet}>
+    <input class="default" placeholder="Enter a user key..." bind:value={usrkey} />
+    <button on:click={send}>
       Send Request
     </button>
   </div>
-  <p>{greetMsg}</p>
 </section>
 
 <style>
