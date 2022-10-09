@@ -15,7 +15,7 @@
 <section class="body">
   <div class="col">
     <input class="default" placeholder="Enter a user key..." bind:value={usrkey} />
-    <button on:click={send}>
+    <button class="default" on:click={send}>
       Send Request
     </button>
   </div>
