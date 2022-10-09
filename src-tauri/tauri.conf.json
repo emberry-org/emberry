@@ -7,7 +7,7 @@
     "withGlobalTauri": false
   },
   "package": {
-    "productName": "emberry",
+    "productName": "Emberry",
     "version": "0.1.0"
   },
   "tauri": {
@@ -29,7 +29,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.emberry.dev",
+      "identifier": "com.emberry.app",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
