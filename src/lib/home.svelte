@@ -7,8 +7,11 @@
 
   function send() {
     let utf8Encode = new TextEncoder();
-    invoke("request_room", { usr: { key: Array.from(utf8Encode.encode(usrkey)) } });
-    storeUser({ key: usrkey, status: UserStatus.Pending });
+    invoke("request_room", { usr: { key: Array.from(utf8Encode.encode(usrkey)) } }).catch(() => {
+      console.log('user not found!');
+    }).then(() => {
+      storeUser({ key: usrkey, status: UserStatus.Awaiting });
+    });
   }
 </script>
 

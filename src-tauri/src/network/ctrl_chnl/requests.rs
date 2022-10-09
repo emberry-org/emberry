@@ -5,6 +5,7 @@ use crate::network::Networking;
 
 use super::state;
 
+// todo : would be nice if `request_room` returned an error if the user was not found.
 #[tauri::command(async)]
 pub async fn request_room(
   usr: User,

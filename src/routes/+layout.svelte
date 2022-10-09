@@ -25,7 +25,7 @@
     });
 
     listen("new-room", (e: any) => {
-      chat = e.payload;
+      chat = e.payload.room_id;
       console.log('new room : ' + chat);
 
       goto('/chat/' + chat);

@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::io::{Error, ErrorKind};
+use std::process::id;
 use std::sync::atomic::Ordering;
 use std::sync::Mutex;
 
@@ -70,6 +71,12 @@ pub struct Config<'a> {
 #[derive(Clone, serde::Serialize)]
 struct MessageRecievedPayload {
   message: Signal,
+}
+
+#[derive(Clone, serde::Serialize)]
+struct NewRoomPayload {
+  room_id: String,
+  peer_id: String
 }
 
 pub async fn hole_punch(
@@ -168,9 +175,8 @@ pub async fn hole_punch(
   };
   state.chats.lock().unwrap().insert(room_id.clone(), con);
 
-  // todo : send the public key of the other peer along with the `new-room` event.
   window
-    .emit("new-room", &identity)
+    .emit("new-room", NewRoomPayload { room_id: identity, peer_id: std::str::from_utf8(&peer_key).unwrap().into() })
     .expect("Failed to emit WantsRoom event");
   Ok(())
 }
