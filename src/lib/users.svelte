@@ -46,7 +46,7 @@
   height: 100%;
 
   margin: 0;
-  padding: 0;
+  padding: 8px 0 0 0;
 
   list-style: none;
 }

@@ -36,7 +36,7 @@
   align-items: center;
 
   padding: 0 12px;
-  margin: 8px;
+  margin: 0 8px;
 
   border-radius: 8px;
 
