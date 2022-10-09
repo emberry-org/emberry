@@ -1,14 +1,50 @@
 <!-- User.Me : a compact panel for user account information (displayed in the top right corner) -->
 
 <script lang="ts">
+  import { onMount } from "svelte";
+  import { getItem, onItem, setItem } from "./store";
+
+  let usernameInput: HTMLInputElement;
+  let username: string = " ";
+
+  let activityInput: HTMLInputElement;
+  let activity: string = "";
+
+  onMount(() => {
+    username = onItem(localStorage, (val) => {
+      username = val ?? "NoName";
+    }, "username") ?? "NoName";
+    activity = onItem(localStorage, (val) => {
+      activity = val ?? "";
+    }, "activity") ?? "";
+  });
+
+  function updateValue(key: string, value: string) {
+    if ((getItem(localStorage, key) ?? "NoName") !== value) {
+      setItem(localStorage, key, value);
+    }
+  }
+
+  function keydown(evt: KeyboardEvent, input: HTMLInputElement) {
+    if (evt.key === "Enter" && evt.shiftKey === false) {
+      input.blur();
+    }
+  }
 
 </script>
 
 
 <div class="row">
   <div class="info">
-    <h3>Username</h3>
-    <p>playing spelltanks</p>
+    <input class="username" placeholder="Username" bind:this={usernameInput} bind:value={username} 
+      on:blur={() => updateValue("username", username)} 
+      on:keydown={(evt) => keydown(evt, usernameInput)} 
+    />
+    <input class="activity" placeholder="no activity" bind:this={activityInput} bind:value={activity} 
+      on:blur={() => updateValue("activity", activity)} 
+      on:keydown={(evt) => keydown(evt, activityInput)} 
+    />
+    <!-- <p>playing spelltanks</p> -->
   </div>
   <div class="avatar" />
 </div>
@@ -27,6 +63,7 @@
 
   .avatar {
     width: 42px;
+    min-width: 42px;
     height: 42px;
 
     background-color: #888;
@@ -38,19 +75,34 @@
     display: flex;
     flex-direction: column;
 
-    h3, p {
+    input {
       margin: 0;
+      padding: 2px 4px;
+      margin-left: -4px;
+      background-color: #0000;
+      outline: none;
+      border-radius: 6px;
+      border: none;
+      font-family: inherit;
+
+      &:focus, &:hover {
+        background-color: #0004;
+      }
     }
 
-    h3 {
+    .username {
+      width: 90%;
+
       font-size: 16px;
-      line-height: 21px;
+      font-weight: 600;
+      line-height: 17px;
       color: #eee;
     }
 
-    p {
+    .activity {
+      width: 90%;
       font-size: 14px;
-      line-height: 21px;
+      line-height: 17px;
       color: #aaa;
     }
   }
