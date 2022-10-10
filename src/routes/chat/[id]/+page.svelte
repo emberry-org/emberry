@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onItem } from "$lib/store";
   import { emit, listen } from "@tauri-apps/api/event"
   import { onMount } from "svelte";
   import { tick } from "svelte";
@@ -7,21 +8,38 @@
   export let data: any;
 
   let msg = "";
+
+  let localname = "";
+  let peername = "";
+  
   let messages: any[] = [];
 
   let feed: HTMLOListElement;
   let input: HTMLInputElement;
 
   onMount(() => {
+    // Load our local username from the storage.
+    localname = onItem(localStorage, (val) => {
+      localname = val ?? "NoName";
+      // Send our new username to the peer.
+      emit(`send_message_${data.id}`, { Username: localname });
+    }, "username") ?? "NoName";
+
     // Listen for incoming messages.
     listen(`message_recieved_${data.id}`, (e: any) => {
       const type: string = Object.keys(e.payload.message)[0];
-      const msg = { type, content: e.payload.message[type], sender: 'Them' };
 
-      addMessage(msg.content, "Them");
+      if (type === "Username") {
+        peername = e.payload.message[type];
+        return;
+      }
 
-      console.log("received msg: ", msg);
+      const msg = { type, content: e.payload.message[type], sender: peername };
+      addMessage(msg.content, peername);
     });
+
+    // Send our username to the peer.
+    emit(`send_message_${data.id}`, { Username: localname });
 
     // Set the list to scroll to the bottom of the messages.
     feed.scrollTop = feed.scrollHeight;
@@ -53,7 +71,7 @@
 
     // Send the message and add it to our own feed.
     emit(`send_message_${data.id}`, { Chat: msg });
-    addMessage(msg, "Me");
+    addMessage(msg, localname);
 
     // Empty the input box.
     msg = "";

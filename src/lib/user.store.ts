@@ -1,3 +1,4 @@
+import { setItem } from "./store";
 import type { UserStatus } from "./user.status";
 
 /**
@@ -22,7 +23,7 @@ export function storeUser(user: StoredUser): StoredUser[] {
   if (userIndex === -1) stored.push(user);
   // If this user is already stored then update their data.
   else stored[userIndex] = user;
-  localStorage.setItem("users", JSON.stringify(stored));
+  setItem(localStorage, "users", JSON.stringify(stored));
   return stored;
 }
 

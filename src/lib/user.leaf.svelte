@@ -21,24 +21,51 @@
 </script>
 
 
-<li class="leaf" name={ user.name ?? 'unknown' } on:click={onActivate}>
-  { user.name ?? user.key } : { user.status }
+<li class="leaf { user.status == UserStatus.Pending ? 'pending' : '' }" name={ user.name ?? 'unknown' } on:click={onActivate}>
+  <p class="name">{ user.name ?? user.key }</p>
+  <p class="status">{ UserStatus[user.status] }</p>
 </li>
 
 
 <style lang="scss">
 
 .leaf {
-  height: 36px;
+  height: 42px;
 
   display: flex;
   align-items: center;
 
   padding: 0 12px;
-  cursor: pointer;
+  margin: 0 8px;
+
+  border-radius: 8px;
 
   &:hover {
     background-color: #fff1;
+
+    .status {
+      display: none;
+    }
+  }
+
+  &.pending {
+    cursor: pointer;
+
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .name {
+    text-overflow: ellipsis;
+    overflow: hidden;
+
+    padding-right: 12px;
+    color: #ccc;
+  }
+
+  .status {
+    font-size: 14px;
+    color: #888;
   }
 }
 
