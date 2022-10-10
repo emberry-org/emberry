@@ -22,7 +22,7 @@ bs58 = "0.4"
 tokio = { version = "1.18.2", features = ["net", "macros", "rt", "sync"] }
 
 # kcp dependencies
-tokio_kcp = "0.9"
+tokio_kcp = "0.9.3"
 
 # tls dependencies
 tokio-rustls = "0.23"
@@ -32,9 +32,6 @@ rustls-pemfile = { version="0.2" }
 # logging / debugging
 log = "0.4"
 env_logger = "0.9"
-
-[patch.crates-io]
-tokio_kcp = { git = "https://github.com/devensiv/tokio_kcp", branch = "bugfix/raw_socket" }
 
 [features]
 # by default Tauri runs in production mode
