@@ -25,3 +25,4 @@ export function storeUser(user: StoredUser): StoredUser[] {
   localStorage.setItem("users", JSON.stringify(stored));
   return stored;
 }
+
