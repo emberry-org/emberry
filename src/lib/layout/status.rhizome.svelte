@@ -34,9 +34,9 @@
 
 <button class="rhizome { rzStatus } move-right" style="--mili: 'Rhizome connected in { rzMili }ms'">
   {#if rzStatus === "connecting"}
-  <Icon icon="bry:loading" width="16px" height="16px" />
+  <Icon icon="bry:rz-disc" width="16px" height="16px" />
   {:else}
-  <Icon icon="bry:rhizome-status" width="16px" height="16px" />
+  <Icon icon="bry:rz-conn" width="16px" height="16px" />
   {/if}
 </button>
 
@@ -68,7 +68,7 @@ button {
       content: var(--mili);
       position: absolute;
 
-      top: -26px;
+      top: -30px;
       right: 8px;
 
       line-height: 14px;
@@ -78,15 +78,16 @@ button {
       white-space: nowrap;
 
       background-color: #141414;
+      color: #aaa;
       pointer-events: none;
     }
   }
 }
 
-.disconnected { color: #555; }
+.disconnected { color: #444; }
 .failed { color: rgb(217, 82, 82); }
-.connected { color: #aaa; }
-.connecting { color: #ccc; }
+.connected { color: #888; }
+.connecting { color: #aaa; }
 
 </style>
 
