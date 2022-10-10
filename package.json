@@ -1,7 +1,7 @@
 {
   "name": "emberry",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite dev",
@@ -15,6 +15,7 @@
     "@tauri-apps/api": "^1.1.0"
   },
   "devDependencies": {
+    "@iconify/svelte": "^3.0.0",
     "@sveltejs/adapter-static": "next",
     "@sveltejs/kit": "next",
     "@tauri-apps/cli": "^1.1.0",

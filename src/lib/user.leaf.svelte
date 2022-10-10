@@ -14,16 +14,15 @@
         usr: { key: user.key },
         accepted: true,
       });
-      // TODO: This should be checked
+      // todo : Need to check if actually connected !
       user.status = UserStatus.Connected;
     }
   }
-
 </script>
 
 
 <li class="leaf" name={ user.name ?? 'unknown' } on:click={onActivate}>
-  { user.name ?? 'unknown' }
+  { user.name ?? user.key } : { user.status }
 </li>
 
 

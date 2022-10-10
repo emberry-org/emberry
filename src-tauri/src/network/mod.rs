@@ -1,12 +1,14 @@
 use std::collections::HashMap;
 use std::io::{Error, ErrorKind};
+use std::sync::atomic::Ordering;
 use std::sync::Mutex;
 
 use smoke::messages::RoomId;
-use smoke::Signal;
 use smoke::User;
+use smoke::{PubKey, Signal};
 use tauri::EventHandler;
 
+use tauri::api::notification::Notification;
 use tokio::io::BufReader;
 use tokio::select;
 use tokio::sync::{mpsc, oneshot};
@@ -19,6 +21,8 @@ use self::holepunch::punch_hole;
 
 pub mod ctrl_chnl;
 mod holepunch;
+mod p2p_tunl;
+use p2p_tunl::tls_kcp;
 
 pub const ENV: Config = Config {
   public_key: dotenv!("PUBLIC_KEY"),
@@ -70,8 +74,10 @@ struct MessageRecievedPayload {
 
 pub async fn hole_punch(
   window: tauri::Window,
+  app_handle: &tauri::AppHandle,
   state: tauri::State<'_, Networking>,
   room_id: RoomId,
+  peer_key: PubKey,
 ) -> tauri::Result<()> {
   /* Get the server ip from .env */
 
@@ -92,6 +98,12 @@ pub async fn hole_punch(
       Error::new(ErrorKind::Other, "Kcp error")
     })?;
 
+  let stream = if peer_key.as_ref() < ENV.public_key.as_bytes() {
+    tls_kcp::wrap_client(stream).await
+  } else {
+    tls_kcp::wrap_server(stream).await
+  };
+
   let mut stream = BufReader::new(stream);
 
   /* Setup the send event for the frontend */
@@ -111,13 +123,28 @@ pub async fn hole_punch(
   let mut buf = Vec::new();
   let emit_identity = identity.clone();
   let spawn_window = window.clone();
+  let app_handle = app_handle.clone();
   tokio::spawn(async move {
     let event_name = format!("message_recieved_{}", emit_identity);
+    let msg_from = format!("Message from {}", emit_identity);
     loop {
       select! {
         Ok(msg) = Signal::recv_with(&mut stream, &mut buf) => {
           /* Emit the message_recieved event when a message is recieved */
           trace!("Received message: {:?}", msg);
+
+          /* Create a new notification for the message */
+          if let Signal::Chat(text) = &msg {
+
+            if !crate::FOCUS.load(Ordering::SeqCst) {
+              Notification::new(&app_handle.config().tauri.bundle.identifier)
+                .title(&msg_from)
+                .body(text)
+                .show().expect("Failed to send desktop notification");
+            }
+          }
+
+          /* Emit the message recieved event */
           spawn_window
             .emit(&event_name, MessageRecievedPayload { message: msg })
             .expect("Failed to emit event");
@@ -141,6 +168,7 @@ pub async fn hole_punch(
   };
   state.chats.lock().unwrap().insert(room_id.clone(), con);
 
+  // todo : send the public key of the other peer along with the `new-room` event.
   window
     .emit("new-room", &identity)
     .expect("Failed to emit WantsRoom event");

@@ -1,8 +1,10 @@
 <script lang="ts">
   import "../app.css";
+  import loadBundle from "../lib/icons/bundle";
   import { goto } from '$app/navigation';
   import { invoke } from "@tauri-apps/api/tauri";
-  import { listen } from "@tauri-apps/api/event";
+  import { emit, listen } from "@tauri-apps/api/event";
+  import StatusBar from "../lib/layout/statusbar.svelte";
   import Users from "../lib/users.svelte";
   import Me from "../lib/user.me.svelte";
   import { onMount } from "svelte";
@@ -10,8 +12,16 @@
   let chat: string | undefined = undefined;
 
   onMount(() => {
+    loadBundle();
+
     // TODO: check if already connected to tls
-    invoke('connect');
+    invoke('connect').catch((e) => {
+      if (e === "Already connected to the server") {
+        emit("rz-con");
+      } else {
+        emit("rz-f");
+      }
+    });
 
     listen("new-room", (e: any) => {
       chat = e.payload;
@@ -60,7 +70,7 @@
   </section>
 
   <!-- Application Status Bar -->
-  <footer></footer>
+  <StatusBar />
 
 </main>
 
@@ -72,6 +82,7 @@
 
     padding: 0 !important;
     margin: 0 !important;
+    overflow: hidden;
   }
 
   .app {
@@ -160,11 +171,6 @@
           background-color: #383838;
         }
       }
-    }
-
-    > footer {
-      width: 100%;
-      height: 22px;
     }
   }
 
