@@ -2,7 +2,7 @@
 
 <script lang="ts">
   import { onMount } from "svelte";
-  import { getItem, onItem, setItem } from "./store";
+  import { getItem, onItem, setItem } from "../store";
 
   let usernameInput: HTMLInputElement;
   let username: string = " ";

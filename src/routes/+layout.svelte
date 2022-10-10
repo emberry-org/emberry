@@ -7,7 +7,7 @@
   import NavBar from "../lib/layout/navbar.svelte";
   import StatusBar from "../lib/layout/statusbar.svelte";
   import Users from "../lib/users.svelte";
-  import Me from "../lib/user.me.svelte";
+  import Me from "../lib/user/user.me.svelte";
   import { onMount } from "svelte";
 
   let chat: string | undefined = undefined;

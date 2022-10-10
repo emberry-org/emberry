@@ -1,5 +1,5 @@
-import { setItem } from "./store";
-import type { UserStatus } from "./user.status";
+import { setItem } from "../store";
+import type { UserStatus } from ".";
 
 /**
  * Interface representing a user stored in our local storage.

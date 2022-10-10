@@ -1,7 +1,6 @@
 <script lang="ts">
   import { invoke } from "@tauri-apps/api/tauri"
-  import { UserStatus } from "./user.status";
-  import { storeUser } from "./user.store";
+  import { UserStatus, storeUser } from "./user";
 
   let usrkey = "";
 

@@ -1,10 +1,7 @@
 <script lang="ts">
   import { listen } from "@tauri-apps/api/event";
-  import Leaf from "./user.leaf.svelte";
-  import type { User } from "./user";
-  import { UserStatus } from "./user.status";
   import { onMount } from "svelte";
-  import { storeUser } from "./user.store";
+  import { UserStatus, storeUser, type User, Leaf } from "./user";
   import { onItem } from "./store";
 
   export let users: User[];

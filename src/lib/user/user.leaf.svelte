@@ -2,8 +2,7 @@
 
 <script lang="ts">
   import { invoke } from "@tauri-apps/api/tauri";
-  import type { User } from "./user";
-  import { UserStatus } from "./user.status";
+  import { UserStatus, type User } from ".";
 
   /** The user this leaf belongs too */
   export let user: User;

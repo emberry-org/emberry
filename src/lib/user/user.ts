@@ -1,4 +1,4 @@
-import type { UserStatus } from "./user.status";
+import type { UserStatus } from ".";
 
 /**
  * Interface representing a user on the network.
