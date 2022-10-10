@@ -27,6 +27,10 @@
 </script>
 
 
+<div class="tools">
+
+</div>
+
 <ol class="users">
   {#each users as user}
   
@@ -38,6 +42,16 @@
 
 <style lang="scss">
 
+.tools {
+  width: 100%;
+  height: 60px;
+  min-height: 60px;
+
+  margin: 0 0 12px 0;
+  background-color: #ffffff08;
+  border-radius: 10px;
+}
+
 .users {
   width: 100%;
   height: 100%;
@@ -46,6 +60,9 @@
   padding: 8px 0 0 0;
 
   list-style: none;
+
+  background-color: #2C2C2C;
+  border-radius: 12px;
 }
 
 </style>

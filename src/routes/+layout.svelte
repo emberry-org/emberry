@@ -111,10 +111,6 @@
         min-width: 72px;
       }
 
-      .sidebar:nth-child(2) {
-        background-color: #2C2C2C;
-      }
-
       .sidebar:nth-child(4) {
         margin-right: 22px;
       }
