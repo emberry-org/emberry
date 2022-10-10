@@ -11,3 +11,4 @@ export interface User {
   status: UserStatus;
   activity?: string;
 }
+
