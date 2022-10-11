@@ -32,11 +32,11 @@
 </script>
 
 
-<button class="rhizome { rzStatus } move-right" style="--mili: 'Rhizome connected in { rzMili }ms'">
+<button class="rhizome { rzStatus } move-right" style="--mili: ' { rzMili }ms'">
   {#if rzStatus === "connecting"}
   <Icon icon="bry:rz-disc" width="16px" height="16px" />
   {:else}
-  <Icon icon="bry:rz-conn" width="20px" height="20px" />
+  <Icon icon="bry:rz-conn" width="16px" height="20px" />
   {/if}
 </button>
 
@@ -46,7 +46,6 @@
 button {
   position: relative;
   max-height: 22px;
-  max-width: 22px;
   margin: 0;
   padding: 0 3px;
 
@@ -61,35 +60,34 @@ button {
 
   background-color: #fff0;
   color: #aaa;
-  transition: color 0.2s;
+  transition: color 0.5s;
 
   &:hover {
-    background-color: #fff1;
+    transition: color 0.2s;
 
     &::after {
       content: var(--mili);
-      opacity: 1;
+      max-width: 128px;
+      opacity: .8;
+      margin: 0px 6px;
+      transition: opacity 0.2s, max-width 0.2s, margin 0.2s;
     }
   }
 
   &::after {
     content: var(--mili);
-    position: absolute;
-
-    top: -30px;
-    right: 8px;
+    max-width: 0px;
 
     line-height: 14px;
     font-size: 14px;
-    padding: 6px 8px;
-    border-radius: 8px;
+    font-family: monospace;
     white-space: nowrap;
+    margin: 0px;
 
-    background-color: #f9c15c;
-    color: #111;
+    color: #f9c15c;
     pointer-events: none;
     opacity: 0;
-    transition: opacity 0.2s;
+    transition: opacity 0.8s, max-width 0.5s, margin 0.8s;
   }
 }
 
