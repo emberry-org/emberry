@@ -60,7 +60,7 @@ button {
 
   background-color: #fff0;
   color: #aaa;
-  transition: color 0.5s;
+  transition: color 1.0s;
 
   &:hover {
     transition: color 0.2s;
