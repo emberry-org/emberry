@@ -4,7 +4,7 @@ export default () => addCollection({
   "prefix": "bry",
   "icons": {
     "rz-conn": {
-      body: '<g fill="currentColor"><path d="m13.379 2.8203-3.3281 1.3789v10.895l-5.8516-5.8516-2.7578 2.7578 9.1797 9.1797 3.3281-1.3789v-10.895l5.8516 5.8516 2.7578-2.7578-9.1797-9.1797z"/><rect transform="rotate(-45)" x="-2.1517" y="4.5548" width="3.5355" height="3.5355" fill-opacity=".5" style="paint-order:stroke markers fill"/><rect transform="rotate(-45)" x="-1.3838" y="25.851" width="3.5355" height="3.5355" fill-opacity=".5" style="paint-order:stroke markers fill"/></g>'
+      body: '<g fill="currentColor"><path d="m13.379 2.8203-3.3281 1.3789v10.895l-5.8516-5.8516-2.7578 2.7578 9.1797 9.1797 3.3281-1.3789v-10.895l5.8516 5.8516 2.7578-2.7578-9.1797-9.1797z"/><rect transform="rotate(-45)" x="-2.1517" y="4.5548" width="3.5355" height="3.5355" fill-opacity=".5" opacity="0" style="paint-order:stroke markers fill"><animate fill="freeze" attributeName="opacity" begin="0.0s" dur="0.5s" values="0;1"/></rect><rect transform="rotate(-45)" x="-1.3838" y="25.851" width="3.5355" height="3.5355" fill-opacity=".5" opacity="0" style="paint-order:stroke markers fill"><animate fill="freeze" attributeName="opacity" begin="0.2s" dur="0.5s" values="0;1"/></rect></g>'
     },
     "rz-disc": {
       body: '<g fill="currentColor"><path d="m13.379 2.8203-3.3281 1.3789v10.895l-5.8516-5.8516-2.7578 2.7578 9.1797 9.1797 3.3281-1.3789v-10.895l5.8516 5.8516 2.7578-2.7578-9.1797-9.1797z"/></g>'

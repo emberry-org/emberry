@@ -85,8 +85,8 @@ button {
     border-radius: 8px;
     white-space: nowrap;
 
-    background-color: #24a1f5;
-    color: #fff;
+    background-color: #f9c15c;
+    color: #111;
     pointer-events: none;
     opacity: 0;
     transition: opacity 0.2s;
@@ -95,7 +95,7 @@ button {
 
 .disconnected { color: #444; }
 .failed { color: rgb(217, 82, 82); }
-.connected { color: #888; &:hover { color: #49b6ff; } }
+.connected { color: #888; &:hover { color: #f9c15c; } }
 .connecting { color: #aaa; }
 
 </style>
