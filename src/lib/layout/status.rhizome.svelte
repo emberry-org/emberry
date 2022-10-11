@@ -36,7 +36,7 @@
   {#if rzStatus === "connecting"}
   <Icon icon="bry:rz-disc" width="16px" height="16px" />
   {:else}
-  <Icon icon="bry:rz-conn" width="16px" height="16px" />
+  <Icon icon="bry:rz-conn" width="20px" height="20px" />
   {/if}
 </button>
 
@@ -46,6 +46,7 @@
 button {
   position: relative;
   max-height: 22px;
+  max-width: 22px;
   margin: 0;
   padding: 0 3px;
 
@@ -60,33 +61,41 @@ button {
 
   background-color: #fff0;
   color: #aaa;
+  transition: color 0.2s;
 
   &:hover {
     background-color: #fff1;
 
     &::after {
       content: var(--mili);
-      position: absolute;
-
-      top: -30px;
-      right: 8px;
-
-      line-height: 14px;
-      font-size: 14px;
-      padding: 6px 8px;
-      border-radius: 8px;
-      white-space: nowrap;
-
-      background-color: #141414;
-      color: #aaa;
-      pointer-events: none;
+      opacity: 1;
     }
+  }
+
+  &::after {
+    content: var(--mili);
+    position: absolute;
+
+    top: -30px;
+    right: 8px;
+
+    line-height: 14px;
+    font-size: 14px;
+    padding: 6px 8px;
+    border-radius: 8px;
+    white-space: nowrap;
+
+    background-color: #24a1f5;
+    color: #fff;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
   }
 }
 
 .disconnected { color: #444; }
 .failed { color: rgb(217, 82, 82); }
-.connected { color: #888; }
+.connected { color: #888; &:hover { color: #49b6ff; } }
 .connecting { color: #aaa; }
 
 </style>
