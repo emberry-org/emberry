@@ -153,7 +153,7 @@ async fn handle_rhiz_msg(
         none = guard.get(&usr).is_none();
         if none {
           window
-            .emit("wants-room", usr)
+            .emit("wants-room", std::str::from_utf8(&usr.key).unwrap())
             .expect("Failed to emit WantsRoom event");
         } else {
           // Here we get a WantsRoom while we already want a room with them (they were unaware when they made their request)
