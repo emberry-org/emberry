@@ -170,6 +170,7 @@ input {
 
 button {
   width: 160px;
+  white-space: nowrap;
 
   background-color: #1F1F1F;
   color: #eee;
