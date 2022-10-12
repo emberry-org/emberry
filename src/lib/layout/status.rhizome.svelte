@@ -69,7 +69,7 @@ button {
       content: var(--mili);
       max-width: 128px;
       opacity: .8;
-      margin: 0px 6px;
+      margin: 0px 22px 0px 6px;
       transition: opacity 0.2s, max-width 0.2s, margin 0.2s;
     }
   }
