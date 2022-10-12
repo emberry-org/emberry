@@ -28,7 +28,6 @@
     });
 
     listen("new-room", (e: any) => {
-      // todo : retrieve the usrkey from the event.payload once that has been added.
       users = storeUser({ key: e.payload.peer_id, status: UserStatus.Connected });
     });
   });

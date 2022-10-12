@@ -13,7 +13,6 @@
   onMount(() => {
     loadBundle();
 
-    // TODO: check if already connected to tls
     invoke('connect').catch((e) => {
       if (e === "Already connected to the server") {
         emit("rz-con");
@@ -21,6 +20,8 @@
         emit("rz-f");
       }
     });
+
+    // TODO: listen for failed room requests and mark those users as Offline
 
     listen("new-room", (e: any) => {
       const room_id = e.payload.room_id;

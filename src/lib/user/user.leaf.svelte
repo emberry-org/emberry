@@ -16,7 +16,7 @@
           usr: { key: user.key },
           accepted: true,
         });
-        // todo : Need to check if actually connected !
+        // TODO: Need to check if actually connected !
         user.status = UserStatus.Connected;
         break;
 
@@ -39,13 +39,9 @@
   /** Attempt to request a room with this user. */
   function tryRequest() {
     let utf8Encode = new TextEncoder();
-    invoke("request_room", { usr: { key: Array.from(utf8Encode.encode(user.key)) } }).catch(() => {
-      // The request failed, mark this user as offline.
-      storeUser({ key: user.key, status: UserStatus.Offline });
-    }).then(() => {
-      // The request has been send succesfully, mark this user as awaiting response.
-      storeUser({ key: user.key, status: UserStatus.Awaiting });
-    });
+    invoke("request_room", { usr: { key: Array.from(utf8Encode.encode(user.key)) } });
+    // The request has been send, mark this user as awaiting response.
+    storeUser({ key: user.key, status: UserStatus.Awaiting });
   }
 </script>
 
