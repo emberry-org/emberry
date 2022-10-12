@@ -10,8 +10,6 @@
   import Me from "../lib/user/user.me.svelte";
   import { onMount } from "svelte";
 
-  let chat: string | undefined = undefined;
-
   onMount(() => {
     loadBundle();
 
@@ -25,10 +23,11 @@
     });
 
     listen("new-room", (e: any) => {
-      chat = e.payload.room_id;
-      console.log('new room : ' + chat);
+      const room_id = e.payload.room_id;
+      const peer_id = e.payload.peer_id;
+      console.log(`new room : ${peer_id}:${room_id}`);
 
-      goto('/chat/' + chat);
+      goto(`/chat/${peer_id}:${room_id}`);
     });
   });
 </script>

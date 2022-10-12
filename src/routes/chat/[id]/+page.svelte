@@ -1,9 +1,11 @@
 <script lang="ts">
   import { onItem } from "$lib/store";
+  import { storeUsername } from "$lib/user";
   import { emit, listen } from "@tauri-apps/api/event"
   import { onMount } from "svelte";
   import { tick } from "svelte";
 
+  /** Chat ID format : 'peer_id:room_id' */
   /** @type {import('./$types').PageData} */
   export let data: any;
 
@@ -11,6 +13,9 @@
 
   let localname = "";
   let peername = "";
+
+  const peer_id = (data.id as string).split(':')[0];
+  const room_id = (data.id as string).split(':')[1];
   
   let messages: any[] = [];
 
@@ -22,15 +27,16 @@
     localname = onItem(localStorage, (val) => {
       localname = val ?? "NoName";
       // Send our new username to the peer.
-      emit(`send_message_${data.id}`, { Username: localname });
+      emit(`send_message_${room_id}`, { Username: localname });
     }, "username") ?? "NoName";
 
     // Listen for incoming messages.
-    listen(`message_recieved_${data.id}`, (e: any) => {
+    listen(`message_recieved_${room_id}`, (e: any) => {
       const type: string = Object.keys(e.payload.message)[0];
 
       if (type === "Username") {
         peername = e.payload.message[type];
+        storeUsername(peer_id, peername);
         return;
       }
 
@@ -39,7 +45,7 @@
     });
 
     // Send our username to the peer.
-    emit(`send_message_${data.id}`, { Username: localname });
+    emit(`send_message_${room_id}`, { Username: localname });
 
     // Set the list to scroll to the bottom of the messages.
     feed.scrollTop = feed.scrollHeight;
@@ -70,7 +76,7 @@
     if (msg.trim().length === 0) return;
 
     // Send the message and add it to our own feed.
-    emit(`send_message_${data.id}`, { Chat: msg });
+    emit(`send_message_${room_id}`, { Chat: msg });
     addMessage(msg, localname);
 
     // Empty the input box.

@@ -12,5 +12,7 @@ export enum UserStatus {
   Online,
   /** This user is connected to us */
   Connected,
+  /** We've connected to this user in the past but are now disconnected */
+  Disconnected,
 }
 

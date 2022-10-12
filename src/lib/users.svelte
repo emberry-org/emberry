@@ -12,6 +12,15 @@
       users = JSON.parse(val ?? "[]");
     }, "users") ?? "[]");
 
+    if (sessionStorage.getItem("has-mounted") === null || sessionStorage.getItem("has-mounted") !== "true") {
+      // Mark all users as disconnected on app load.
+      for (let i = 0; i < users.length; i++) {
+        users[i].status = UserStatus.Disconnected;
+        storeUser(users[i]);
+      }
+      sessionStorage.setItem("has-mounted", "true");
+    }
+
     listen('wants-room', (e: any) => {
       const usrkey = e.payload.key;
 

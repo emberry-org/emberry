@@ -27,3 +27,17 @@ export function storeUser(user: StoredUser): StoredUser[] {
   return stored;
 }
 
+/**
+ * Store a users username within the local storage.
+ * @param key The public key of the user.
+ * @param username The username to give the user.
+ */
+export function storeUsername(key: string, username: string) {
+  const stored: StoredUser[] = JSON.parse(localStorage.getItem("users") ?? "[]");
+  const userIndex = stored.findIndex(u => u.key === key);
+  // If this user exists.
+  if (userIndex > -1) {
+    stored[userIndex].name = username;
+    setItem(localStorage, "users", JSON.stringify(stored));
+  }
+}
