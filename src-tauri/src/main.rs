@@ -7,6 +7,7 @@
 extern crate dotenv_codegen;
 
 mod network;
+mod history;
 use std::sync::atomic::AtomicBool;
 
 use log::trace;

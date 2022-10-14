@@ -1,14 +1,15 @@
-#[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Eq)]
-pub enum Msg {
-    /// Normal text message
-    Text,
-    /// Inline reaction message
-    InlineReaction,
+use serde::{Deserialize, Serialize};
 
-    // Image, Embeds, Invites, etc...
+#[derive(Clone, Serialize, Deserialize, Debug)]
+pub enum Msg {
+  /// Normal text message
+  Text(Text),
+  /// Inline reaction message
+  InlineReaction(InlineReaction),
+  // Image, Embeds, Invites, etc...
 }
 
-#[derive(Clone, Copy, Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize, Debug)]
 /// # Text
 /// The default chat message.
 /// These contain text and a sender.
@@ -26,10 +27,10 @@ pub struct Text {
   // time: u64, // This should be a DateTime<UTC>
 
   /** Reaction emojis */
-  remojis: Vec<Remoji>
+  remojis: Vec<Remoji>,
 }
 
-#[derive(Clone, Copy, Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize, Debug)]
 /// # Inline Reactions
 /// A reaction to another message in the same chat.
 /// These reactions are inserted at the bottom of the chat.
@@ -51,10 +52,10 @@ pub struct InlineReaction {
   /** Reaction emojis */
   remojis: Vec<Remoji>,
   /** The message this reaction is targeting */
-  target: Msg
+  target: Box<Msg>,
 }
 
-#[derive(Clone, Copy, Serialize, Deserialize)]
+#[derive(Clone, Copy, Serialize, Deserialize, Debug)]
 /// # Reaction Emojis
 /// All messages can be reacted too using emojis.
 ///
