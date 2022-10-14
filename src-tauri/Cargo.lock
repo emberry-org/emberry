@@ -707,6 +707,7 @@ dependencies = [
  "bs58",
  "dotenv_codegen",
  "env_logger",
+ "lazy_static",
  "log",
  "rustls",
  "rustls-pemfile",
