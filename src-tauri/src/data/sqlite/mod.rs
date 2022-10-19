@@ -1,4 +1,5 @@
 pub mod actions;
+mod schema;
 
 use lazy_static::lazy_static;
 use log::warn;
@@ -8,10 +9,10 @@ use std::sync::Mutex;
 use crate::data::path::DATA;
 
 lazy_static! {
-  static ref DATABASE: Mutex<Connection> = validate();
+  static ref DATABASE: Mutex<Connection> = generate();
 }
 
-fn generate() -> Connection {
+fn generate() -> Mutex<Connection> {
   let db = Connection::open(DATA.clone());
 
   match db {
@@ -20,13 +21,13 @@ fn generate() -> Connection {
       warn!("Using in memory database");
       // using unwrap here is safe as sqlite does not return an error
       // when creating in memory database
-      Connection::open_in_memory().expect("In memory database creation failed")
+      let mut db = Connection::open_in_memory().expect("In memory database creation failed");
+      schema::validate(&mut db);
+      Mutex::new(db)
     }
-    Ok(db) => db,
+    Ok(mut db) => {
+      schema::validate(&mut db);
+      Mutex::new(db)
+    }
   }
-}
-
-fn validate() -> Mutex<Connection> {
-  todo!("check version and if needed update/create tables");
-  Mutex::new(generate())
 }
