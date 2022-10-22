@@ -1,20 +1,18 @@
 use rusqlite::Connection;
 use smoke::{PubKey, User};
 
-use crate::exec;
+use crate::{exec, data::UserInfo};
 
-fn _get_or_insert(db: &mut Connection, user: &PubKey) -> Result<User, rusqlite::Error> {
-  
+fn _get_or_insert(db: &mut Connection, data: (&User, UserInfo)) -> Result<User, rusqlite::Error> {
   let transaction = db.transaction()?;
   let mut statement = transaction
-            .prepare(
-                "SELECT DISTINCT user_id, card_name, skin_name FROM card_data WHERE user_id = (?1)",
-            )
-            .unwrap();
+    .prepare("SELECT id, username, relation FROM users WHERE tls_cert = (?1)")
+    .unwrap();
+  let rows = statement.query_map([data.0.key], |row| Ok(()));
   Err(rusqlite::Error::InvalidQuery)
 }
 
 #[tauri::command]
-pub fn get_or_insert(user: &PubKey) -> Result<User, rusqlite::Error> {
-  exec!(_get_or_insert, user)
+pub fn get_or_insert(user: &User, info: UserInfo) -> Result<User, rusqlite::Error> {
+  exec!(_get_or_insert, (user, info))
 }
