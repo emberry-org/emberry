@@ -21,6 +21,7 @@ pub static FOCUS: AtomicBool = AtomicBool::new(false);
 fn main() {
   env_logger::init();
 
+  trace!(concat!("emberry-rs v", env!("CARGO_PKG_VERSION")));
   tauri::Builder::default()
     // Application State
     .manage(Networking {

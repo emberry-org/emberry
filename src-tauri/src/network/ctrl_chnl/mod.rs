@@ -119,6 +119,7 @@ async fn run_channel_result<'a>(
   loop {
     select! {
       Some(msg) = rx.recv() => {
+        trace!("crtl send: {:?}", &msg);
         match msg {
             EmberryMessage::Direct(msg) => msg.send_with(&mut tls).await?,
             EmberryMessage::Close() => return Ok(()),
