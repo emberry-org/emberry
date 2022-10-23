@@ -5,8 +5,7 @@
   let usrkey = "";
 
   function send() {
-    let utf8Encode = new TextEncoder();
-    invoke("request_room", { usr: { key: Array.from(utf8Encode.encode(usrkey)) } });
+    invoke("request_room", { bs58_cert: usrkey });
     storeUser({ key: usrkey, status: UserStatus.Awaiting });
   }
 </script>
