@@ -13,7 +13,7 @@
       /** If a pending user was clicked accept their request */
       case UserStatus.Pending:
         invoke('accept_room', {
-          bs58_cert: user.key,
+          bs58cert: user.key,
           accepted: true,
         });
         // TODO: Need to check if actually connected !
@@ -38,7 +38,7 @@
 
   /** Attempt to request a room with this user. */
   function tryRequest() {
-    invoke("request_room", { bs58_cert: user.key });
+    invoke("request_room", { bs58cert: user.key });
     // The request has been send, mark this user as awaiting response.
     storeUser({ key: user.key, status: UserStatus.Awaiting });
   }

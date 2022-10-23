@@ -5,7 +5,7 @@
   let usrkey = "";
 
   function send() {
-    invoke("request_room", { bs58_cert: usrkey });
+    invoke("request_room", { bs58cert: usrkey });
     storeUser({ key: usrkey, status: UserStatus.Awaiting });
   }
 </script>

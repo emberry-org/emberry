@@ -9,7 +9,7 @@ use tauri::Result;
 
 #[tauri::command(async)]
 pub async fn accept_room(
-  bs58_cert: String,
+  bs58cert: String,
   accepted: bool,
   net: tauri::State<'_, Networking>,
   rc: tauri::State<'_, RhizomeConnection>,
@@ -17,10 +17,10 @@ pub async fn accept_room(
   {
     // This is a temporary solution
     let usr = User {
-      cert_data: match bs58::decode(&bs58_cert).into_vec() {
+      cert_data: match bs58::decode(&bs58cert).into_vec() {
         Ok(cert) => cert,
         Err(err) => {
-          error!("cannot parse base58 sting: '{}'. Error: {}", bs58_cert, err);
+          error!("cannot parse base58 sting: '{}'. Error: {}", bs58cert, err);
           return Err(tauri::Error::Io(Error::new(
             ErrorKind::InvalidData,
             "bs58 parsing error",
