@@ -8,6 +8,7 @@ pub struct UserInfo {
 pub enum UserRelation {
   Known = 0,
   Friend = 1,
+  Stranger = 2,
   Undefined,
 }
 
@@ -16,6 +17,7 @@ impl From<u8> for UserRelation {
     match value {
       0 => Self::Known,
       1 => Self::Friend,
+      2 => Self::Stranger,
       _ => Self::Undefined,
     }
   }
