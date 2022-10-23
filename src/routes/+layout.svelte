@@ -17,6 +17,7 @@
       if (e === "Already connected to the server") {
         emit("rz-con");
       } else {
+        console.error(e);
         emit("rz-f");
       }
     });

@@ -70,6 +70,7 @@ pub async fn connect(
   let mut plaintext = String::new();
   tls.read_line(&mut plaintext).await?;
   if plaintext != "rhizome v0.3.0\n" {
+    error!("invalid rhizome version");
     return Err(tauri::Error::Io(io::Error::new(
       io::ErrorKind::Unsupported,
       "Server did greet with rhizome signature",
