@@ -22,7 +22,7 @@
     }
 
     listen('wants-room', (e: any) => {
-      const usrkey = e.payload.key;
+      const usrkey = e.payload;
 
       users = storeUser({ key: usrkey, status: UserStatus.Pending });
     });
