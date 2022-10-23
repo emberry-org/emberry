@@ -13,7 +13,7 @@ pub async fn request_room(
   rc: tauri::State<'_, RhizomeConnection>,
 ) -> tauri::Result<()> {
   // try to add to pending list
-  let msg = match net.pending.lock().unwrap().entry(usr) {
+  let msg = match net.pending.lock().unwrap().entry(usr.clone()) {
     std::collections::hash_map::Entry::Occupied(mut e) => {
       e.insert(crate::network::RRState::Agreement);
       EmbMessage::Accept(true)

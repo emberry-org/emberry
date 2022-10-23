@@ -15,7 +15,7 @@ pub fn get(user: &User) -> Result<UserInfo, rusqlite::Error> {
 fn _get(db: &mut Connection, data: &User) -> Result<UserInfo, rusqlite::Error> {
   let mut statement =
     db.prepare("SELECT id, username, relation FROM users WHERE tls_cert = (?1)")?;
-  let certificate = bs58::encode(data.key).into_string();
+  let certificate = bs58::encode(&data.cert_data).into_string();
   let mut rows = statement.query_map([&certificate], |row| {
     let id: u64 = row.get(0)?;
     let username: String = row.get(1)?;

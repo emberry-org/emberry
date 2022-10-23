@@ -13,6 +13,7 @@ tauri-build = { version = "1.1", features = [] }
 
 [dependencies]
 serde_json = "1.0"
+postcard = "1"
 serde = { version = "1.0", features = ["derive"] }
 tauri = { version = "1.1", features = ["api-all"] }
 smoke = { git = "https://github.com/emberry-org/smoke" }

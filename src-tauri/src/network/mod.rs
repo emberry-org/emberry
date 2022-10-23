@@ -3,11 +3,13 @@ use std::io::{Error, ErrorKind};
 use std::sync::atomic::Ordering;
 use std::sync::Mutex;
 
+use rustls::Certificate;
 use smoke::messages::RoomId;
+use smoke::Signal;
 use smoke::User;
-use smoke::{PubKey, Signal};
 use tauri::EventHandler;
 
+use lazy_static::lazy_static;
 use tauri::api::notification::Notification;
 use tokio::io::BufReader;
 use tokio::select;
@@ -24,10 +26,12 @@ mod holepunch;
 mod p2p_tunl;
 use p2p_tunl::tls_kcp;
 
-pub const ENV: Config = Config {
-  public_key: dotenv!("PUBLIC_KEY"),
-  server_address: dotenv!("SERVER_ADDRESS"),
-};
+lazy_static! {
+  pub static ref ENV: Config = Config {
+    user_cert: tls_kcp::craft_cert(),
+    server_address: dotenv!("SERVER_ADDRESS"),
+  };
+}
 
 /// Default kcp conf as from KcpConfig::default()
 /// default is not const and therefore needs to be inlined manually
@@ -62,9 +66,9 @@ pub struct Networking {
   pub pending: Mutex<HashMap<User, RRState>>,
 }
 
-pub struct Config<'a> {
-  server_address: &'a str,
-  public_key: &'a str,
+pub struct Config {
+  server_address: &'static str,
+  user_cert: Certificate,
 }
 
 #[derive(Clone, serde::Serialize)]
@@ -75,7 +79,7 @@ struct MessageRecievedPayload {
 #[derive(Clone, serde::Serialize)]
 struct NewRoomPayload {
   room_id: String,
-  peer_id: String
+  peer_id: String,
 }
 
 pub async fn hole_punch(
@@ -83,7 +87,7 @@ pub async fn hole_punch(
   app_handle: &tauri::AppHandle,
   state: tauri::State<'_, Networking>,
   room_id: RoomId,
-  peer_key: PubKey,
+  peer_cert: &[u8],
 ) -> tauri::Result<()> {
   /* Get the server ip from .env */
 
@@ -104,7 +108,7 @@ pub async fn hole_punch(
       Error::new(ErrorKind::Other, "Kcp error")
     })?;
 
-  let stream = if peer_key.as_ref() < ENV.public_key.as_bytes() {
+  let stream = if peer_cert < &ENV.user_cert.0[..] {
     tls_kcp::wrap_client(stream).await
   } else {
     tls_kcp::wrap_server(stream).await
@@ -175,7 +179,13 @@ pub async fn hole_punch(
   state.chats.lock().unwrap().insert(room_id.clone(), con);
 
   window
-    .emit("new-room", NewRoomPayload { room_id: identity, peer_id: std::str::from_utf8(&peer_key).unwrap().into() })
+    .emit(
+      "new-room",
+      NewRoomPayload {
+        room_id: identity,
+        peer_id: bs58::encode(peer_cert).into_string(),
+      },
+    )
     .expect("Failed to emit WantsRoom event");
   Ok(())
 }

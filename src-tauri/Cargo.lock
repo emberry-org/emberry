@@ -720,6 +720,7 @@ dependencies = [
  "env_logger",
  "lazy_static",
  "log",
+ "postcard",
  "rusqlite",
  "rustls",
  "rustls-pemfile",
@@ -2864,8 +2865,8 @@ checksum = "a507befe795404456341dfab10cef66ead4c041f62b8b11bbb92bffe5d0953e0"
 
 [[package]]
 name = "smoke"
-version = "0.1.1"
-source = "git+https://github.com/emberry-org/smoke#6fd4bf6f6523301d32c27c2521f1eb03fb887e05"
+version = "0.2.0"
+source = "git+https://github.com/emberry-org/smoke#e01cf105194d946f7115452532eae4e455de1b1c"
 dependencies = [
  "log",
  "postcard",

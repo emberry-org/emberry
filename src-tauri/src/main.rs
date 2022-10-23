@@ -21,8 +21,6 @@ pub static FOCUS: AtomicBool = AtomicBool::new(false);
 fn main() {
   env_logger::init();
 
-  trace!("Running as: {}", dotenv!("PUBLIC_KEY"));
-
   tauri::Builder::default()
     // Application State
     .manage(Networking {

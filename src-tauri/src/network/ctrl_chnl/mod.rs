@@ -13,7 +13,7 @@ use std::{
 use crate::network::hole_punch;
 
 pub use self::state::RwOption;
-use log::trace;
+use log::{error, trace};
 pub use messages::EmberryMessage;
 use rustls::{ClientConfig, RootCertStore, ServerName};
 use serde_json::json;
@@ -35,7 +35,7 @@ use tokio::{
 };
 use tokio_rustls::{client::TlsStream, TlsConnector};
 
-use super::{Networking, RRState, ENV};
+use super::{p2p_tunl::tls_kcp, Networking, RRState, ENV};
 
 #[tauri::command(async)]
 pub async fn connect(
@@ -69,7 +69,7 @@ pub async fn connect(
 
   let mut plaintext = String::new();
   tls.read_line(&mut plaintext).await?;
-  if plaintext != "rhizome v0.2.0\n" {
+  if plaintext != "rhizome v0.3.0\n" {
     return Err(tauri::Error::Io(io::Error::new(
       io::ErrorKind::Unsupported,
       "Server did greet with rhizome signature",
@@ -79,7 +79,17 @@ pub async fn connect(
     .emit("rz-con", start.elapsed().as_millis() as u64)
     .expect("Failed to emit event");
 
-  tls.write_all(dotenv!("PUBLIC_KEY").as_bytes()).await?;
+  let cobs_cert = match postcard::to_vec_cobs::<Vec<u8>, 1024>(&tls_kcp::craft_cert().0) {
+    Ok(cobs) => cobs,
+    Err(err) => {
+      error!("Error serializing USER_CERT in 1024 bytes: {}", err);
+      return Err(tauri::Error::Io(io::Error::new(
+        io::ErrorKind::InvalidData,
+        "cannot serialize USER_CERT",
+      )));
+    }
+  };
+  tls.write_all(&cobs_cert).await?;
 
   let (tx, rx) = mpsc::channel::<EmberryMessage>(25);
 
@@ -132,7 +142,10 @@ async fn handle_rhiz_msg(
     HasRoute(usr) => {
       let pending = net.pending.lock().unwrap().contains_key(&usr);
       window
-        .emit("has-route", json!({ "pending": pending, "usr": usr, }))
+        .emit(
+          "has-route",
+          json!({ "pending": pending, "usr": bs58::encode(&usr.cert_data).into_string(), }),
+        )
         .expect("Failed to emit HasRoute")
     }
     NoRoute(usr) => {
@@ -141,7 +154,7 @@ async fn handle_rhiz_msg(
       window
         .emit(
           "no-route",
-          json!({ "pending": pending.is_some(), "usr": usr, }),
+          json!({ "pending": pending.is_some(), "usr": bs58::encode(&usr.cert_data).into_string(), }),
         )
         .expect("Failed to emit NoRoute")
     }
@@ -153,20 +166,20 @@ async fn handle_rhiz_msg(
         none = guard.get(&usr).is_none();
         if none {
           window
-            .emit("wants-room", std::str::from_utf8(&usr.key).unwrap())
+            .emit("wants-room", bs58::encode(&usr.cert_data).into_string())
             .expect("Failed to emit WantsRoom event");
         } else {
           // Here we get a WantsRoom while we already want a room with them (they were unaware when they made their request)
           // In this situation the user with the higher value as pub key rejects the request
           // the client with the lower value pub key auto accepts
           // this is done to remove the dublicate request
-          guard.insert(usr, super::RRState::Agreement);
+          guard.insert(usr.clone(), super::RRState::Agreement);
         }
       }
 
       if !none {
         // this is the same case where guard.insert(Agreement) happens just outside scope because we want to drop guard before await
-        let msg = EmbMessage::Accept(ENV.public_key.as_bytes() < usr.key.as_slice());
+        let msg = EmbMessage::Accept(ENV.user_cert.0 < usr.cert_data);
         state::send(rc, msg).await?;
       }
     }
@@ -194,7 +207,7 @@ async fn try_holepunch(
   if let Some(room_id) = room_id {
     if net_state.pending.lock().unwrap().remove(&usr).is_some() {
       // only hole punch if there is a connection pending
-      hole_punch(window, app_handle, net_state, room_id, usr.key).await?;
+      hole_punch(window, app_handle, net_state, room_id, &usr.cert_data).await?;
     } else {
       // This is rather weak protection as a compromized rhizome server could still just send a different room id with a valid user
       // Room id procedure is subject to change in the future. (plan is to use cryptographic signatures to mitigated unwanted ip leak)
