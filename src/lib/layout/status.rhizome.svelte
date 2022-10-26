@@ -33,7 +33,7 @@
 
 
 <button class="rhizome { rzStatus } move-right" style="--mili: ' { rzMili }ms'">
-  {#if rzStatus === "connecting"}
+  {#if rzStatus === "connecting" || rzStatus === "failed"}
   <Icon icon="bry:rz-disc" width="16px" height="16px" />
   {:else}
   <Icon icon="bry:rz-conn" width="16px" height="20px" />
