@@ -8,7 +8,7 @@
   export let time: string;
   export let chain: boolean;
 
-  let embed: { title: string, desc: string, icon: string, url: string, preview?: string } | undefined = undefined;
+  let embed: { title: string, desc: string, icon?: string, url: string, preview?: string } | undefined = undefined;
   let embedHeight: number = 0;
 
   onMount(async () => {
