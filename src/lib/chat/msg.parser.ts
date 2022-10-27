@@ -39,7 +39,8 @@ export async function getEmbed(content: string): Promise<{ title: string, desc: 
     // If the result is empty then just return undefined.
     if (result.length === 0) return undefined;
 
-    result = result.replace(/&#39;/g, "'");
+    result = result.replace(/&#39;|&#x27;/g, "'");
+    result = result.replace(/&amp;/g, "&");
 
     // Extract the description and title from the website html.
     const desc = /<meta.*?name="description".*?content="(.*?)".*?>|<meta.*?content="(.*?)".*?name="description".*?>/i;

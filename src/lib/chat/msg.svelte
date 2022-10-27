@@ -37,7 +37,7 @@
     <a href={ embed.url } target="_blank">{ embed.url }</a>
     <h2>
       {#if embed.icon && embed.icon.length > 0}
-        <img class="favicon" src={ embed.icon } alt={ embed.title }>
+        <img class="favicon" src={ embed.icon } alt={ embed.title } on:error={ (e) => e.currentTarget.style.display = 'none' }>
       {/if}
       { embed.title }
     </h2>
@@ -49,7 +49,7 @@
   </div>
 
   {#if embed.preview && embed.preview.length > 0}
-    <img class="preview" src={ embed.preview } alt={ embed.title } height={embedHeight}>
+    <img class="preview" src={ embed.preview } alt={ embed.title } height={embedHeight} on:error={ (e) => e.currentTarget.style.display = 'none' }>
   {/if}
 </li>
 
