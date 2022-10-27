@@ -8,6 +8,8 @@ extern crate dotenv_codegen;
 
 mod network;
 mod history;
+mod embed;
+
 use std::sync::atomic::AtomicBool;
 
 use log::trace;
@@ -15,6 +17,7 @@ use network::ctrl_chnl::{connect, requests::*, responses::*, State};
 use network::{chat_exists, Networking};
 use std::sync::atomic::Ordering;
 use tokio::sync::RwLock;
+use embed::embed;
 
 pub static FOCUS: AtomicBool = AtomicBool::new(false);
 
@@ -36,6 +39,7 @@ fn main() {
       connect,
       request_room,
       accept_room,
+      embed,
     ])
     // TEMP / TODO : This will be obsolete once the `window.is_focused()` function is released from Tauri.
     .on_window_event(|event| {

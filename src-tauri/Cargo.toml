@@ -29,6 +29,9 @@ tokio-rustls = "0.23"
 rustls = { version = "0.20" }
 rustls-pemfile = { version="0.2" }
 
+# http dependencies
+reqwest = "0.11.12"
+
 # logging / debugging
 log = "0.4"
 env_logger = "0.9"

@@ -1,15 +1,23 @@
 <script lang="ts">
-  import { parseContent } from "./msg.parser";
+  import { onMount } from "svelte";
+  import { getEmbed, parseContent } from "./msg.parser";
 
   // Standard message variables.
 	export let sender: string;
 	export let content: string;
   export let time: string;
   export let chain: boolean;
+  let embed: { title: string, desc: string, url: string, preview?: string } | undefined = undefined;
+
+  onMount(async () => {
+    embed = await getEmbed(content);
+  });
 </script>
 
 
-<div class='msg'>
+ <!--  Message information  -->
+
+<div class="msg">
 	{#if !chain}
     <div class="profile-picture" />
     <h3>{ sender } <span>{ time }</span></h3>
@@ -18,6 +26,26 @@
     <p>{ @html parseContent(content) }</p>
   </div>
 </div>
+
+{#if embed} <!--  Embedded information  -->
+  
+<div class="embed">
+	<div class="body">
+    <a href={ embed.url } target="_blank">{ embed.url }</a>
+    <h2>{ embed.title }</h2>
+    
+    {#if embed.desc.length > 0}
+      <p>{ embed.desc }</p>
+    {/if}
+
+    {#if embed.preview && embed.preview.length > 0}
+      <img src={ embed.preview } alt={ embed.title }>
+    {/if}
+
+  </div>
+</div>
+
+{/if}
 
 
 <style lang="scss">
@@ -101,6 +129,55 @@
             text-decoration: underline;
           }
         }
+      }
+    }
+  }
+
+  // Embedded info underneath the message
+  .embed {
+    position: relative;
+    width: 100%;
+    height: fit-content;
+
+    margin-bottom: 6px;
+    padding-left: 42px;
+
+    .body {
+      background-color: #202020;
+      height: fit-content;
+      min-width: 240px;
+      max-width: 400px;
+      width: fit-content;
+      padding: 0px 12px 0px 12px;
+      margin: 4px 0 0 0;
+      border-radius: 10px;
+
+      a {
+        margin: 8px 0 6px 0;
+        font-weight: inherit;
+        font-size: 12px;
+        color: #6BA0D6;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+
+      h2 {
+        color: #ddd;
+        font-weight: 400;
+        font-size: 18px;
+        line-height: 22px;
+        margin-top: 0;
+      }
+
+      p {
+        height: fit-content;
+        color: #888;
+        font-size: 14px;
+        white-space: pre-wrap;
+        line-height: 18px;
+        margin: 0 0 15px 0;
       }
     }
   }
