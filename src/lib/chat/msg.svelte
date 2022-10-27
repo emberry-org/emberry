@@ -1,17 +1,11 @@
 <script lang="ts">
+  import { parseContent } from "./msg.parser";
+
   // Standard message variables.
 	export let sender: string;
 	export let content: string;
   export let time: string;
   export let chain: boolean;
-
-  function applyTags(s: String) {
-    //return s.replace(/@(\S+)/gi,'<a>@$1</a>');
-    
-    // Convert urls to a elements.
-    return s.replace(/(?:^|[^"'])((ftp|http|https|file):\/\/[\S]+(\b|$))/gim, '<a href="$1" target="_blank">$1</a>');
-  }
-
 </script>
 
 
@@ -21,7 +15,7 @@
     <h3>{ sender } <span>{ time }</span></h3>
   {/if}
   <div class="body">
-    <p>{ @html applyTags(content) }</p>
+    <p>{ @html parseContent(content) }</p>
   </div>
 </div>
 
@@ -100,7 +94,12 @@
         margin: 10px 0 12px 0;
 
         :global(a) {
+          font-weight: inherit;
           color: #6BA0D6;
+
+          &:hover {
+            text-decoration: underline;
+          }
         }
       }
     }

@@ -21,6 +21,7 @@
       }
     });
 
+    goto(`/chat/test`);
     // TODO: listen for failed room requests and mark those users as Offline
 
     listen("new-room", (e: any) => {
