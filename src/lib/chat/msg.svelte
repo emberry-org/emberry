@@ -7,7 +7,9 @@
 	export let content: string;
   export let time: string;
   export let chain: boolean;
-  let embed: { title: string, desc: string, url: string, preview?: string } | undefined = undefined;
+
+  let embed: { title: string, desc: string, icon: string, url: string, preview?: string } | undefined = undefined;
+  let embedHeight: number = 0;
 
   onMount(async () => {
     embed = await getEmbed(content);
@@ -15,35 +17,36 @@
 </script>
 
 
- <!--  Message information  -->
+<!--  Message information  -->
 
-<div class="msg">
+<li class="msg">
 	{#if !chain}
     <div class="profile-picture" />
     <h3>{ sender } <span>{ time }</span></h3>
   {/if}
-  <div class="body">
+  <div class="content">
     <p>{ @html parseContent(content) }</p>
   </div>
-</div>
+</li>
 
 {#if embed} <!--  Embedded information  -->
   
-<div class="embed">
-	<div class="body">
+<li class="embed">
+	<div class="content" bind:clientHeight={embedHeight}>
+
     <a href={ embed.url } target="_blank">{ embed.url }</a>
     <h2>{ embed.title }</h2>
     
     {#if embed.desc.length > 0}
       <p>{ embed.desc }</p>
     {/if}
-
-    {#if embed.preview && embed.preview.length > 0}
-      <img src={ embed.preview } alt={ embed.title }>
-    {/if}
-
+    
   </div>
-</div>
+
+  {#if embed.preview && embed.preview.length > 0}
+    <img class="preview" src={ embed.preview } alt={ embed.title } height={embedHeight}>
+  {/if}
+</li>
 
 {/if}
 
@@ -105,13 +108,16 @@
       }
     }
 
-    .body {
+    .content {
       background-color: #282828;
       height: fit-content;
       width: fit-content;
       padding: 0px 12px 0px 12px;
       margin: 4px 0 0 0;
       border-radius: 10px;
+      //margin: 0 12px;
+      display: flex;
+      flex-direction: column;
 
       p {
         height: fit-content;
@@ -136,21 +142,24 @@
   // Embedded info underneath the message
   .embed {
     position: relative;
-    width: 100%;
-    height: fit-content;
+    width: fit-content;
+    height: min-content;
 
     margin-bottom: 6px;
     padding-left: 42px;
+    display: flex;
 
-    .body {
+    .content {
       background-color: #202020;
       height: fit-content;
       min-width: 240px;
-      max-width: 400px;
+      max-width: 480px;
       width: fit-content;
       padding: 0px 12px 0px 12px;
-      margin: 4px 0 0 0;
       border-radius: 10px;
+      display: flex;
+      //margin: 0 0 0 12px;
+      flex-direction: column;
 
       a {
         margin: 8px 0 6px 0;
@@ -179,6 +188,12 @@
         line-height: 18px;
         margin: 0 0 15px 0;
       }
+    }
+
+    .preview {
+      margin-left: 6px;
+      border-radius: 12px;
+      image-rendering: optimizeSpeed;
     }
   }
 </style>

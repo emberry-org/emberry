@@ -26,7 +26,7 @@ export function parseContent(content: string): string {
  * Gets the embed information for the given msg content.
  * @param content The message content to check for urls.
  */
-export async function getEmbed(content: string): Promise<{ title: string, desc: string, url: string, preview?: string } | undefined> {
+export async function getEmbed(content: string): Promise<{ title: string, desc: string, icon: string, url: string, preview?: string } | undefined> {
 
   const url = content.match(/((ftp|http|https|file):\/\/[\S]+(\b|$))(?![^<]*>|[^<>]*<)/gim);
 
@@ -46,7 +46,17 @@ export async function getEmbed(content: string): Promise<{ title: string, desc: 
     const title = /<title>(.*?)<\/title>/i;
     const titleMatch = title.exec(result) ?? [ "", "" ];
 
-    return { title: titleMatch[1], desc: descMatch[1], url: url[0] };
+    const icon = /<link.*?rel="icon".*?href="(.*?)".*?>/i;
+    const iconMatch = icon.exec(result) ?? [ "", "" ];
+
+    let preview = /<(meta)[^>]*?content="([^>]*?)"[^>]*?property="og:image">|<(meta)[^>]*?property="og:image"[^>]*?content="([^>]*?)"[^>]*?>/g;
+    let previewMatch = preview.exec(result);
+    let previewResult = previewMatch ? previewMatch[2] ? previewMatch[2] : previewMatch[4] : undefined;
+
+    // Fix the image url which might be relative.
+    if (previewResult && !previewResult.includes('http')) previewResult = "http://" + new URL(url[0]).host + previewResult;
+
+    return { title: titleMatch[1], desc: descMatch[1], icon: iconMatch[1], preview: previewResult, url: url[0] };
   }
 
   return undefined;
