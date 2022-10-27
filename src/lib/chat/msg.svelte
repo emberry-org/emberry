@@ -120,7 +120,6 @@
       padding: 0px 12px 0px 12px;
       margin: 4px 0 0 0;
       border-radius: 10px;
-      //margin: 0 12px;
       display: flex;
       flex-direction: column;
 
@@ -163,7 +162,6 @@
       padding: 0px 12px 0px 12px;
       border-radius: 10px;
       display: flex;
-      //margin: 0 0 0 12px;
       flex-direction: column;
 
       a {

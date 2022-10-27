@@ -32,12 +32,14 @@ export async function getEmbed(content: string): Promise<{ title: string, desc: 
 
   if (url) {
     // Fetch the html from the url using the backend.
-    const result: string = await invoke('embed', {
+    let result: string = await invoke('embed', {
       url: url[0]
     });
 
     // If the result is empty then just return undefined.
     if (result.length === 0) return undefined;
+
+    result = result.replace(/&#39;/g, "'");
 
     // Extract the description and title from the website html.
     const desc = /<meta.*?name="description".*?content="(.*?)".*?>|<meta.*?content="(.*?)".*?name="description".*?>/i;
