@@ -35,7 +35,12 @@
 	<div class="content" bind:clientHeight={embedHeight}>
 
     <a href={ embed.url } target="_blank">{ embed.url }</a>
-    <h2>{ embed.title }</h2>
+    <h2>
+      {#if embed.icon && embed.icon.length > 0}
+        <img class="favicon" src={ embed.icon } alt={ embed.title }>
+      {/if}
+      { embed.title }
+    </h2>
     
     {#if embed.desc.length > 0}
       <p>{ embed.desc }</p>
@@ -178,6 +183,22 @@
         font-size: 18px;
         line-height: 22px;
         margin-top: 0;
+        display: flex;
+        align-items: center;
+
+        .favicon {
+          width: 24px;
+          height: 24px;
+
+          margin-right: 8px;
+          background-color: #ddd;
+          border-radius: 6px;
+          padding: 4px;
+          image-rendering: optimizeSpeed;
+
+          user-select: none;
+          -webkit-user-select: none;
+        }
       }
 
       p {

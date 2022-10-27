@@ -49,6 +49,9 @@ export async function getEmbed(content: string): Promise<{ title: string, desc: 
     const icon = /<link.*?rel="icon".*?href="(.*?)".*?>/i;
     const iconMatch = icon.exec(result) ?? [ "", "" ];
 
+    // Fix the image url which might be relative.
+    if (iconMatch && iconMatch[1].length > 0 && !iconMatch[1].includes('http')) iconMatch[1] = "http://" + new URL(url[0]).host + iconMatch[1];
+
     let preview = /<(meta)[^>]*?content="([^>]*?)"[^>]*?property="og:image">|<(meta)[^>]*?property="og:image"[^>]*?content="([^>]*?)"[^>]*?>/g;
     let previewMatch = preview.exec(result);
     let previewResult = previewMatch ? previewMatch[2] ? previewMatch[2] : previewMatch[4] : undefined;
