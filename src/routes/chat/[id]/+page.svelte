@@ -4,6 +4,8 @@
   import { emit, listen } from "@tauri-apps/api/event"
   import { onMount } from "svelte";
   import { tick } from "svelte";
+  import Msg from "$lib/chat/msg.svelte";
+  import type { Message } from "$lib/chat/msg";
 
   /** Chat ID format : 'peer_id:room_id' */
   /** @type {import('./$types').PageData} */
@@ -17,7 +19,7 @@
   const peer_id = (data.id as string).split(':')[0];
   const room_id = (data.id as string).split(':')[1];
   
-  let messages: any[] = [];
+  let messages: Message[] = [];
 
   let feed: HTMLOListElement;
   let input: HTMLInputElement;
@@ -59,8 +61,13 @@
   });
 
   async function addMessage(content: any, sender: string) {
+    // Get the time and chain.
+    const date = new Date();
+    const time = `Today at ${ date.getHours().toString().padStart(2, '0') }:${ date.getMinutes().toString().padStart(2, '0') }`;
+    const chain = messages.length > 0 && messages[messages.length - 1].sender === sender;
+
     // Add the message to the feed.
-    messages.push({ type: "Chat", content, sender });
+    messages.push({ type: "Chat", content, sender, time, chain });
     messages = [...messages];
 
     // Check if the user has scrolled all the way to the bottom.
@@ -95,9 +102,16 @@
     <ol bind:this={ feed }>
       {#each messages as message}
     
-      <li>
+      <Msg 
+        sender={message.sender} 
+        content={message.content} 
+        time={message.time} 
+        chain={message.chain} 
+      />
+
+      <!-- <li>
         { message.sender } : { message.content }
-      </li>
+      </li> -->
 
       {/each}
     </ol>
@@ -140,10 +154,6 @@
 
       &::-webkit-scrollbar {
         display: none;
-      }
-
-      li {
-        color: #eee;
       }
     }
   }
