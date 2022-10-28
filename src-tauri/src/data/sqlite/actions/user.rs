@@ -1,14 +1,12 @@
 use log::warn;
 use rusqlite::{params, Connection};
-use smoke::User;
 
-use crate::data::{UserInfo, UserRelation};
+use crate::data::{UserInfo, UserRelation, UserIdentifier};
 
-pub fn get(db: &mut Connection, data: &User) -> Result<UserInfo, rusqlite::Error> {
+pub fn get(db: &mut Connection, data: &UserIdentifier) -> Result<UserInfo, rusqlite::Error> {
   let mut statement =
     db.prepare("SELECT id, username, relation FROM users WHERE tls_cert = (?1)")?;
-  let certificate = bs58::encode(&data.cert_data).into_string();
-  let mut rows = statement.query_map([&certificate], |row| {
+  let mut rows = statement.query_map([&data.bs58], |row| {
     let id: u64 = row.get(0)?;
     let username: String = row.get(1)?;
     let relation = UserRelation::from(row.get::<usize, u8>(2)?);
@@ -20,7 +18,7 @@ pub fn get(db: &mut Connection, data: &User) -> Result<UserInfo, rusqlite::Error
     if rows.next().is_some() {
       warn!(
         "more then one database entry for certifificate: '{}'",
-        &certificate
+        &data.bs58
       );
     }
     Ok(UserInfo {
@@ -29,7 +27,7 @@ pub fn get(db: &mut Connection, data: &User) -> Result<UserInfo, rusqlite::Error
     })
   } else {
     Ok(UserInfo {
-      username: certificate,
+      username: data.bs58.to_string(),
       relation: UserRelation::Stranger,
     })
   }
