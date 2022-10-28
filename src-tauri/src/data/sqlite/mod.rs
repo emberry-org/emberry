@@ -1,4 +1,4 @@
-pub mod actions;
+mod actions;
 mod schema;
 
 use lazy_static::lazy_static;
@@ -8,8 +8,10 @@ use std::sync::Mutex;
 
 use crate::data::path::DATA;
 
+pub use actions::*;
+
 lazy_static! {
-  static ref DATABASE: Mutex<Connection> = generate();
+  pub static ref DATABASE: Mutex<Connection> = generate();
 }
 
 fn generate() -> Mutex<Connection> {

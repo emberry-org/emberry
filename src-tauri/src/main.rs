@@ -12,6 +12,7 @@ mod network;
 use log::trace;
 use network::ctrl_chnl::{connect, requests::*, responses::*, State};
 use network::{chat_exists, Networking};
+use data::tauri::*;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 use tokio::sync::RwLock;
@@ -35,6 +36,7 @@ fn main() {
       connect,
       request_room,
       accept_room,
+      get_usr_info,
     ])
     // TEMP / TODO : This will be obsolete once the `window.is_focused()` function is released from Tauri.
     .on_window_event(|event| {

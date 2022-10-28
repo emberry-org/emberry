@@ -1,9 +1,12 @@
+use serde::{Serialize, Deserialize};
+
+#[derive(PartialEq, Eq, Serialize, Deserialize, Debug)]
 pub struct UserInfo {
   pub username: String,
   pub relation: UserRelation,
 }
 
-#[derive(Clone, Copy, PartialEq)]
+#[derive(Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Debug)]
 #[repr(u8)]
 pub enum UserRelation {
   Known = 0,

@@ -2,17 +2,9 @@ use log::warn;
 use rusqlite::{params, Connection};
 use smoke::User;
 
-use crate::{
-  data::{UserInfo, UserRelation},
-  exec,
-};
+use crate::data::{UserInfo, UserRelation};
 
-#[tauri::command]
-pub fn get(user: &User) -> Result<UserInfo, rusqlite::Error> {
-  exec!(_get, user)
-}
-
-fn _get(db: &mut Connection, data: &User) -> Result<UserInfo, rusqlite::Error> {
+pub fn get(db: &mut Connection, data: &User) -> Result<UserInfo, rusqlite::Error> {
   let mut statement =
     db.prepare("SELECT id, username, relation FROM users WHERE tls_cert = (?1)")?;
   let certificate = bs58::encode(&data.cert_data).into_string();

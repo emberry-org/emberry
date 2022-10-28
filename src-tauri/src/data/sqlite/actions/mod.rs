@@ -1,6 +1,10 @@
-mod get_or_insert;
+use std::io::ErrorKind;
 
-pub use get_or_insert::*;
+use rusqlite::Connection;
+
+use super::DATABASE;
+
+pub mod user;
 
 /// Uses the crate local mutex sqlite connection to run the supplied action
 /// The supplied action MUST never panic
@@ -11,11 +15,14 @@ pub use get_or_insert::*;
 ///
 /// # Panics
 /// If said mutex is poisoned
-#[macro_export]
-macro_rules! exec {
-  ($action:ident, $input:expr) => {{
-    let db = &*$crate::data::sqlite::DATABASE;
-    let mut db = db.lock().unwrap();
-    $action(&mut db, $input)
-  }};
+#[inline(always)]
+pub fn exec<F, T, O>(action: F, input: T) -> Result<O, std::io::Error>
+where
+  F: FnOnce(&mut Connection, T) -> Result<O, rusqlite::Error>,
+{
+  let db = &*DATABASE;
+  let mut db = db.lock().unwrap();
+  action(&mut db, input).map_err(|err| {
+    log::error!("SQLite access error: '{}'", err);
+    std::io::Error::new(ErrorKind::Other, "SQLite error")})
 }
