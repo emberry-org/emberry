@@ -9,10 +9,10 @@ pub struct UserIdentifier<'a> {
   pub bs58: Cow<'a, String>,
 }
 
-impl<'a> From<User> for UserIdentifier<'a> {
-  fn from(usr: User) -> Self {
+impl<'a> From<&User> for UserIdentifier<'a> {
+  fn from(usr: &User) -> Self {
     UserIdentifier {
-      bs58: Cow::Owned(bs58::encode(usr.cert_data).into_string()),
+      bs58: Cow::Owned(bs58::encode(&usr.cert_data).into_string()),
     }
   }
 }
