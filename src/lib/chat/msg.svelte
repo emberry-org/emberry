@@ -14,6 +14,7 @@
   onMount(async () => {
     embed = await getEmbed(content);
   });
+
 </script>
 
 
@@ -49,7 +50,12 @@
   </div>
 
   {#if embed.preview && embed.preview.length > 0}
-    <img class="preview" src={ embed.preview } alt={ embed.title } height={embedHeight} on:error={ (e) => e.currentTarget.style.display = 'none' }>
+    <img class="preview"
+      src={ embed.preview } 
+      alt={ embed.title } 
+      height={ embedHeight } 
+      on:error={ (e) => e.currentTarget.style.display = 'none' }
+    >
   {/if}
 </li>
 
