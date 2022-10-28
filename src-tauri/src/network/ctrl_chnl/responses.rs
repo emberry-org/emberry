@@ -1,10 +1,9 @@
-use crate::network::{Networking, RRState};
+use crate::{network::{Networking, RRState}, data::UserIdentifier};
 
 use super::{state, RhizomeConnection};
-use log::error;
 use smoke::messages::EmbMessage;
 use smoke::User;
-use std::io::{Error, ErrorKind};
+use std::{io::{Error, ErrorKind}, borrow::Cow};
 use tauri::Result;
 
 #[tauri::command(async)]
@@ -15,19 +14,10 @@ pub async fn accept_room(
   rc: tauri::State<'_, RhizomeConnection>,
 ) -> Result<()> {
   {
-    // This is a temporary solution
-    let usr = User {
-      cert_data: match bs58::decode(&bs58cert).into_vec() {
-        Ok(cert) => cert,
-        Err(err) => {
-          error!("cannot parse base58 sting: '{}'. Error: {}", bs58cert, err);
-          return Err(tauri::Error::Io(Error::new(
-            ErrorKind::InvalidData,
-            "bs58 parsing error",
-          )));
-        }
-      },
-    };
+    let usr: User = UserIdentifier {
+      bs58: Cow::Owned(bs58cert),
+    }
+    .try_into()?;
 
     let mut guard = net.pending.lock().unwrap();
     let some = if accepted {

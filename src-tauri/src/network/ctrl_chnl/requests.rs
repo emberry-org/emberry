@@ -1,8 +1,8 @@
-use std::io::{Error, ErrorKind};
+use std::borrow::Cow;
 
-use log::error;
 use smoke::{messages::EmbMessage, User};
 
+use crate::data::UserIdentifier;
 use crate::network::ctrl_chnl::RhizomeConnection;
 use crate::network::Networking;
 
@@ -15,19 +15,9 @@ pub async fn request_room(
   net: tauri::State<'_, Networking>,
   rc: tauri::State<'_, RhizomeConnection>,
 ) -> tauri::Result<()> {
-  // This is a temporary solution
-  let usr = User {
-    cert_data: match bs58::decode(&bs58cert).into_vec() {
-      Ok(cert) => cert,
-      Err(err) => {
-        error!("cannot parse base58 sting: '{}'. Error: {}", bs58cert, err);
-        return Err(tauri::Error::Io(Error::new(
-          ErrorKind::InvalidData,
-          "bs58 parsing error",
-        )));
-      }
-    },
-  };
+  let usr: User = UserIdentifier{
+    bs58: Cow::Owned(bs58cert)
+  }.try_into()?;
 
   // try to add to pending list
   let msg = match net.pending.lock().unwrap().entry(usr.clone()) {

@@ -10,7 +10,7 @@ use std::{
   time::Instant,
 };
 
-use crate::network::hole_punch;
+use crate::{network::hole_punch, data::UserIdentifier};
 
 pub use self::state::RwOption;
 use log::{error, trace};
@@ -146,7 +146,7 @@ async fn handle_rhiz_msg(
       window
         .emit(
           "has-route",
-          json!({ "pending": pending, "usr": bs58::encode(&usr.cert_data).into_string(), }),
+          json!({ "pending": pending, "usr": UserIdentifier::from(&usr).bs58, }),
         )
         .expect("Failed to emit HasRoute")
     }
@@ -156,7 +156,7 @@ async fn handle_rhiz_msg(
       window
         .emit(
           "no-route",
-          json!({ "pending": pending.is_some(), "usr": bs58::encode(&usr.cert_data).into_string(), }),
+          json!({ "pending": pending.is_some(), "usr": UserIdentifier::from(&usr).bs58, }),
         )
         .expect("Failed to emit NoRoute")
     }
@@ -168,7 +168,7 @@ async fn handle_rhiz_msg(
         none = guard.get(&usr).is_none();
         if none {
           window
-            .emit("wants-room", bs58::encode(&usr.cert_data).into_string())
+            .emit("wants-room", UserIdentifier::from(&usr).bs58)
             .expect("Failed to emit WantsRoom event");
         } else {
           // Here we get a WantsRoom while we already want a room with them (they were unaware when they made their request)
@@ -209,7 +209,7 @@ async fn try_holepunch(
   if let Some(room_id) = room_id {
     if net_state.pending.lock().unwrap().remove(&usr).is_some() {
       // only hole punch if there is a connection pending
-      hole_punch(window, app_handle, net_state, room_id, &usr.cert_data).await?;
+      hole_punch(window, app_handle, net_state, room_id, usr).await?;
     } else {
       // This is rather weak protection as a compromized rhizome server could still just send a different room id with a valid user
       // Room id procedure is subject to change in the future. (plan is to use cryptographic signatures to mitigated unwanted ip leak)

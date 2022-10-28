@@ -19,6 +19,8 @@ use tokio_kcp::{KcpConfig, KcpStream};
 
 use log::{error, trace};
 
+use crate::data::UserIdentifier;
+
 use self::holepunch::punch_hole;
 
 pub mod ctrl_chnl;
@@ -87,7 +89,7 @@ pub async fn hole_punch(
   app_handle: &tauri::AppHandle,
   state: tauri::State<'_, Networking>,
   room_id: RoomId,
-  peer_cert: &[u8],
+  peer: User,
 ) -> tauri::Result<()> {
   /* Get the server ip from .env */
 
@@ -108,7 +110,7 @@ pub async fn hole_punch(
       Error::new(ErrorKind::Other, "Kcp error")
     })?;
 
-  let stream = if peer_cert < &ENV.user_cert.0[..] {
+  let stream = if peer.cert_data < ENV.user_cert.0 {
     tls_kcp::wrap_client(stream).await
   } else {
     tls_kcp::wrap_server(stream).await
@@ -183,7 +185,7 @@ pub async fn hole_punch(
       "new-room",
       NewRoomPayload {
         room_id: identity,
-        peer_id: bs58::encode(peer_cert).into_string(),
+        peer_id: UserIdentifier::from(&peer).bs58.into_owned(),
       },
     )
     .expect("Failed to emit WantsRoom event");
