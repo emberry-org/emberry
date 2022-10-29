@@ -7,11 +7,11 @@ pub fn validate(db: &mut Connection) {
 fn validate_user_table(db: &mut Connection) {
   db.execute(
     r#"CREATE TABLE IF NOT EXISTS "users" (
-"id"	INTEGER NOT NULL UNIQUE,
-"username"	TEXT,
-"tls_cert"	BLOB NOT NULL,
-"relation"	INTEGER,
-PRIMARY KEY("id")
+"id" INTEGER NOT NULL UNIQUE,
+"username" TEXT,
+"tls_cert" TEXT NOT NULL,
+"relation" INTEGER,
+PRIMARY KEY("id" AUTOINCREMENT)
 );"#,
     [],
   )

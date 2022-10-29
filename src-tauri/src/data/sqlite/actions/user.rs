@@ -1,7 +1,7 @@
 use log::warn;
 use rusqlite::{params, Connection};
 
-use crate::data::{UserInfo, UserRelation, UserIdentifier};
+use crate::data::{UserIdentifier, UserInfo, UserRelation};
 
 pub fn get(db: &mut Connection, data: &UserIdentifier) -> Result<UserInfo, rusqlite::Error> {
   let mut statement =
@@ -33,25 +33,15 @@ pub fn get(db: &mut Connection, data: &UserIdentifier) -> Result<UserInfo, rusql
   }
 }
 
-fn _update(
+pub fn upsert(
   db: &mut Connection,
   certificate: String,
   info: UserInfo,
 ) -> Result<(), rusqlite::Error> {
   let _ = db.execute(
-    "UPDATE users SET username = (?1), relation = (?2) WHERE tls_cert = (?3)",
-    params![info.username, info.relation as u8, certificate],
-  )?;
-  Ok(())
-}
-
-fn _insert(
-  db: &mut Connection,
-  certificate: String,
-  info: UserInfo,
-) -> Result<(), rusqlite::Error> {
-  let _ = db.execute(
-    "INSERT INTO users (username, relation, tls_cert) VALUES (?1, ?2, ?3)",
+    r#"INSERT INTO users (username, tls_cert, relation) VALUES (?1, ?2, ?3)
+ON CONFLICT (user_id) DO UPDATE 
+SET name = excluded.name, deck = excluded.deck, currency = excluded.currency ,elo = excluded.elo"#,
     params![info.username, info.relation as u8, certificate],
   )?;
   Ok(())
