@@ -74,8 +74,8 @@ pub struct Config {
 }
 
 #[derive(Clone, serde::Serialize)]
-struct MessageRecievedPayload {
-  message: Signal,
+struct MessageRecievedPayload<'a> {
+  message: &'a Signal,
 }
 
 #[derive(Clone, serde::Serialize)]
@@ -156,10 +156,9 @@ pub async fn hole_punch(
             }
           }
 
-          /* Emit the message recieved event */
-          spawn_window
-            .emit(&event_name, MessageRecievedPayload { message: msg })
-            .expect("Failed to emit event");
+          if let Err(err) = p2p_tunl::signal::handle_signal(&msg, &spawn_window, &event_name).await{
+            log::warn!("failed to handle signal: '{:?}' with error: '{}'", msg, err);
+          }
         },
         Ok(_) = &mut rx => {
           break;
