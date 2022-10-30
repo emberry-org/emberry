@@ -15,9 +15,10 @@ pub async fn request_room(
   net: tauri::State<'_, Networking>,
   rc: tauri::State<'_, RhizomeConnection>,
 ) -> tauri::Result<()> {
-  let usr: User = UserIdentifier{
-    bs58: Cow::Owned(bs58cert)
-  }.try_into()?;
+  let usr: User = UserIdentifier {
+    bs58: Cow::Owned(bs58cert),
+  }
+  .try_into()?;
 
   // try to add to pending list
   let msg = match net.pending.lock().unwrap().entry(usr.clone()) {

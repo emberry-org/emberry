@@ -91,7 +91,7 @@ mod tests {
   use super::PemfileReader;
 
   const FILENAME: &str = "randomfilename";
-  /// Private key has been specifically genereated for use in 
+  /// Private key has been specifically genereated for use in
   /// this testcase. Its appearance in the official repository
   /// is intended and does therefore not represent a leak.
   const TEST_KEY: &str = r#"-----BEGIN PRIVATE KEY-----

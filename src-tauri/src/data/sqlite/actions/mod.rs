@@ -1,5 +1,5 @@
-use std::io::ErrorKind;
 use std::io;
+use std::io::ErrorKind;
 
 use rusqlite::Connection;
 
@@ -27,5 +27,6 @@ where
   let mut db = db.lock().unwrap();
   action(&mut db, input).map_err(|err| {
     log::error!("SQLite access error: '{}'", err);
-    io::Error::new(ErrorKind::Other, "SQLite error")})
+    io::Error::new(ErrorKind::Other, "SQLite error")
+  })
 }

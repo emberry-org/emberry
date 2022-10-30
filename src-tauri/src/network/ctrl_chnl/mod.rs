@@ -10,7 +10,7 @@ use std::{
   time::Instant,
 };
 
-use crate::{network::hole_punch, data::UserIdentifier};
+use crate::{data::UserIdentifier, network::hole_punch};
 
 pub use self::state::RwOption;
 use log::{error, trace};

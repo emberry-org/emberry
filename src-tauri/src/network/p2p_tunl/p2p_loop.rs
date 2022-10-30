@@ -18,7 +18,7 @@ use crate::{
   network::p2p_tunl,
 };
 
-pub struct EventNames{
+pub struct EventNames {
   pub msg_recv: String,
   pub usr_name: String,
 }

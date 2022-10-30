@@ -1,9 +1,15 @@
-use crate::{network::{Networking, RRState}, data::UserIdentifier};
+use crate::{
+  data::UserIdentifier,
+  network::{Networking, RRState},
+};
 
 use super::{state, RhizomeConnection};
 use smoke::messages::EmbMessage;
 use smoke::User;
-use std::{io::{Error, ErrorKind}, borrow::Cow};
+use std::{
+  borrow::Cow,
+  io::{Error, ErrorKind},
+};
 use tauri::Result;
 
 #[tauri::command(async)]

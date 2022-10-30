@@ -7,7 +7,7 @@ use super::UserInfo;
 
 /// Wraps UserInfo with an Identifier
 #[derive(Clone, PartialEq, Eq, Serialize, Deserialize, Debug)]
-pub struct IdentifiedUserInfo<'a>{
+pub struct IdentifiedUserInfo<'a> {
   pub identifier: UserIdentifier<'a>,
   pub info: UserInfo,
 }
