@@ -16,7 +16,7 @@ pub fn get_usr_info(bs58cert: String) -> Result<UserInfo, tauri::Error> {
 
 #[tauri::command]
 pub fn get_usrs<'a>(
-  limit: usize,
+  limit: i64,
   offset: usize,
 ) -> Result<Vec<IdentifiedUserInfo<'a>>, tauri::Error> {
   exec(get_limit_offset, (limit, offset)).map_err(tauri::Error::Io)

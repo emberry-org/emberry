@@ -1,6 +1,6 @@
 use std::borrow::Cow;
 
-use rusqlite::Connection;
+use rusqlite::{Connection, params};
 
 use crate::data::{IdentifiedUserInfo, UserIdentifier, UserInfo, UserRelation};
 
@@ -14,12 +14,12 @@ use crate::data::{IdentifiedUserInfo, UserIdentifier, UserInfo, UserRelation};
 /// The first error returned by executing the underlying SQLite query on `db`
 pub fn get_limit_offset<'a>(
   db: &mut Connection,
-  range: (usize, usize),
+  range: (i64, usize),
 ) -> Result<Vec<IdentifiedUserInfo<'a>>, rusqlite::Error> {
   let (limit, offset) = range;
   let mut statement =
     db.prepare("SELECT tls_cert, username, relation FROM users LIMIT (?1) OFFSET (?2)")?;
-  let rows = statement.query_map([limit, offset], |row| {
+  let rows = statement.query_map(params![limit, offset], |row| {
     let cert: String = row.get(0)?;
     let username: String = row.get(1)?;
     let relation = UserRelation::from(row.get::<usize, u8>(2)?);
@@ -80,7 +80,7 @@ mod tests {
 
   fn get_limit<'a>(
     db: &mut Connection,
-    limit: usize,
+    limit: i64,
   ) -> Result<Vec<IdentifiedUserInfo<'a>>, rusqlite::Error> {
     get_limit_offset(db, (limit, 0))
   }
@@ -196,6 +196,65 @@ mod tests {
         assert_eq!(
           &result[..],
           &exprected[3..],
+          "\nget returned 'left' but 'right' was expected"
+        );
+      }
+    }
+  }
+
+  /// Tests if get_limit return all if `limit = -1`
+  /// and if offset works with that
+  #[test]
+  fn get_all_offset() {
+    init();
+    let mut db = Connection::open_in_memory().unwrap();
+    schema::validate(&mut db);
+
+    let result = create_sample_users(&mut db);
+    if let Err(err) = result {
+      panic!("error executing creating 'upsert' command: '{}'", err);
+    }
+
+    let result = get_limit_offset(&mut db, (-1, 3));
+
+    match result {
+      Err(err) => {
+        panic!("error executing 'get_limit' command: '{}'", err);
+      }
+      Ok(result) => {
+        let exprected = sample_users();
+        assert_eq!(
+          &result[..],
+          &exprected[3..],
+          "\nget returned 'left' but 'right' was expected"
+        );
+      }
+    }
+  }
+
+  /// Tests if get_limit return all if `limit = -1`
+  #[test]
+  fn get_all() {
+    init();
+    let mut db = Connection::open_in_memory().unwrap();
+    schema::validate(&mut db);
+
+    let result = create_sample_users(&mut db);
+    if let Err(err) = result {
+      panic!("error executing creating 'upsert' command: '{}'", err);
+    }
+
+    let result = get_limit_offset(&mut db, (-1, 0));
+
+    match result {
+      Err(err) => {
+        panic!("error executing 'get_limit' command: '{}'", err);
+      }
+      Ok(result) => {
+        let exprected = sample_users();
+        assert_eq!(
+          &result[..],
+          &exprected[..],
           "\nget returned 'left' but 'right' was expected"
         );
       }
