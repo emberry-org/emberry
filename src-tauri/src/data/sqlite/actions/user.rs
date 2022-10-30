@@ -4,8 +4,7 @@ use rusqlite::{params, Connection};
 use crate::data::{IdentifiedUserInfo, UserIdentifier, UserInfo, UserRelation};
 
 pub fn get(db: &mut Connection, data: &UserIdentifier) -> Result<UserInfo, rusqlite::Error> {
-  let mut statement =
-    db.prepare("SELECT username, relation FROM users WHERE tls_cert = (?1)")?;
+  let mut statement = db.prepare("SELECT username, relation FROM users WHERE tls_cert = (?1)")?;
   let mut rows = statement.query_map([&data.bs58], |row| {
     let username: String = row.get(0)?;
     let relation = UserRelation::from(row.get::<usize, u8>(1)?);
@@ -33,7 +32,20 @@ pub fn get(db: &mut Connection, data: &UserIdentifier) -> Result<UserInfo, rusql
   }
 }
 
-pub fn upsert(db: &mut Connection, ident_info: &IdentifiedUserInfo) -> Result<(), rusqlite::Error> {
+/// Tries to upsert (insert or update) the user info entry into given database
+/// `callback` is executed when the database action was successfull
+///
+/// # Errors
+/// This function will return:</br>
+/// The first error returned by executing the underlying SQLite query on `db`
+pub fn upsert<C>(
+  db: &mut Connection,
+  ident_info: &IdentifiedUserInfo,
+  callback: C,
+) -> Result<(), rusqlite::Error>
+where
+  C: FnOnce(&IdentifiedUserInfo),
+{
   log::trace!("upserting entry for: '{}'", ident_info.identifier.bs58);
   let _ = db.execute(
     r#"INSERT INTO users (tls_cert, username, relation) VALUES (?1, ?2, ?3)
@@ -45,6 +57,9 @@ SET username = excluded.username, relation = excluded.relation"#,
       ident_info.info.relation as u8,
     ],
   )?;
+
+  callback(ident_info);
+
   Ok(())
 }
 
@@ -85,7 +100,7 @@ mod tests {
     let info = sample_user_info();
     let ident_info = IdentifiedUserInfo { identifier, info };
 
-    upsert(db, &ident_info)
+    upsert(db, &ident_info, |_| ())
   }
 
   fn update_sample_user(db: &mut Connection) -> Result<(), rusqlite::Error> {
@@ -93,7 +108,7 @@ mod tests {
     let info = sample_user_info_updated();
     let ident_info = IdentifiedUserInfo { identifier, info };
 
-    upsert(db, &ident_info)
+    upsert(db, &ident_info, |_| ())
   }
 
   fn get_sample_user(db: &mut Connection) -> Result<UserInfo, rusqlite::Error> {
