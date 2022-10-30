@@ -41,7 +41,7 @@ pub fn get(db: &mut Connection, data: &UserIdentifier) -> Result<UserInfo, rusql
 }
 
 /// Tries to upsert (insert or update) the user info entry into given database
-/// `callback` is executed when the database action was successfull
+/// `callback` is executed before the database access
 ///
 /// # Errors
 /// This function will return:</br>
@@ -55,6 +55,9 @@ where
 {
   let (ident_info, callback) = input;
   log::trace!("upserting entry for: '{}'", ident_info.identifier.bs58);
+
+  callback(ident_info);
+
   let _ = db.execute(
     r#"INSERT INTO users (tls_cert, username, relation) VALUES (?1, ?2, ?3)
 ON CONFLICT (tls_cert) DO UPDATE
@@ -65,8 +68,6 @@ SET username = excluded.username, relation = excluded.relation"#,
       ident_info.info.relation as u8,
     ],
   )?;
-
-  callback(ident_info);
 
   Ok(())
 }
