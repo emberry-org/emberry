@@ -40,12 +40,12 @@ pub fn get(db: &mut Connection, data: &UserIdentifier) -> Result<UserInfo, rusql
 /// The first error returned by executing the underlying SQLite query on `db`
 pub fn upsert<C>(
   db: &mut Connection,
-  ident_info: &IdentifiedUserInfo,
-  callback: C,
+  input: (&IdentifiedUserInfo, C),
 ) -> Result<(), rusqlite::Error>
 where
   C: FnOnce(&IdentifiedUserInfo),
 {
+  let (ident_info, callback) = input;
   log::trace!("upserting entry for: '{}'", ident_info.identifier.bs58);
   let _ = db.execute(
     r#"INSERT INTO users (tls_cert, username, relation) VALUES (?1, ?2, ?3)
@@ -100,7 +100,7 @@ mod tests {
     let info = sample_user_info();
     let ident_info = IdentifiedUserInfo { identifier, info };
 
-    upsert(db, &ident_info, |_| ())
+    upsert(db, (&ident_info, |_| ()))
   }
 
   fn update_sample_user(db: &mut Connection) -> Result<(), rusqlite::Error> {
@@ -108,7 +108,7 @@ mod tests {
     let info = sample_user_info_updated();
     let ident_info = IdentifiedUserInfo { identifier, info };
 
-    upsert(db, &ident_info, |_| ())
+    upsert(db, (&ident_info, |_| ()))
   }
 
   fn get_sample_user(db: &mut Connection) -> Result<UserInfo, rusqlite::Error> {
