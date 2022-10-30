@@ -5,16 +5,15 @@ use crate::data::{IdentifiedUserInfo, UserIdentifier, UserInfo, UserRelation};
 
 pub fn get(db: &mut Connection, data: &UserIdentifier) -> Result<UserInfo, rusqlite::Error> {
   let mut statement =
-    db.prepare("SELECT id, username, relation FROM users WHERE tls_cert = (?1)")?;
+    db.prepare("SELECT username, relation FROM users WHERE tls_cert = (?1)")?;
   let mut rows = statement.query_map([&data.bs58], |row| {
-    let id: u64 = row.get(0)?;
-    let username: String = row.get(1)?;
-    let relation = UserRelation::from(row.get::<usize, u8>(2)?);
-    Ok((id, username, relation))
+    let username: String = row.get(0)?;
+    let relation = UserRelation::from(row.get::<usize, u8>(1)?);
+    Ok((username, relation))
   })?;
 
   if let Some(row) = rows.next() {
-    let (_id, name, relation) = row?;
+    let (name, relation) = row?;
     if rows.next().is_some() {
       warn!(
         "more then one database entry for certifificate: '{}'",
