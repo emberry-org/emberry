@@ -31,16 +31,18 @@ pub async fn handle_signal(
 ) -> Result<(), io::Error> {
   match signal {
     Signal::Username(name) => {
-      cache.info.username = name.to_string();
-      let input = (cache.borrow(), |info: &IdentifiedUserInfo| {
-        emit_username(
-          spawn_window,
-          &events.usr_name,
-          &info.identifier,
-          &info.info.username,
-        )
-      });
-      exec(upsert, input)?;
+      if &cache.info.username != name {
+        cache.info.username = name.to_string();
+        let input = (cache.borrow(), |info: &IdentifiedUserInfo| {
+          emit_username(
+            spawn_window,
+            &events.usr_name,
+            &info.identifier,
+            &info.info.username,
+          )
+        });
+        exec(upsert, input)?;
+      }
     }
     Signal::Chat(text) => {
       emit_msg(spawn_window, &events.msg_recv, signal);
