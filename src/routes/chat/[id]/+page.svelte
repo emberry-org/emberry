@@ -6,6 +6,7 @@
   import { tick } from "svelte";
   import Msg from "$lib/chat/msg.svelte";
   import type { Message } from "$lib/chat/msg";
+  import { invoke } from "@tauri-apps/api/tauri";
 
   /** Chat ID format : 'peer_id:room_id' */
   /** @type {import('./$types').PageData} */
@@ -25,22 +26,25 @@
   let input: HTMLInputElement;
 
   onMount(() => {
+    invoke("get_usr_info", { bs58cert: peer_id}).then((info: any) => {
+      peername = info.username;
+      listen(`usr_name_${peer_id}`, (e: any) => {
+        peername = e.payload; 
+      });
+    }, (err: any) => {
+      console.error("Could not get peer username from backend: ", err);
+    });
+
     // Load our local username from the storage.
     localname = onItem(localStorage, (val) => {
-      localname = val ?? "NoName";
+      localname = val ?? "DefaultUsername";
       // Send our new username to the peer.
       emit(`send_message_${room_id}`, { Username: localname });
-    }, "username") ?? "NoName";
+    }, "username") ?? "DefaultUsername";
 
     // Listen for incoming messages.
     listen(`message_recieved_${room_id}`, (e: any) => {
       const type: string = Object.keys(e.payload.message)[0];
-
-      if (type === "Username") {
-        peername = e.payload.message[type];
-        storeUsername(peer_id, peername);
-        return;
-      }
 
       const msg = { type, content: e.payload.message[type], sender: peername };
       addMessage(msg.content, peername);
@@ -93,7 +97,7 @@
 
 
 <div class="header">
-  <h2>{ data.id }</h2>
+  <h2>{ peername }</h2>
 </div>
 
 <div class="chat">
