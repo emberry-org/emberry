@@ -25,6 +25,7 @@ pub fn get(db: &mut Connection, data: &UserIdentifier) -> Result<UserInfo, rusql
       relation,
     })
   } else {
+    log::info!("no database entry for '{}'", &data.bs58);
     Ok(UserInfo {
       username: data.bs58.to_string(),
       relation: UserRelation::Stranger,
@@ -33,6 +34,7 @@ pub fn get(db: &mut Connection, data: &UserIdentifier) -> Result<UserInfo, rusql
 }
 
 pub fn upsert(db: &mut Connection, ident_info: &IdentifiedUserInfo) -> Result<(), rusqlite::Error> {
+  log::trace!("upserting entry for: '{}'", ident_info.identifier.bs58);
   let _ = db.execute(
     r#"INSERT INTO users (username, tls_cert, relation) VALUES (?1, ?2, ?3)
 ON CONFLICT (tls_cert) DO UPDATE
