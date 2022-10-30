@@ -6,6 +6,7 @@ use rusqlite::Connection;
 use super::DATABASE;
 
 pub mod user;
+pub mod user_batch;
 
 /// Uses the crate local mutex sqlite connection to run the supplied action
 /// The supplied action MUST never panic
