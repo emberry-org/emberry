@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 use std::io::{Error, ErrorKind};
-use std::sync::atomic::Ordering;
 use std::sync::Mutex;
 
 use rustls::Certificate;
@@ -10,14 +9,12 @@ use smoke::User;
 use tauri::EventHandler;
 
 use lazy_static::lazy_static;
-use tauri::api::notification::Notification;
 use tokio::io::BufReader;
-use tokio::select;
 use tokio::sync::{mpsc, oneshot};
 
 use tokio_kcp::{KcpConfig, KcpStream};
 
-use log::{error, trace};
+use log::error;
 
 use crate::data::UserIdentifier;
 
@@ -26,7 +23,7 @@ use self::holepunch::punch_hole;
 pub mod ctrl_chnl;
 mod holepunch;
 mod p2p_tunl;
-use p2p_tunl::tls_kcp;
+use p2p_tunl::{p2p_loop, tls_kcp};
 
 lazy_static! {
   pub static ref ENV: Config = Config {
@@ -71,11 +68,6 @@ pub struct Networking {
 pub struct Config {
   server_address: &'static str,
   user_cert: Certificate,
-}
-
-#[derive(Clone, serde::Serialize)]
-struct MessageRecievedPayload<'a> {
-  message: &'a Signal,
 }
 
 #[derive(Clone, serde::Serialize)]
@@ -132,44 +124,27 @@ pub async fn hole_punch(
 
   /* Setup the receive loop */
   let (recv_handle, mut rx) = oneshot::channel::<()>();
-  let mut buf = Vec::new();
   let emit_identity = identity.clone();
   let spawn_window = window.clone();
   let app_handle = app_handle.clone();
+  let ident = UserIdentifier::from(&peer);
   tokio::spawn(async move {
-    let event_name = format!("message_recieved_{}", emit_identity);
-    let msg_from = format!("Message from {}", emit_identity);
-    loop {
-      select! {
-        Ok(msg) = Signal::recv_with(&mut stream, &mut buf) => {
-          /* Emit the message_recieved event when a message is recieved */
-          trace!("Received message: {:?}", msg);
-
-          /* Create a new notification for the message */
-          if let Signal::Chat(text) = &msg {
-
-            if !crate::FOCUS.load(Ordering::SeqCst) {
-              Notification::new(&app_handle.config().tauri.bundle.identifier)
-                .title(&msg_from)
-                .body(text)
-                .show().expect("Failed to send desktop notification");
-            }
-          }
-
-          if let Err(err) = p2p_tunl::signal::handle_signal(&msg, &spawn_window, &event_name).await{
-            log::warn!("failed to handle signal: '{:?}' with error: '{}'", msg, err);
-          }
-        },
-        Ok(_) = &mut rx => {
-          break;
-        },
-        Some(msg) = msg_rx.recv() => {
-          if let Err(e) = msg.send_with(&mut stream).await{
-            error!("Kcp send error: {}", e);
-            break;
-          }
-        },
-      }
+    if let Err(err) = p2p_loop(
+      &emit_identity,
+      ident,
+      &spawn_window,
+      &app_handle,
+      &mut stream,
+      &mut rx,
+      &mut msg_rx,
+    )
+    .await
+    {
+      log::error!(
+        "receive loop for identity '{}' crashed with '{}'",
+        emit_identity,
+        err
+      );
     }
   });
 
