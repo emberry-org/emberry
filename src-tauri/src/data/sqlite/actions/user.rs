@@ -36,13 +36,13 @@ pub fn get(db: &mut Connection, data: &UserIdentifier) -> Result<UserInfo, rusql
 pub fn upsert(db: &mut Connection, ident_info: &IdentifiedUserInfo) -> Result<(), rusqlite::Error> {
   log::trace!("upserting entry for: '{}'", ident_info.identifier.bs58);
   let _ = db.execute(
-    r#"INSERT INTO users (username, tls_cert, relation) VALUES (?1, ?2, ?3)
+    r#"INSERT INTO users (tls_cert, username, relation) VALUES (?1, ?2, ?3)
 ON CONFLICT (tls_cert) DO UPDATE
 SET username = excluded.username, relation = excluded.relation"#,
     params![
+      ident_info.identifier.bs58,
       ident_info.info.username,
       ident_info.info.relation as u8,
-      ident_info.identifier.bs58
     ],
   )?;
   Ok(())
