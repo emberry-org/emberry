@@ -17,7 +17,6 @@ struct MessageRecievedPayload<'a> {
 
 #[derive(Clone, serde::Serialize)]
 struct UsernameChangedPayload<'a> {
-  bs58cert: &'a str,
   username: &'a str,
 }
 
@@ -34,12 +33,7 @@ pub async fn handle_signal(
       if &cache.info.username != name {
         cache.info.username = name.to_string();
         let input = (cache.borrow(), |info: &IdentifiedUserInfo| {
-          emit_username(
-            spawn_window,
-            &events.usr_name,
-            &info.identifier,
-            &info.info.username,
-          )
+          emit_username(spawn_window, &events.usr_name, &info.info.username)
         });
         exec(upsert, input)?;
       }
@@ -63,14 +57,8 @@ pub async fn handle_signal(
 }
 
 #[inline]
-fn emit_username(window: &Window, event_name: &str, id: &UserIdentifier, name: &str) {
-  if let Err(err) = window.emit(
-    event_name,
-    UsernameChangedPayload {
-      bs58cert: &id.bs58,
-      username: name,
-    },
-  ) {
+fn emit_username(window: &Window, event_name: &str, name: &str) {
+  if let Err(err) = window.emit(event_name, name) {
     log::error!("Failed to emit event: '{}'", err);
   }
 }
