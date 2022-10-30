@@ -1,4 +1,5 @@
 use std::io::ErrorKind;
+use std::io;
 
 use rusqlite::Connection;
 
@@ -10,8 +11,9 @@ pub mod user;
 /// The supplied action MUST never panic
 ///
 /// # Errors
-/// This function will return:</br>
-/// The first error returned by the supplied action
+/// This function logs the first error returned by the supplied action
+/// and returns an [io::Error] with [ErrorKind::Other] and no further information
+/// then "SQLite error"
 ///
 /// # Panics
 /// If said mutex is poisoned
@@ -24,5 +26,5 @@ where
   let mut db = db.lock().unwrap();
   action(&mut db, input).map_err(|err| {
     log::error!("SQLite access error: '{}'", err);
-    std::io::Error::new(ErrorKind::Other, "SQLite error")})
+    io::Error::new(ErrorKind::Other, "SQLite error")})
 }
