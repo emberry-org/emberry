@@ -75,7 +75,7 @@
     messages = [...messages];
 
     // Check if the user has scrolled all the way to the bottom.
-    if (feed.scrollTop !== feed.scrollHeight - feed.clientHeight) return;
+    if (feed.scrollTop < feed.scrollHeight - feed.clientHeight - 100) return;
     await tick(); // Wait a tick for the UI to update.
 
     // Move the list up with the new message that was added.
