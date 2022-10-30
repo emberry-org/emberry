@@ -15,7 +15,9 @@ lazy_static! {
 }
 
 fn generate() -> Mutex<Connection> {
-  let db = Connection::open(DATA.clone());
+  let mut path = DATA.clone();
+  path.push("warehouse.db3");
+  let db = Connection::open(path);
 
   match db {
     Err(err) => {
