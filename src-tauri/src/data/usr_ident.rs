@@ -3,6 +3,15 @@ use std::borrow::Cow;
 use serde::{Deserialize, Serialize};
 use smoke::User;
 
+use super::UserInfo;
+
+/// Wraps UserInfo with an Identifier
+#[derive(Clone, PartialEq, Eq, Serialize, Deserialize, Debug)]
+pub struct IdentifiedUserInfo<'a>{
+  pub identifier: UserIdentifier<'a>,
+  pub info: UserInfo,
+}
+
 /// Client side local uniqe user identifier
 #[derive(Clone, PartialEq, Eq, Hash, Serialize, Deserialize, Debug)]
 pub struct UserIdentifier<'a> {
