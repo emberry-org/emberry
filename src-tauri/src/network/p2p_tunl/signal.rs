@@ -2,7 +2,7 @@ use std::{borrow::Borrow, io, sync::atomic::Ordering};
 
 use crate::data::{
   sqlite::{exec, user::upsert},
-  IdentifiedUserInfo, UserIdentifier,
+  IdentifiedUserInfo,
 };
 
 use smoke::Signal;
