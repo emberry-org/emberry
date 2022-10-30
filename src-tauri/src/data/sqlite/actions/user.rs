@@ -38,12 +38,12 @@ pub fn get(db: &mut Connection, data: &UserIdentifier) -> Result<UserInfo, rusql
 /// # Errors
 /// This function will return:</br>
 /// The first error returned by executing the underlying SQLite query on `db`
-pub fn upsert<C>(
+pub fn upsert<'a, C>(
   db: &mut Connection,
-  input: (&IdentifiedUserInfo, C),
+  input: (&'a IdentifiedUserInfo, C),
 ) -> Result<(), rusqlite::Error>
 where
-  C: FnOnce(&IdentifiedUserInfo),
+  C: FnOnce(&'a IdentifiedUserInfo<'a>),
 {
   let (ident_info, callback) = input;
   log::trace!("upserting entry for: '{}'", ident_info.identifier.bs58);
