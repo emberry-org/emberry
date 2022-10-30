@@ -3,6 +3,14 @@ use rusqlite::{params, Connection};
 
 use crate::data::{IdentifiedUserInfo, UserIdentifier, UserInfo, UserRelation};
 
+/// Tries to get the user info entry from the given db
+///
+/// If there is no entry [UserInfo] containing the bs58 encoded certificate as username
+/// and [UserRelation::Stranger]
+///
+/// # Errors
+/// This function will return:</br>
+/// The first error returned by executing the underlying SQLite query on `db`
 pub fn get(db: &mut Connection, data: &UserIdentifier) -> Result<UserInfo, rusqlite::Error> {
   let mut statement = db.prepare("SELECT username, relation FROM users WHERE tls_cert = (?1)")?;
   let mut rows = statement.query_map([&data.bs58], |row| {
