@@ -41,9 +41,9 @@ where
   let usr_name = format!("usr_name_{}", peer_ident.bs58);
   let events = EventNames { msg_recv, usr_name };
 
-  let msg_from = format!("Message from {}", emit_identity);
-
   let info = exec(get, &peer_ident)?;
+
+  let mut msg_from = format!("Message from {}", info.username);
 
   let mut usr_status_cache = IdentifiedUserInfo {
     identifier: peer_ident,
@@ -60,7 +60,7 @@ where
           spawn_window,
           app_handle,
           &events,
-          &msg_from,
+          &mut msg_from,
           &mut usr_status_cache,
         )
         .await

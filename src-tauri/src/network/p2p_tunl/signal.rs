@@ -25,7 +25,7 @@ pub async fn handle_signal(
   spawn_window: &Window,
   app_handle: &AppHandle,
   events: &EventNames,
-  msg_from: &str,
+  msg_from: &mut String,
   cache: &mut IdentifiedUserInfo<'_>,
 ) -> Result<(), io::Error> {
   match signal {
@@ -33,6 +33,7 @@ pub async fn handle_signal(
       if &cache.info.username != name {
         cache.info.username = name.to_string();
         let input = (cache.borrow(), |info: &IdentifiedUserInfo| {
+          *msg_from = format!("Message from {}", cache.info.username);
           emit_username(spawn_window, &events.usr_name, &info.info.username)
         });
         exec(upsert, input)?;
@@ -44,7 +45,7 @@ pub async fn handle_signal(
       /* Create a new notification for the message */
       if !crate::FOCUS.load(Ordering::SeqCst) {
         Notification::new(&app_handle.config().tauri.bundle.identifier)
-          .title(msg_from)
+          .title(msg_from.as_str())
           .body(text)
           .show()
           .expect("Failed to send desktop notification");
