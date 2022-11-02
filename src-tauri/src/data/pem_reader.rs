@@ -17,7 +17,7 @@ pub struct PemfileReader {
 /// This function will return:</br>
 /// Any [std::io::Error] from opening/reading the file</br>
 /// [ErrorKind::InvalidData] when the items are malformed or out of order
-impl<'a> TryInto<UserIdentifier<'a>> for PemfileReader {
+impl<'a> TryInto<UserIdentifier<'a>> for &PemfileReader {
   type Error = std::io::Error;
 
   fn try_into(self) -> Result<UserIdentifier<'a>, Self::Error> {
