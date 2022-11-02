@@ -1,4 +1,6 @@
-use std::path::PathBuf;
+use std::{borrow::Cow, path::PathBuf};
+
+use crate::data::UserIdentifier;
 
 use super::resolver::ClientCertResolver;
 use rustls_pemfile::Item::{PKCS8Key, X509Certificate};
@@ -8,21 +10,52 @@ pub struct PemfileReader {
   pub filepath: PathBuf,
 }
 
+/// Opens the filepath from [PemfileReader] in readonly mode and reads one
+/// X509Certificate and one PKCS8Key from it.
+/// The order in which those items are expected is: X509Certificate, PKCS8Key
+///
+/// # Errors
+/// This function will return:</br>
+/// Any [std::io::Error] from opening/reading the file</br>
+/// [ErrorKind::InvalidData] when the items are malformed or out of order
+impl<'a> TryInto<UserIdentifier<'a>> for PemfileReader {
+  type Error = std::io::Error;
+
+  fn try_into(self) -> Result<UserIdentifier<'a>, Self::Error> {
+    let certfile = std::fs::OpenOptions::new()
+      .read(true)
+      .open(&self.filepath)?;
+    let mut reader = std::io::BufReader::new(certfile);
+
+    let cert = if let Some(X509Certificate(key)) = rustls_pemfile::read_one(&mut reader)? {
+      rustls::Certificate(key)
+    } else {
+      return Err(Self::Error::new(
+        ErrorKind::InvalidData,
+        format!(
+          "File: '{}' did not contain X509Certificate as first element",
+          self.filepath.to_string_lossy()
+        ),
+      ));
+    };
+
+    Ok(UserIdentifier {
+      bs58: Cow::Owned(bs58::encode(cert.0).into_string()),
+    })
+  }
+}
+
 impl TryInto<ClientCertResolver> for PemfileReader {
   type Error = std::io::Error;
 
   /// Opens the filepath from [PemfileReader] in readonly mode and reads one
-  /// PKCS8Key and one X509Certificate from it.
-  /// THe order in which those items are expected is: PKCS8Key, X509Certificate
+  /// X509Certificate and one PKCS8Key from it.
+  /// The order in which those items are expected is: X509Certificate, PKCS8Key
   ///
   /// # Errors
   /// This function will return:</br>
   /// Any [std::io::Error] from opening/reading the file</br>
   /// [ErrorKind::InvalidData] when the items are malformed or out of order
-  ///
-  /// # Panics
-  /// If "self" was to large to be serialized within [EMB_MESSAGE_BUF_SIZE].
-  /// As of writing, this is technically impossible
   fn try_into(self) -> Result<ClientCertResolver, Self::Error> {
     (&self).try_into()
   }
@@ -33,16 +66,12 @@ impl TryInto<ClientCertResolver> for &PemfileReader {
 
   /// Opens the filepath from [PemfileReader] in readonly mode and reads one
   /// X509Certificate and one PKCS8Key from it.
-  /// THe order in which those items are expected is: X509Certificate, PKCS8Key
+  /// The order in which those items are expected is: X509Certificate, PKCS8Key
   ///
   /// # Errors
   /// This function will return:</br>
   /// Any [std::io::Error] from opening/reading the file</br>
   /// [ErrorKind::InvalidData] when the items are malformed or out of order
-  ///
-  /// # Panics
-  /// If "self" was to large to be serialized within [EMB_MESSAGE_BUF_SIZE].
-  /// As of writing, this is technically impossible
   fn try_into(self) -> Result<ClientCertResolver, Self::Error> {
     let certfile = std::fs::OpenOptions::new()
       .read(true)
