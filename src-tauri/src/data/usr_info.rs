@@ -13,6 +13,7 @@ pub enum UserRelation {
   Known = 1,
   Friend = 2,
   Stranger = 3,
+  Local = 255,
 }
 
 impl From<u8> for UserRelation {
@@ -21,6 +22,7 @@ impl From<u8> for UserRelation {
       1 => Self::Known,
       2 => Self::Friend,
       3 => Self::Stranger,
+      255 => Self::Local,
       _ => Self::Undefined,
     }
   }

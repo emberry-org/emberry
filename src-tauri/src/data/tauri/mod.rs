@@ -1,7 +1,8 @@
 use std::borrow::Cow;
+use std::io::ErrorKind;
 
 use super::sqlite::user_batch::get_limit_offset;
-use super::{IdentifiedUserInfo, UserIdentifier, UserInfo};
+use super::{config, IdentifiedUserInfo, UserIdentifier, UserInfo};
 
 use super::sqlite::{exec, user::*};
 
@@ -20,4 +21,10 @@ pub fn get_usrs<'a>(
   offset: usize,
 ) -> Result<Vec<IdentifiedUserInfo<'a>>, tauri::Error> {
   exec(get_limit_offset, (limit, offset)).map_err(tauri::Error::Io)
+}
+
+#[tauri::command]
+pub fn get_local<'a>() -> Option<IdentifiedUserInfo<'a>> {
+  let lock = config::IDI.read().unwrap();
+  lock.clone()
 }
