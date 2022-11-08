@@ -18,6 +18,16 @@ pub struct UserIdentifier<'a> {
   pub bs58: Cow<'a, String>,
 }
 
+impl<'a> UserIdentifier<'a> {
+  /// Creates a new UserIdentifier that uses a [Cow::Borrowed] from
+  /// self
+  pub fn as_ref(&'a self) -> UserIdentifier<'a> {
+    UserIdentifier {
+      bs58: Cow::Borrowed(&self.bs58),
+    }
+  }
+}
+
 impl<'a> From<&User> for UserIdentifier<'a> {
   fn from(usr: &User) -> Self {
     UserIdentifier {

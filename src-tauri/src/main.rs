@@ -42,6 +42,8 @@ fn main() {
       accept_room,
       get_usr_info,
       get_usrs,
+      update_username,
+      get_local,
       embed,
     ])
     // TEMP / TODO : This will be obsolete once the `window.is_focused()` function is released from Tauri.

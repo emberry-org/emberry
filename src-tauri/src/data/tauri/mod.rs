@@ -28,3 +28,16 @@ pub fn get_local<'a>() -> Option<IdentifiedUserInfo<'a>> {
   let lock = config::IDI.read().unwrap();
   lock.clone()
 }
+
+#[tauri::command]
+pub fn update_username(name: String) {
+  let mut lock = config::IDI.write().unwrap();
+  let option = lock.as_mut();
+  if let Some(mut id_info) = option {
+    id_info.info.username = name;
+    match exec(upsert, (id_info, |_| ())) {
+      Ok(()) => (),
+      Err(err) => log::warn!("Could not update local username: '{}'", err),
+    }
+  }
+}
