@@ -1,17 +1,15 @@
 use log::warn;
-use rusqlite::{params, Connection};
+use rusqlite::{params, Connection, Error::QueryReturnedNoRows};
 
 use crate::data::{IdentifiedUserInfo, UserIdentifier, UserInfo, UserRelation};
 
 /// Tries to get the user info entry from the given db
 ///
-/// If there is no entry [UserInfo] containing the bs58 encoded certificate as username
-/// and [UserRelation::Stranger]
-///
 /// # Errors
 /// This function will return:</br>
-/// The first error returned by executing the underlying SQLite query on `db`
-pub fn get(db: &mut Connection, data: &UserIdentifier) -> Result<UserInfo, rusqlite::Error> {
+/// The first error returned by executing the underlying SQLite query on `db`</br>
+/// [QueryReturnedNoRows] error if the entry is not present in the 'db'
+pub fn try_get(db: &mut Connection, data: &UserIdentifier) -> Result<UserInfo, rusqlite::Error> {
   let mut statement = db.prepare("SELECT username, relation FROM users WHERE tls_cert = (?1)")?;
   let mut rows = statement.query_map([&data.bs58], |row| {
     let username: String = row.get(0)?;
@@ -33,10 +31,32 @@ pub fn get(db: &mut Connection, data: &UserIdentifier) -> Result<UserInfo, rusql
     })
   } else {
     log::info!("no database entry for '{}'", &data.bs58);
-    Ok(UserInfo {
-      username: data.bs58.to_string(),
-      relation: UserRelation::Stranger,
-    })
+    Err(QueryReturnedNoRows)
+  }
+}
+
+/// Tries to get the user info entry from the given db
+///
+/// If there is no entry [UserInfo] containing the bs58 encoded certificate as username
+/// and [UserRelation::Stranger]
+///
+/// # Errors
+/// This function will return:</br>
+/// The first error returned by [try_get]
+pub fn get(db: &mut Connection, data: &UserIdentifier) -> Result<UserInfo, rusqlite::Error> {
+  match try_get(db, data) {
+    Ok(data) => Ok(data),
+    Err(err) => {
+      if let rusqlite::Error::QueryReturnedNoRows = err {
+        log::info!("no database entry for '{}'", &data.bs58);
+        Ok(UserInfo {
+          username: data.bs58.to_string(),
+          relation: UserRelation::Stranger,
+        })
+      } else {
+        Err(err)
+      }
+    }
   }
 }
 
