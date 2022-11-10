@@ -1,17 +1,18 @@
+import type { UserStatus } from "$lib/user";
+
 /**
  * Sets an item in the given storage and dispatches an event for that storage.
  * @param store The storage to mutate.
  * @param key The key of the item to set.
  * @param value The new value of the item.
  */
-export function setItem(store: Storage, key: string, value: string) {
-  store.setItem(key, value);
+export function setItem(key: string, value: string) {
+  sessionStorage.setItem(key, value);
 
   // Dispatch a new storage event.
   dispatchEvent(
     new StorageEvent('storage', { 
       key, 
-      storageArea: store, 
       newValue: value 
     }
   ));
@@ -26,7 +27,7 @@ export function getItem(store: Storage, key: string): string | null {
   return store.getItem(key);
 }
 
-type StorageCallback = (value: string | null) => void;
+type StorageCallback = (key: string | null, value: UserStatus) => void;
 
 /**
  * Add an event listener to an item in a given storage.
@@ -35,14 +36,9 @@ type StorageCallback = (value: string | null) => void;
  * @param key The key of the item to listen for.
  * @returns The initial value of the item.
  */
-export function onItem(store: Storage, callback: StorageCallback, key: string): string | null {
+export function onStatusChange(callback: StorageCallback) {
   // Listen for the storage update event.
   addEventListener('storage', e => {
-    if (e.storageArea === store && e.key === key) {
-      callback(e.newValue);
-    }
+      callback(e.key, JSON.parse(e.newValue || "2"));
   });
-
-  // Return the initial value of the item.
-  return store.getItem(key);
 }

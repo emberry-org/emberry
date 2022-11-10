@@ -1,8 +1,9 @@
 <script lang="ts">
   import { listen } from "@tauri-apps/api/event";
   import { onMount } from "svelte";
-  import { UserStatus, storeUser, type User, Leaf } from "./user";
+  import { UserStatus, type User, Leaf } from "./user";
   import { invoke } from "@tauri-apps/api/tauri";
+  import { onStatusChange, setItem } from "./store";
 
   export let users: User[];
 
@@ -18,17 +19,16 @@
       });
       // update the rendering
       users = users;
+    });
 
-      //FIXME keep using store user while we dont have a better for status
-      if (
-        sessionStorage.getItem("has-mounted") === null ||
-        sessionStorage.getItem("has-mounted") !== "true"
-      ) {
-        for (let i = 0; i < users.length; i++) {
-          storeUser(users[i]);
-        }
-        sessionStorage.setItem("has-mounted", "true");
+    onStatusChange((key: string | null, value: UserStatus) => {
+      const userIndex = users.findIndex((u) => u.key === key);
+      if (userIndex === -1)
+      {
+        console.error(`Status of non existing user "${key}" changed`);
+        return;
       }
+      users[userIndex].status = value;
     });
 
     listen("wants-room", (e: any) => {
@@ -48,8 +48,7 @@
       }
       // If this user is already present then update their data.
       else users[userIndex] = s_user;
-      //FIXME keep using store user while we dont have a better for status
-      storeUser({ key: usrkey, status: UserStatus.Pending });
+      setItem(usrkey, JSON.stringify(UserStatus.Pending));
     });
 
     listen("new-room", (e: any) => {
@@ -66,11 +65,7 @@
       // If this user is already present then update their data.
       else users[userIndex] = s_user; // index assignment updated the rendering
 
-      //FIXME keep using store user while we dont have a better for status
-      storeUser({
-        key: e.payload.peer_id,
-        status: UserStatus.Connected,
-      });
+      setItem(e.payload.peer_id, JSON.stringify(UserStatus.Connected));
     });
   });
 </script>

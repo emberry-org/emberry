@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { onItem } from "$lib/store";
-  import { storeUsername } from "$lib/user";
   import { emit, listen } from "@tauri-apps/api/event"
   import { onMount } from "svelte";
   import { tick } from "svelte";

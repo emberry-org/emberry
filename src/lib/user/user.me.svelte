@@ -2,7 +2,7 @@
 
 <script lang="ts">
   import { onMount } from "svelte";
-  import { getItem, onItem, setItem } from "../store";
+  import { getItem, setItem } from "../store";
   import { invoke } from "@tauri-apps/api/tauri";
   import { listen } from "@tauri-apps/api/event"
 

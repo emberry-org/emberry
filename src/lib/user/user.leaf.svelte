@@ -1,8 +1,9 @@
 <!-- User.Leaf : a small wide display of a user (usually displayed within a list) -->
 
 <script lang="ts">
+  import { setItem } from "$lib/store";
   import { invoke } from "@tauri-apps/api/tauri";
-  import { storeUser, UserStatus, type User } from ".";
+  import { UserStatus, type User } from ".";
 
   /** The user this leaf belongs too */
   export let user: User;
@@ -39,8 +40,7 @@
   /** Attempt to request a room with this user. */
   function tryRequest() {
     invoke("request_room", { bs58cert: user.key });
-    // The request has been send, mark this user as awaiting response.
-    storeUser({ key: user.key, status: UserStatus.Awaiting });
+    setItem(user.key, JSON.stringify(UserStatus.Awaiting));
   }
 </script>
 
