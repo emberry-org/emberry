@@ -1,20 +1,19 @@
 use std::borrow::Cow;
-use std::io::ErrorKind;
 
 use tauri::Window;
 
 use super::sqlite::user_batch::get_limit_offset;
 use super::{config, IdentifiedUserInfo, UserIdentifier, UserInfo};
 
-use super::sqlite::{exec, user::*};
+use super::sqlite::{exec, user::*, try_exec};
 
 #[tauri::command]
-pub fn get_usr_info(bs58cert: String) -> Result<UserInfo, tauri::Error> {
+pub fn get_usr_info(bs58cert: String) -> UserInfo {
   let user = UserIdentifier {
     bs58: Cow::Borrowed(&bs58cert),
   };
 
-  exec(get, &user).map_err(tauri::Error::Io)
+  exec(get, &user)
 }
 
 #[tauri::command]
@@ -22,7 +21,7 @@ pub fn get_usrs<'a>(
   limit: i64,
   offset: usize,
 ) -> Result<Vec<IdentifiedUserInfo<'a>>, tauri::Error> {
-  exec(get_limit_offset, (limit, offset)).map_err(tauri::Error::Io)
+  try_exec(get_limit_offset, (limit, offset)).map_err(tauri::Error::Io)
 }
 
 #[tauri::command]
@@ -44,7 +43,7 @@ pub fn update_username(window: Window, name: String) {
   if let Some(mut id_info) = option {
     if name != id_info.info.username {
       id_info.info.username = name;
-      match exec(upsert, (id_info, frontend_event)) {
+      match try_exec(upsert, (id_info, frontend_event)) {
         Ok(()) => (),
         Err(err) => log::warn!("Could not update local username: '{}'", err),
       }

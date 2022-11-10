@@ -12,7 +12,7 @@ use tauri::{AppHandle, Window};
 
 use crate::{
   data::{
-    sqlite::{exec, user::get},
+    sqlite::{user::get, exec},
     IdentifiedUserInfo, UserIdentifier,
   },
   network::p2p_tunl,
@@ -41,7 +41,7 @@ where
   let usr_name = format!("usr_name_{}", peer_ident.bs58);
   let events = EventNames { msg_recv, usr_name };
 
-  let info = exec(get, &peer_ident)?;
+  let info = exec(get, &peer_ident);
 
   let mut msg_from = format!("Message from {}", info.username);
 

@@ -4,7 +4,7 @@ use crate::data::{IdentifiedUserInfo, UserIdentifier};
 
 use super::{
   path::CONFIG,
-  sqlite::{exec, user::try_get},
+  sqlite::{try_exec, user::try_get},
   PemfileReader, UserInfo, UserRelation,
 };
 use lazy_static::lazy_static;
@@ -19,7 +19,7 @@ lazy_static! {
 
 fn maybe_info<'a>() -> Option<IdentifiedUserInfo<'a>> {
   let id = maybe_identifier()?;
-  let info = match exec(try_get, &id) {
+  let info = match try_exec(try_get, &id) {
     Ok(info) => info,
     Err(_err) => UserInfo {
       relation: UserRelation::Local,

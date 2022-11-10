@@ -10,7 +10,7 @@ use std::{
   time::Instant,
 };
 
-use crate::{data::{UserIdentifier, sqlite::{exec, user::get}, IdentifiedUserInfo}, network::hole_punch};
+use crate::{data::{UserIdentifier, sqlite::{user::get, exec}, IdentifiedUserInfo}, network::hole_punch};
 
 pub use self::state::RwOption;
 use log::{error, trace};
@@ -168,7 +168,7 @@ async fn handle_rhiz_msg(
         none = guard.get(&usr).is_none();
         if none {
           let ident= UserIdentifier::from(&usr);
-          let info = exec(get, &ident).expect("get will in the future never err");
+          let info = exec(get, &ident);
           let ident_info = IdentifiedUserInfo{
             identifier: ident,
             info

@@ -29,8 +29,6 @@
       listen(`usr_name_${peer_id}`, (e: any) => {
         peername = e.payload; 
       });
-    }, (err: any) => {
-      console.error("Could not get peer username from backend: ", err);
     });
 
     invoke("get_local").then((user: any) => {
