@@ -40,9 +40,14 @@
         return;
       }
       localname = user.info.username;
+      // Send our username to the peer.
+      emit(`send_message_${room_id}`, { Username: localname });
+
       let local_id = user.identifier.bs;
+      console.log("listening to ", `usr_name_${local_id}`);
       listen(`usr_name_${local_id}`, (e: any) => {
         const name: string = e.payload;
+        console.log("localname changed");
         localname = name
         // Send our new username to the peer.
         emit(`send_message_${room_id}`, { Username: localname });
@@ -56,9 +61,6 @@
       const msg = { type, content: e.payload.message[type], sender: peername };
       addMessage(msg.content, peername);
     });
-
-    // Send our username to the peer.
-    emit(`send_message_${room_id}`, { Username: localname });
 
     // Set the list to scroll to the bottom of the messages.
     feed.scrollTop = feed.scrollHeight;
