@@ -35,12 +35,21 @@
       console.error("Could not get peer username from backend: ", err);
     });
 
-    // Load our local username from the storage.
-    localname = onItem(localStorage, (val) => {
-      localname = val ?? "DefaultUsername";
-      // Send our new username to the peer.
-      emit(`send_message_${room_id}`, { Username: localname });
-    }, "username") ?? "DefaultUsername";
+    invoke("get_local").then((user: any) => {
+      if (user === null) {
+        console.error("lol how did you manage to open a room without an identity")
+        localname = "[no_user_pem]"
+        return;
+      }
+      localname = user.info.username;
+      let local_id = user.identifier.bs;
+      listen(`usr_name_${local_id}`, (e: any) => {
+        const name: string = e.payload;
+        localname = name
+        // Send our new username to the peer.
+        emit(`send_message_${room_id}`, { Username: localname });
+      });
+    });
 
     // Listen for incoming messages.
     listen(`message_recieved_${room_id}`, (e: any) => {

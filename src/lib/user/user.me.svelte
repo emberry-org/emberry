@@ -3,6 +3,8 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { getItem, onItem, setItem } from "../store";
+  import { invoke } from "@tauri-apps/api/tauri";
+  import { listen } from "@tauri-apps/api/event"
 
   let usernameInput: HTMLInputElement;
   let username: string = " ";
@@ -11,9 +13,18 @@
   let activity: string = "";
 
   onMount(() => {
-    username = onItem(localStorage, (val) => {
-      username = val ?? "NoName";
-    }, "username") ?? "NoName";
+    invoke("get_local").then((user: any) => {
+      if (user === null) {
+        username = "[no_user_pem]"
+        return;
+      }
+      username = user.info.username;
+      let local_id = user.identifier.bs58;
+      listen(`usr_name_${local_id}`, (e: any) => {
+        const name: string = e.payload;
+        username = name
+      });
+    });
     activity = onItem(localStorage, (val) => {
       activity = val ?? "";
     }, "activity") ?? "";
@@ -37,7 +48,7 @@
 <div class="row">
   <div class="info">
     <input class="username" placeholder="Username" bind:this={usernameInput} bind:value={username} 
-      on:blur={() => updateValue("username", username)} 
+      on:blur={() => invoke("update_username", { name: username })} 
       on:keydown={(evt) => keydown(evt, usernameInput)} 
     />
     <input class="activity" placeholder="no activity" bind:this={activityInput} bind:value={activity} 
