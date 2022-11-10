@@ -9,9 +9,6 @@
   let usernameInput: HTMLInputElement;
   let username: string = " ";
 
-  let activityInput: HTMLInputElement;
-  let activity: string = "";
-
   onMount(() => {
     invoke("get_local").then((user: any) => {
       if (user === null) {
@@ -25,16 +22,7 @@
         username = name
       });
     });
-    activity = onItem(localStorage, (val) => {
-      activity = val ?? "";
-    }, "activity") ?? "";
   });
-
-  function updateValue(key: string, value: string) {
-    if ((getItem(localStorage, key) ?? "NoName") !== value) {
-      setItem(localStorage, key, value);
-    }
-  }
 
   function keydown(evt: KeyboardEvent, input: HTMLInputElement) {
     if (evt.key === "Enter" && evt.shiftKey === false) {
@@ -51,11 +39,6 @@
       on:blur={() => invoke("update_username", { name: username })} 
       on:keydown={(evt) => keydown(evt, usernameInput)} 
     />
-    <input class="activity" placeholder="no activity" bind:this={activityInput} bind:value={activity} 
-      on:blur={() => updateValue("activity", activity)} 
-      on:keydown={(evt) => keydown(evt, activityInput)} 
-    />
-    <!-- <p>playing spelltanks</p> -->
   </div>
   <div class="avatar" />
 </div>
@@ -108,13 +91,6 @@
       font-weight: 600;
       line-height: 17px;
       color: #eee;
-    }
-
-    .activity {
-      width: 90%;
-      font-size: 14px;
-      line-height: 17px;
-      color: #aaa;
     }
   }
 
