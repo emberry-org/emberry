@@ -5,7 +5,7 @@
   let path = "";
 
   afterNavigate((nav) => {
-    if (nav.to) path = nav.to.routeId ?? "";
+    if (nav.to) path = nav.to.route.id ?? "";
   });
 </script>
 
