@@ -1,6 +1,6 @@
 use std::borrow::Cow;
 
-use rusqlite::{Connection, params};
+use rusqlite::{params, Connection};
 
 use crate::data::{IdentifiedUserInfo, UserIdentifier, UserInfo, UserRelation};
 
@@ -17,8 +17,9 @@ pub fn get_limit_offset<'a>(
   range: (i64, usize),
 ) -> Result<Vec<IdentifiedUserInfo<'a>>, rusqlite::Error> {
   let (limit, offset) = range;
-  let mut statement =
-    db.prepare("SELECT tls_cert, username, relation FROM users LIMIT (?1) OFFSET (?2)")?;
+  let mut statement = db.prepare(
+    "SELECT tls_cert, username, relation FROM users WHERE relation < 255 LIMIT (?1) OFFSET (?2)",
+  )?;
   let rows = statement.query_map(params![limit, offset], |row| {
     let cert: String = row.get(0)?;
     let username: String = row.get(1)?;
@@ -241,6 +242,48 @@ mod tests {
 
     let result = create_sample_users(&mut db);
     if let Err(err) = result {
+      panic!("error executing creating 'upsert' command: '{}'", err);
+    }
+
+    let result = get_limit_offset(&mut db, (-1, 0));
+
+    match result {
+      Err(err) => {
+        panic!("error executing 'get_limit' command: '{}'", err);
+      }
+      Ok(result) => {
+        let exprected = sample_users();
+        assert_eq!(
+          &result[..],
+          &exprected[..],
+          "\nget returned 'left' but 'right' was expected"
+        );
+      }
+    }
+  }
+
+  /// Tests if get_limit return all if `limit = -1`
+  #[test]
+  fn get_all_exclude_local() {
+    init();
+    let mut db = Connection::open_in_memory().unwrap();
+    schema::validate(&mut db);
+
+    // local user
+    let user = IdentifiedUserInfo {
+      identifier: UserIdentifier {
+        bs58: Cow::Owned("user_local".into()),
+      },
+      info: UserInfo {
+        username: "local_user_username".into(),
+        relation: UserRelation::Local,
+      },
+    };
+
+    if let Err(err) = upsert(&mut db, (&user, |_| ())) {
+      panic!("error executing creating 'upsert' command: '{}'", err);
+    }
+    if let Err(err) = create_sample_users(&mut db) {
       panic!("error executing creating 'upsert' command: '{}'", err);
     }
 
