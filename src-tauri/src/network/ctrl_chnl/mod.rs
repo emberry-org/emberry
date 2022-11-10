@@ -10,7 +10,7 @@ use std::{
   time::Instant,
 };
 
-use crate::{data::UserIdentifier, network::hole_punch};
+use crate::{data::{UserIdentifier, sqlite::{exec, user::get}, IdentifiedUserInfo}, network::hole_punch};
 
 pub use self::state::RwOption;
 use log::{error, trace};
@@ -167,8 +167,14 @@ async fn handle_rhiz_msg(
         let mut guard = net.pending.lock().unwrap();
         none = guard.get(&usr).is_none();
         if none {
+          let ident= UserIdentifier::from(&usr);
+          let info = exec(get, &ident).expect("get will in the future never err");
+          let ident_info = IdentifiedUserInfo{
+            identifier: ident,
+            info
+          };
           window
-            .emit("wants-room", UserIdentifier::from(&usr).bs58)
+            .emit("wants-room", ident_info)
             .expect("Failed to emit WantsRoom event");
         } else {
           // Here we get a WantsRoom while we already want a room with them (they were unaware when they made their request)

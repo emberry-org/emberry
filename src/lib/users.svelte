@@ -32,11 +32,11 @@
     });
 
     listen("wants-room", (e: any) => {
-      const usrkey = e.payload;
+      const usrkey = e.payload.identifier.bs58;
 
       let s_user = {
         key: usrkey,
-        name: "Change wants-room to send IdentifiedUserInfo",
+        name: e.payload.info.username,
         status: UserStatus.Pending,
       };
 
@@ -49,23 +49,6 @@
       // If this user is already present then update their data.
       else users[userIndex] = s_user;
       setItem(usrkey, JSON.stringify(UserStatus.Pending));
-    });
-
-    listen("new-room", (e: any) => {
-      const usrkey = e.payload.peer_id;
-      let s_user = {
-        key: usrkey,
-        name: "Change new-room to send IdentifiedUserInfo",
-        status: UserStatus.Pending,
-      };
-
-      const userIndex = users.findIndex((u) => u.key === usrkey);
-      if (userIndex === -1)
-        console.error("new-room event but the user was not found in users");
-      // If this user is already present then update their data.
-      else users[userIndex] = s_user; // index assignment updated the rendering
-
-      setItem(e.payload.peer_id, JSON.stringify(UserStatus.Connected));
     });
   });
 </script>

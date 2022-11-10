@@ -9,6 +9,8 @@
   import Users from "../lib/users.svelte";
   import Me from "../lib/user/user.me.svelte";
   import { onMount } from "svelte";
+    import { setItem } from "$lib/store";
+    import { UserStatus } from "$lib/user";
 
   onMount(() => {
     loadBundle();
@@ -27,8 +29,9 @@
     listen("new-room", (e: any) => {
       const room_id = e.payload.room_id;
       const peer_id = e.payload.peer_id;
-      console.log(`new room : ${peer_id}:${room_id}`);
+      setItem(peer_id, JSON.stringify(UserStatus.Connected));
 
+      console.log(`new room : ${peer_id}:${room_id}`);
       goto(`/chat/${peer_id}:${room_id}`);
     });
   });
