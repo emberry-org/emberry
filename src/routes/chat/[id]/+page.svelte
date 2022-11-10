@@ -43,8 +43,7 @@
       // Send our username to the peer.
       emit(`send_message_${room_id}`, { Username: localname });
 
-      let local_id = user.identifier.bs;
-      console.log("listening to ", `usr_name_${local_id}`);
+      let local_id = user.identifier.bs58;
       listen(`usr_name_${local_id}`, (e: any) => {
         const name: string = e.payload;
         console.log("localname changed");
