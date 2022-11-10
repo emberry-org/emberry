@@ -16,7 +16,6 @@
           status: UserStatus.Disconnected,
         };
         users.push(s_user);
-        console.log("listening to ", `usr_name_${s_user.key}`)
         listen(`usr_name_${s_user.key}`, (e: any) => {
           console.log("event for ", s_user.key);
           const userIndex = users.findIndex((u) => u.key === s_user.key);
