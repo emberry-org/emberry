@@ -16,6 +16,17 @@
           status: UserStatus.Disconnected,
         };
         users.push(s_user);
+        console.log("listening to ", `usr_name_${s_user.key}`)
+        listen(`usr_name_${s_user.key}`, (e: any) => {
+          console.log("event for ", s_user.key);
+          const userIndex = users.findIndex((u) => u.key === s_user.key);
+          if (userIndex === -1)
+          {
+            console.error(`username of non existing user "${s_user.key}" changed`);
+            return;
+          }
+          users[userIndex].name = e.payload;
+        });
       });
       // update the rendering
       users = users;
