@@ -1,4 +1,4 @@
-use std::{sync::Arc, io::ErrorKind};
+use std::{io::ErrorKind, sync::Arc};
 
 use rustls::{client::ResolvesClientCert, sign::CertifiedKey, Certificate, PrivateKey};
 use rustls_pemfile::Item::{PKCS8Key, X509Certificate};
@@ -46,7 +46,7 @@ impl TryFrom<PemfileReader> for ClientCertResolver {
   /// Any [std::io::Error] from opening/reading the file</br>
   /// [ErrorKind::InvalidData] when the items are malformed or out of order
   fn try_from(value: PemfileReader) -> Result<Self, Self::Error> {
-    (value).try_into()
+    ClientCertResolver::try_from(&value)
   }
 }
 
