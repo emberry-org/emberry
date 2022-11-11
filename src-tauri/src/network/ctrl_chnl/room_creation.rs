@@ -1,12 +1,9 @@
-use std::collections::HashMap;
 use std::io::{Error, ErrorKind};
-use std::sync::Mutex;
 
 use rustls::Certificate;
 use smoke::messages::RoomId;
 use smoke::Signal;
 use smoke::User;
-use tauri::EventHandler;
 
 use tokio::io::BufReader;
 use tokio::sync::{mpsc, oneshot};

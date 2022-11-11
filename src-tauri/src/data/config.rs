@@ -24,7 +24,7 @@ fn maybe_pem_data() -> Option<(Certificate, PrivateKey)> {
   match PEM.parse() {
     Ok(data) => Some(data),
     Err(err) => {
-      log::warn!("Failed to parse Certificate and PrivateKey from '{}'", PEM.filepath.to_string_lossy());
+      log::warn!("Failed to parse Certificate and PrivateKey from '{}', Err: '{}'", PEM.filepath.to_string_lossy(), err);
       None
     }
   }

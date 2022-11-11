@@ -21,7 +21,6 @@ pub async fn wrap_client(stream: KcpStream, peer_cert: &Certificate) -> TlsStrea
 
   root_store.add(peer_cert).unwrap();
 
-  let (cert, key) = (&*PEM_DATA).as_ref().unwrap();
   let cac_resolver = CAC_RESOLVER.as_ref().unwrap().clone();
 
   let config = ClientConfig::builder()

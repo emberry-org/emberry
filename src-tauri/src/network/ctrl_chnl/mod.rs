@@ -71,7 +71,7 @@ pub async fn connect(
 
   let mut root_store = RootCertStore::empty();
   root_store
-    .add(&cert)
+    .add(cert)
     .map_err(|err| tauri::Error::Io(io::Error::new(ErrorKind::InvalidData, err)))?;
 
   let config = ClientConfig::builder()
