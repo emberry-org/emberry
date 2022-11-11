@@ -1,6 +1,7 @@
 mod messages;
 pub mod requests;
 pub mod responses;
+mod room_creation;
 mod state;
 
 use std::{
@@ -8,6 +9,7 @@ use std::{
   sync::Arc,
   time::Instant,
 };
+use room_creation::hole_punch;
 
 use crate::{
   data::{
@@ -15,7 +17,6 @@ use crate::{
     sqlite::{exec, user::get},
     IdentifiedUserInfo, UserIdentifier,
   },
-  network::hole_punch,
 };
 
 pub use self::state::RwOption;
