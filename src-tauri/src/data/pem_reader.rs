@@ -23,7 +23,7 @@ impl PemfileReader {
   pub fn parse(&self) -> Result<(Certificate, PrivateKey), std::io::Error> {
     let certfile = std::fs::OpenOptions::new()
       .read(true)
-      .open(self.filepath)?;
+      .open(&self.filepath)?;
     let mut reader = std::io::BufReader::new(certfile);
 
     let cert = if let Some(X509Certificate(key)) = rustls_pemfile::read_one(&mut reader)? {
