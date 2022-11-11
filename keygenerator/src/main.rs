@@ -17,7 +17,7 @@ fn main() {
 /// # Errors
 /// Will return any errors from creating and writing "certfile"/"keyfile"
 pub fn generate_cert(pemfile: &PathBuf) -> io::Result<()> {
-    let subject_alt_names = vec!["embery_user".to_string()];
+    let subject_alt_names = vec!["emberry_user".to_string()];
     let cert = generate_simple_self_signed(subject_alt_names).unwrap();
 
     let mut pemfile = OpenOptions::new().create(true).write(true).open(pemfile)?;
