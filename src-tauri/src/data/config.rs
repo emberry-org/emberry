@@ -8,13 +8,26 @@ use super::{
   PemfileReader, UserInfo, UserRelation,
 };
 use lazy_static::lazy_static;
+use tokio_rustls::rustls::{Certificate, PrivateKey};
 
 lazy_static! {
   /// PemfileReader to the .pem of the current user
   pub static ref PEM: PemfileReader = pem_reader();
+  /// cert and key of the local user from .pem file
+  pub static ref PEM_DATA:  Option<(Certificate, PrivateKey)> = maybe_pem_data();
   /// IdentifiedUserInfo of the current user;
   /// None if [PEM] has no valid cert
   pub static ref IDI: RwLock<Option<IdentifiedUserInfo<'static>>> = RwLock::new(maybe_info());
+}
+
+fn maybe_pem_data() -> Option<(Certificate, PrivateKey)> {
+  match PEM.parse() {
+    Ok(data) => Some(data),
+    Err(err) => {
+      log::warn!("Failed to parse Certificate and PrivateKey from '{}'", PEM.filepath.to_string_lossy());
+      None
+    }
+  }
 }
 
 fn maybe_info<'a>() -> Option<IdentifiedUserInfo<'a>> {
