@@ -3,9 +3,9 @@ use std::borrow::Cow;
 use tauri::Window;
 
 use super::sqlite::user_batch::get_limit_offset;
-use super::{config, IdentifiedUserInfo, UserIdentifier, UserInfo};
+use super::{cert_gen, config, IdentifiedUserInfo, UserIdentifier, UserInfo};
 
-use super::sqlite::{exec, user::*, try_exec};
+use super::sqlite::{exec, try_exec, user::*};
 
 #[tauri::command]
 pub fn get_usr_info(bs58cert: String) -> UserInfo {
@@ -49,4 +49,9 @@ pub fn update_username(window: Window, name: String) {
       }
     }
   }
+}
+
+#[tauri::command]
+pub fn generate_user_certificate() {
+  cert_gen::generate_cert(&config::PEM.filepath).unwrap()
 }

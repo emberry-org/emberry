@@ -39,10 +39,10 @@ pub async fn wrap_client(
     .with_root_certificates(root_store)
     .with_client_cert_resolver(cac_resolver);
 
-  let server_name = dotenv!("PEER_NAME").try_into().unwrap(); // FIXME get peername from certificate
+  let cert_name = "emberry_user".try_into().unwrap(); // FIXME get peername from certificate
   let conn = TlsConnector::from(Arc::new(config));
 
-  Ok(TlsStream::Client(conn.connect(server_name, stream).await?))
+  Ok(TlsStream::Client(conn.connect(cert_name, stream).await?))
 }
 
 pub async fn wrap_server(
