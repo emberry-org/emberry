@@ -24,9 +24,5 @@ pub fn generate_cert(pemfile: &PathBuf) -> io::Result<()> {
     pemfile.write_all(cert.serialize_pem().unwrap().as_bytes())?;
 
     pemfile.write_all(cert.serialize_private_key_pem().as_bytes())?;
-    println!(
-        "BS58: '{}'",
-        bs58::encode(cert.serialize_pem().unwrap()).into_string()
-    );
     Ok(())
 }
