@@ -54,6 +54,16 @@
       // If this user is new then just push them into the array.
       if (userIndex === -1) {
         users.push(s_user);
+        listen(`usr_name_${s_user.key}`, (e: any) => {
+          console.log("event for ", s_user.key);
+          const userIndex = users.findIndex((u) => u.key === s_user.key);
+          if (userIndex === -1)
+          {
+            console.error(`username of non existing user "${s_user.key}" changed`);
+            return;
+          }
+          users[userIndex].name = e.payload;
+        });
         users = users; // Update the rendering
       }
       // If this user is already present then update their data.
