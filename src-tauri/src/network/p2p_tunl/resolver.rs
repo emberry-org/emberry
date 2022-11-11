@@ -1,7 +1,6 @@
-use std::{io::ErrorKind, sync::Arc};
+use std::sync::Arc;
 
 use rustls::{client::ResolvesClientCert, sign::CertifiedKey, Certificate, PrivateKey};
-use rustls_pemfile::Item::{PKCS8Key, X509Certificate};
 
 use crate::data::PemfileReader;
 
@@ -34,22 +33,6 @@ impl ResolvesClientCert for ClientCertResolver {
   }
 }
 
-impl TryFrom<PemfileReader> for ClientCertResolver {
-  type Error = std::io::Error;
-
-  /// Opens the filepath from [PemfileReader] in readonly mode and reads one
-  /// X509Certificate and one PKCS8Key from it.
-  /// The order in which those items are expected is: X509Certificate, PKCS8Key
-  ///
-  /// # Errors
-  /// This function will return:</br>
-  /// Any [std::io::Error] from opening/reading the file</br>
-  /// [ErrorKind::InvalidData] when the items are malformed or out of order
-  fn try_from(value: PemfileReader) -> Result<Self, Self::Error> {
-    ClientCertResolver::try_from(&value)
-  }
-}
-
 impl TryFrom<&PemfileReader> for ClientCertResolver {
   type Error = std::io::Error;
 
@@ -62,37 +45,9 @@ impl TryFrom<&PemfileReader> for ClientCertResolver {
   /// Any [std::io::Error] from opening/reading the file</br>
   /// [ErrorKind::InvalidData] when the items are malformed or out of order
   fn try_from(value: &PemfileReader) -> Result<ClientCertResolver, Self::Error> {
-    let certfile = std::fs::OpenOptions::new()
-      .read(true)
-      .open(&value.filepath)?;
-    let mut reader = std::io::BufReader::new(certfile);
-
-    let cert = if let Some(X509Certificate(key)) = rustls_pemfile::read_one(&mut reader)? {
-      rustls::Certificate(key)
-    } else {
-      return Err(Self::Error::new(
-        ErrorKind::InvalidData,
-        format!(
-          "File: '{}' did not contain X509Certificate as first element",
-          value.filepath.to_string_lossy()
-        ),
-      ));
-    };
-
-    let key = if let Some(PKCS8Key(key)) = rustls_pemfile::read_one(&mut reader)? {
-      rustls::PrivateKey(key)
-    } else {
-      return Err(Self::Error::new(
-        ErrorKind::InvalidData,
-        format!(
-          "File: '{}' did not contain PKCS8Key as second element",
-          value.filepath.to_string_lossy()
-        ),
-      ));
-    };
-
-    let resolver = ClientCertResolver::new(cert, key);
-    Ok(resolver)
+    value
+      .parse()
+      .map(|(cert, key)| ClientCertResolver::new(cert, key))
   }
 }
 
@@ -101,7 +56,7 @@ mod tests {
   use std::{
     fs::remove_file,
     fs::OpenOptions,
-    io::{BufWriter, Error, Write},
+    io::{BufWriter, Write},
   };
 
   use crate::network::p2p_tunl::resolver::ClientCertResolver;
@@ -152,7 +107,7 @@ dyOIEqrkHHicDvb8zi40n682DWVFUDQu
       filepath: FILENAME.into(),
     };
 
-    let resolver: Result<ClientCertResolver, Error> = reader.try_into();
+    let resolver = ClientCertResolver::try_from(&reader);
 
     remove_file(FILENAME).expect("!!! ERROR DELETING './randomfilename' MANUAL DELETION NECESSARY");
 
