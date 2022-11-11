@@ -8,6 +8,7 @@
 
   let usernameInput: HTMLInputElement;
   let username: string = " ";
+  let bs58cert: string = " ";
 
   onMount(() => {
     invoke("get_local").then((user: any) => {
@@ -16,8 +17,8 @@
         return;
       }
       username = user.info.username;
-      let local_id = user.identifier.bs58;
-      listen(`usr_name_${local_id}`, (e: any) => {
+      bs58cert = user.identifier.bs58;
+      listen(`usr_name_${bs58cert}`, (e: any) => {
         const name: string = e.payload;
         username = name
       });
@@ -44,7 +45,7 @@
 </div>
 
 <div class="row">
-  <p class="desc">This is a place where you can add a description of your own :D</p>
+  <p class="desc">{ bs58cert }</p>
 </div>
 
 
