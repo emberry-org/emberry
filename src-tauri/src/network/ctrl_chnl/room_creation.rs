@@ -13,7 +13,7 @@ use tokio_kcp::{KcpConfig, KcpStream};
 use log::error;
 
 use crate::data::UserIdentifier;
-use crate::network::{Networking, Connection};
+use crate::network::{Connection, Networking};
 
 use super::super::holepunch::punch_hole;
 use super::super::p2p_tunl::{p2p_loop, tls_kcp};
@@ -74,6 +74,11 @@ pub async fn hole_punch(
   } else {
     tls_kcp::wrap_server(stream, &peer_cert).await
   };
+
+  let stream = stream.map_err(|err| {
+    log::error!("Unable to start TLS on KCP stream, Err: '{}'", err);
+    Error::new(ErrorKind::Other, "TLS could not be established")
+  })?;
 
   let mut stream = BufReader::new(stream);
 
