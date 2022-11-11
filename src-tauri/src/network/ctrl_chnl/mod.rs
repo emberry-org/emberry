@@ -1,4 +1,3 @@
-mod certs;
 mod messages;
 pub mod requests;
 pub mod responses;
@@ -10,7 +9,14 @@ use std::{
   time::Instant,
 };
 
-use crate::{data::{UserIdentifier, sqlite::{user::get, exec}, IdentifiedUserInfo}, network::hole_punch};
+use crate::{
+  data::{
+    config,
+    sqlite::{exec, user::get},
+    IdentifiedUserInfo, UserIdentifier,
+  },
+  network::hole_punch,
+};
 
 pub use self::state::RwOption;
 use log::{error, trace};
@@ -35,7 +41,7 @@ use tokio::{
 };
 use tokio_rustls::{client::TlsStream, TlsConnector};
 
-use super::{p2p_tunl::tls_kcp, Networking, RRState, ENV};
+use super::{Networking, RRState};
 
 #[tauri::command(async)]
 pub async fn connect(
@@ -52,10 +58,20 @@ pub async fn connect(
     )));
   }
 
-  let mut root_store = RootCertStore::empty();
+  let (cert, _) = match config::PEM_DATA.as_ref() {
+    Some(data) => data,
+    None => {
+      return Err(tauri::Error::Io(io::Error::new(
+        io::ErrorKind::Unsupported,
+        "Identity needed to connect with rhizome",
+      )))
+    }
+  };
 
-  let cert = certs::craft();
-  root_store.add(&cert).unwrap(); // unwrap is safe here as invalid certificates wont be returned from load
+  let mut root_store = RootCertStore::empty();
+  root_store
+    .add(&cert)
+    .map_err(|err| tauri::Error::Io(io::Error::new(ErrorKind::InvalidData, err)))?;
 
   let config = ClientConfig::builder()
     .with_safe_defaults()
@@ -80,7 +96,7 @@ pub async fn connect(
     .emit("rz-con", start.elapsed().as_millis() as u64)
     .expect("Failed to emit event");
 
-  let cobs_cert = match postcard::to_vec_cobs::<Vec<u8>, 1024>(&tls_kcp::craft_cert().0) {
+  let cobs_cert = match postcard::to_vec_cobs::<Vec<u8>, 1024>(&cert.0) {
     Ok(cobs) => cobs,
     Err(err) => {
       error!("Error serializing USER_CERT in 1024 bytes: {}", err);
@@ -167,11 +183,11 @@ async fn handle_rhiz_msg(
         let mut guard = net.pending.lock().unwrap();
         none = guard.get(&usr).is_none();
         if none {
-          let ident= UserIdentifier::from(&usr);
+          let ident = UserIdentifier::from(&usr);
           let info = exec(get, &ident);
-          let ident_info = IdentifiedUserInfo{
+          let ident_info = IdentifiedUserInfo {
             identifier: ident,
-            info
+            info,
           };
           window
             .emit("wants-room", ident_info)
@@ -187,12 +203,20 @@ async fn handle_rhiz_msg(
 
       if !none {
         // this is the same case where guard.insert(Agreement) happens just outside scope because we want to drop guard before await
-        let msg = EmbMessage::Accept(ENV.user_cert.0 < usr.cert_data);
+        //                    we can unsafe unwrap here because we know that PEM_DATA is not None because the receive loop
+        //                    only starts if PEM_DATA is Some()
+        let priority = unsafe { &config::PEM_DATA.as_ref().unwrap_unchecked().0.0 } < &usr.cert_data;
+        let msg = EmbMessage::Accept(
+          priority,
+        );
         state::send(rc, msg).await?;
       }
     }
     AcceptedRoom(id, usr) => {
-      try_holepunch(window.clone(), app_handle, net.clone(), id, usr).await?
+      //                    we can unsafe unwrap here because we know that PEM_DATA is not None because the receive loop
+      //                    only starts if PEM_DATA is Some()
+      let priority = unsafe { &config::PEM_DATA.as_ref().unwrap_unchecked().0.0 } < &usr.cert_data;
+      try_holepunch(window.clone(), app_handle, net.clone(), id, usr, priority).await?
     }
     ServerError(err) => {
       return Err(tauri::Error::Io(io::Error::new(
@@ -211,11 +235,12 @@ async fn try_holepunch(
   net_state: tauri::State<'_, Networking>,
   room_id: Option<RoomId>,
   usr: User,
+  priority: bool,
 ) -> tauri::Result<()> {
   if let Some(room_id) = room_id {
     if net_state.pending.lock().unwrap().remove(&usr).is_some() {
       // only hole punch if there is a connection pending
-      hole_punch(window, app_handle, net_state, room_id, usr).await?;
+      hole_punch(window, app_handle, net_state, room_id, usr, priority).await?;
     } else {
       // This is rather weak protection as a compromized rhizome server could still just send a different room id with a valid user
       // Room id procedure is subject to change in the future. (plan is to use cryptographic signatures to mitigated unwanted ip leak)

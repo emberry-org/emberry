@@ -8,7 +8,6 @@ use smoke::Signal;
 use smoke::User;
 use tauri::EventHandler;
 
-use lazy_static::lazy_static;
 use tokio::io::BufReader;
 use tokio::sync::{mpsc, oneshot};
 
@@ -24,13 +23,6 @@ pub mod ctrl_chnl;
 mod holepunch;
 mod p2p_tunl;
 use p2p_tunl::{p2p_loop, tls_kcp};
-
-lazy_static! {
-  pub static ref ENV: Config = Config {
-    user_cert: tls_kcp::craft_cert(),
-    server_address: dotenv!("SERVER_ADDRESS"),
-  };
-}
 
 /// Default kcp conf as from KcpConfig::default()
 /// default is not const and therefore needs to be inlined manually
@@ -65,11 +57,6 @@ pub struct Networking {
   pub pending: Mutex<HashMap<User, RRState>>,
 }
 
-pub struct Config {
-  server_address: &'static str,
-  user_cert: Certificate,
-}
-
 #[derive(Clone, serde::Serialize)]
 struct NewRoomPayload {
   room_id: String,
@@ -82,6 +69,7 @@ pub async fn hole_punch(
   state: tauri::State<'_, Networking>,
   room_id: RoomId,
   peer: User,
+  priority: bool,
 ) -> tauri::Result<()> {
   /* Get the server ip from .env */
 
@@ -92,7 +80,7 @@ pub async fn hole_punch(
     .expect("Failed to emit WantsRoom event");
 
   /* Holepunch using rhizome */
-  let socket = punch_hole(ENV.server_address, &room_id.0).await?;
+  let socket = punch_hole(dotenv!("SERVER_ADDRESS"), &room_id.0).await?;
   let addr = socket.peer_addr()?;
 
   let stream = KcpStream::connect_with_socket(&KCP_CONF, socket, addr)
@@ -102,10 +90,11 @@ pub async fn hole_punch(
       Error::new(ErrorKind::Other, "Kcp error")
     })?;
 
-  let stream = if peer.cert_data < ENV.user_cert.0 {
-    tls_kcp::wrap_client(stream).await
+  let peer_cert = Certificate(peer.cert_data.clone());
+  let stream = if priority {
+    tls_kcp::wrap_client(stream, &peer_cert).await
   } else {
-    tls_kcp::wrap_server(stream).await
+    tls_kcp::wrap_server(stream, &peer_cert).await
   };
 
   let mut stream = BufReader::new(stream);

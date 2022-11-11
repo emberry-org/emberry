@@ -1,20 +1,28 @@
-use std::{io, sync::Arc};
+use std::{sync::Arc};
 
 use super::resolver::ClientCertResolver;
 use rustls::{server::AllowAnyAuthenticatedClient, Certificate, ClientConfig, RootCertStore};
 use tokio_kcp::KcpStream;
 use tokio_rustls::{TlsAcceptor, TlsConnector, TlsStream};
+use crate::data::config::PEM_DATA;
+use lazy_static::lazy_static;
 
-pub async fn wrap_client(stream: KcpStream) -> TlsStream<KcpStream> {
+lazy_static! {
+  static ref CAC_RESOLVER: Option<Arc<ClientCertResolver>> = maybe_cacr();
+}
+
+fn maybe_cacr()-> Option<Arc<ClientCertResolver>> {
+  let (cert, key) = PEM_DATA.as_ref()?;  
+  Some(Arc::new(ClientCertResolver::new(cert.clone(), key.clone())))
+}
+
+pub async fn wrap_client(stream: KcpStream, peer_cert: &Certificate) -> TlsStream<KcpStream> {
   let mut root_store = RootCertStore::empty();
 
-  let cert = craft_peer_cert();
+  root_store.add(peer_cert).unwrap();
 
-  root_store.add(&cert).unwrap();
-
-  let cert = craft_cert();
-  let key = craft_key();
-  let cac_resolver = Arc::new(ClientCertResolver::new(cert, key));
+  let (cert, key) = (&*PEM_DATA).as_ref().unwrap();
+  let cac_resolver = CAC_RESOLVER.as_ref().unwrap().clone();
 
   let config = ClientConfig::builder()
     .with_safe_defaults()
@@ -27,18 +35,19 @@ pub async fn wrap_client(stream: KcpStream) -> TlsStream<KcpStream> {
   TlsStream::Client(conn.connect(server_name, stream).await.unwrap())
 }
 
-pub async fn wrap_server(stream: KcpStream) -> TlsStream<KcpStream> {
+pub async fn wrap_server(stream: KcpStream, peer_cert: &Certificate) -> TlsStream<KcpStream> {
   let mut client_cert_store = RootCertStore::empty();
-  client_cert_store.add(&craft_peer_cert()).unwrap();
+  client_cert_store.add(peer_cert).unwrap();
 
   let client_cert_verifier = AllowAnyAuthenticatedClient::new(client_cert_store);
+  let (cert, key) = PEM_DATA.as_ref().unwrap();
 
   // Build TLS configuration.
   let tls_cfg = {
     // Load public certificate.
-    let certs = vec![craft_cert()];
+    let certs = vec![cert.clone()];
     // Load private key.
-    let key = craft_key();
+    let key = key.clone();
     // Do not use client certificate authentication.
     let cfg = rustls::ServerConfig::builder()
       .with_safe_defaults()
@@ -51,77 +60,4 @@ pub async fn wrap_server(stream: KcpStream) -> TlsStream<KcpStream> {
   let tls_acceptor = TlsAcceptor::from(tls_cfg);
 
   TlsStream::Server(tls_acceptor.accept(stream).await.unwrap())
-}
-
-// Load public certificate from file.
-pub fn craft_peer_cert() -> rustls::Certificate {
-  let mut reader = io::BufReader::new(dotenv!("PEER_CERT").as_bytes());
-
-  // Load and return a single private key.
-  // use unwrap as we test this during compile time using tests and its is uneffected by runtime
-  if let rustls_pemfile::Item::X509Certificate(key) =
-    rustls_pemfile::read_one(&mut reader).unwrap().unwrap()
-  {
-    Certificate(key)
-  } else {
-    panic!("no parsable certificate in dotenv");
-  }
-}
-
-// Load public certificate from file.
-pub fn craft_cert() -> rustls::Certificate {
-  let mut reader = io::BufReader::new(dotenv!("USER_CERT").as_bytes());
-
-  // Load and return a single private key.
-  // use unwrap as we test this during compile time using tests and its is uneffected by runtime
-  if let rustls_pemfile::Item::X509Certificate(key) =
-    rustls_pemfile::read_one(&mut reader).unwrap().unwrap()
-  {
-    Certificate(key)
-  } else {
-    panic!("no parsable certificate in dotenv");
-  }
-}
-
-// Load public certificate from file.
-pub fn craft_key() -> rustls::PrivateKey {
-  let mut reader = io::BufReader::new(dotenv!("USER_KEY").as_bytes());
-
-  // Load and return a single private key.
-  // use unwrap as we test this during compile time using tests and its is uneffected by runtime
-  if let rustls_pemfile::Item::PKCS8Key(key) =
-    rustls_pemfile::read_one(&mut reader).unwrap().unwrap()
-  {
-    rustls::PrivateKey(key)
-  } else {
-    panic!("no parsable certificate in dotenv");
-  }
-}
-
-#[cfg(test)]
-mod tests {
-  use rustls::RootCertStore;
-
-  #[test]
-  fn user_key_creation() {
-    super::craft_key();
-  }
-
-  #[test]
-  fn user_cert_creation() {
-    super::craft_cert();
-  }
-
-  #[test]
-  fn peer_cert_creation() {
-    super::craft_peer_cert();
-  }
-
-  #[test]
-  fn peer_cert_trust_anchor() {
-    let mut store = RootCertStore::empty();
-    store
-      .add(&super::craft_peer_cert())
-      .expect("could not use cert as trust anchor");
-  }
 }
