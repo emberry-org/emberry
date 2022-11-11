@@ -1,9 +1,9 @@
 use rcgen::generate_simple_self_signed;
-use std::fs::OpenOptions;
-use std::{io, path::PathBuf};
-use std::io::Write;
 #[allow(unused_imports)] // doc import
-use rustls::{PrivateKey, Certificate};
+use rustls::{Certificate, PrivateKey};
+use std::fs::OpenOptions;
+use std::io::Write;
+use std::{io, path::PathBuf};
 
 fn main() {
     generate_cert(&"identity.pem".into()).expect("file io error");
@@ -24,5 +24,9 @@ pub fn generate_cert(pemfile: &PathBuf) -> io::Result<()> {
     pemfile.write_all(cert.serialize_pem().unwrap().as_bytes())?;
 
     pemfile.write_all(cert.serialize_private_key_pem().as_bytes())?;
+    println!(
+        "BS58: '{}'",
+        bs58::encode(cert.serialize_pem().unwrap()).into_string()
+    );
     Ok(())
 }
