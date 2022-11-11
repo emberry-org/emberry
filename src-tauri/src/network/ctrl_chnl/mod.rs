@@ -3,6 +3,7 @@ pub mod requests;
 pub mod responses;
 mod room_creation;
 mod state;
+mod certs;
 
 use std::{
   io::{self, Error, ErrorKind},
@@ -59,7 +60,8 @@ pub async fn connect(
     )));
   }
 
-  let (cert, _) = match config::PEM_DATA.as_ref() {
+  let server_cert = certs::craft();
+  let (client_cert, _) = match config::PEM_DATA.as_ref() {
     Some(data) => data,
     None => {
       return Err(tauri::Error::Io(io::Error::new(
@@ -71,7 +73,7 @@ pub async fn connect(
 
   let mut root_store = RootCertStore::empty();
   root_store
-    .add(cert)
+    .add(&server_cert)
     .map_err(|err| tauri::Error::Io(io::Error::new(ErrorKind::InvalidData, err)))?;
 
   let config = ClientConfig::builder()
@@ -97,7 +99,7 @@ pub async fn connect(
     .emit("rz-con", start.elapsed().as_millis() as u64)
     .expect("Failed to emit event");
 
-  let cobs_cert = match postcard::to_vec_cobs::<Vec<u8>, 1024>(&cert.0) {
+  let cobs_cert = match postcard::to_vec_cobs::<Vec<u8>, 1024>(&client_cert.0) {
     Ok(cobs) => cobs,
     Err(err) => {
       error!("Error serializing USER_CERT in 1024 bytes: {}", err);
