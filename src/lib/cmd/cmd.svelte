@@ -1,5 +1,5 @@
 <script lang="ts">
-  // import Icon from "@iconify/svelte";
+  import Icon from "@iconify/svelte";
   import { invoke } from "@tauri-apps/api/tauri";
   import { onDestroy, onMount } from "svelte";
   import { type Cmd, type StringAction, type VoidAction, fetch } from "./cmd";
@@ -141,7 +141,7 @@
 </script>
 
 
-<div class="cmd" style={state ? undefined : "opacity: 0"} bind:this={panel}>
+<div class="cmd" style={state ? undefined : "opacity: 0; pointer-events: none"} bind:this={panel}>
   <input
     type="text"
     class="input"
@@ -158,7 +158,7 @@
         class="command {selected == i ? 'selected' : ''}"
         on:click={() => executeCommand(cmd)}
       >
-        <!-- <div class="icon"> <Icon name={ cmd.type } size="20px" /> </div> -->
+        <div class="icon"> <Icon icon="cmd:{ cmd.type }" width="20px" /> </div>
         <div class="title">{cmd.title}</div>
         <div class="shortcut">
           {#each cmd.accelerator as part, j}
@@ -186,7 +186,8 @@
 
     transform: translateX(-50%);
 
-    background-color: #222222;
+    background-color: rgba(17, 17, 17, 0.5);
+    backdrop-filter: blur(12px);
     border: 1.5px solid #ffffff22;
     border-radius: 6px;
 
@@ -204,7 +205,7 @@
       outline: none;
       border: none;
       border-bottom: 1.5px solid #ffffff1b;
-      background: #222222;
+      background: transparent;
       color: #dddddd;
 
       font-size: 0.9rem;
@@ -224,33 +225,34 @@
 
         &:hover,
         &.selected {
-          background-color: #2a2a2a;
+          background-color: #ffffff08;
 
-          // .icon {
-          //   color: #aaa;
-          // }
+          .icon {
+            margin-left: 26px;
+            color: #aaa;
+          }
 
           .title {
             color: #aaa;
           }
         }
 
-        // .icon {
-        //   width: 20px;
-        //   height: 20px;
+        .icon {
+          width: 20px;
+          height: 20px;
 
-        //   margin-left: 12px;
+          margin-left: 10px;
 
-        //   color: #4d4d4d;
+          color: #4d4d4d;
 
-        //   display: flex;
-        //   justify-content: center;
-        //   align-items: center;
-        // }
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
 
         .title {
           color: #6d6d6d;
-          font-size: 13px;
+          font-size: 14px;
           font-weight: 450;
           flex-grow: 1;
           margin-left: 12px;
@@ -259,13 +261,13 @@
         }
 
         .shortcut {
-          font-size: 13px;
+          font-size: 14px;
           color: #555555;
           margin-right: 14px;
           min-width: fit-content;
 
           span {
-            font-size: 11px;
+            font-size: 12px;
             padding: 2px 6px 2px 6px;
             background-color: #ffffff11;
             color: #999999;

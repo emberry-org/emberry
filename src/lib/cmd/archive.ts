@@ -7,7 +7,7 @@ import { CmdType } from './cmd.type';
 /** Collection of all the executable commands */
 export const CmdArchive: Cmd[] = [
   {
-    title: '> Run', type: CmdType.Debug, accelerator: [], action: (s: String) =>
+    title: 'Execute Command', type: CmdType.Debug, accelerator: [], action: (s: String) =>
       invoke(s.toString()).then(err => console.log(`![${s}] -> `, err)),
     input: true
   },
