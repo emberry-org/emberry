@@ -9,6 +9,7 @@
   import Users from "../lib/users.svelte";
   import Me from "../lib/user/user.me.svelte";
   import { onMount } from "svelte";
+  import Cmd from "$lib/cmd/cmd.svelte";
 
   onMount(() => {
     loadBundle();
@@ -36,6 +37,8 @@
 
 
 <main class="app">
+
+  <Cmd />
   
   <!-- Application Titlebar -->
   <nav></nav>
