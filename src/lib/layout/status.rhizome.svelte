@@ -13,8 +13,6 @@
     rzStatus = sessionStorage.getItem("rz-status") ?? "connecting";
     rzMili = sessionStorage.getItem("rz-mili") ?? "0";
 
-    console.log(sessionStorage.getItem("rz-mili"));
-
     listen("rz-con", (evt) => setStatus("connected", evt.payload as string));
     listen("rz-dc", (evt) => setStatus("disconnected", evt.payload as string));
     listen("rz-f", (evt) => setStatus("failed", evt.payload as string));
@@ -32,7 +30,7 @@
 </script>
 
 
-<button class="rhizome { rzStatus } move-right" style="--mili: ' { rzMili }ms'">
+<button class="rhizome { rzStatus } move-right" title="{ rzMili }ms">
   {#if rzStatus === "connecting" || rzStatus === "failed"}
   <Icon icon="bry:rz-disc" width="16px" height="16px" />
   {:else}
@@ -60,35 +58,7 @@ button {
 
   background-color: #fff0;
   color: #aaa;
-  transition: color 1.0s;
-
-  &:hover {
-    transition: color 0.2s;
-
-    &::after {
-      content: var(--mili);
-      max-width: 128px;
-      opacity: .8;
-      margin: 0px 22px 0px 6px;
-      transition: opacity 0.2s, max-width 0.2s, margin 0.2s;
-    }
-  }
-
-  &::after {
-    content: var(--mili);
-    max-width: 0px;
-
-    line-height: 14px;
-    font-size: 14px;
-    font-family: monospace;
-    white-space: nowrap;
-    margin: 0px;
-
-    color: #f9c15c;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.8s, max-width 0.5s, margin 0.8s;
-  }
+  transition: color 0.1s;
 }
 
 .disconnected { color: #444; }
