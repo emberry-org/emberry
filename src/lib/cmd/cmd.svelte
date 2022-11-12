@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Icon from "@iconify/svelte";
+  // import Icon from "@iconify/svelte";
   import { invoke } from "@tauri-apps/api/tauri";
   import { onDestroy, onMount } from "svelte";
   import { type Cmd, type StringAction, type VoidAction, fetch } from "./cmd";
@@ -226,27 +226,27 @@
         &.selected {
           background-color: #2a2a2a;
 
-          .icon {
-            color: #aaa;
-          }
+          // .icon {
+          //   color: #aaa;
+          // }
 
           .title {
             color: #aaa;
           }
         }
 
-        .icon {
-          width: 20px;
-          height: 20px;
+        // .icon {
+        //   width: 20px;
+        //   height: 20px;
 
-          margin-left: 12px;
+        //   margin-left: 12px;
 
-          color: #4d4d4d;
+        //   color: #4d4d4d;
 
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
+        //   display: flex;
+        //   justify-content: center;
+        //   align-items: center;
+        // }
 
         .title {
           color: #6d6d6d;
