@@ -45,6 +45,7 @@ fn main() {
       update_username,
       get_local,
       embed,
+      generate_user_certificate,
     ])
     // TEMP / TODO : This will be obsolete once the `window.is_focused()` function is released from Tauri.
     .on_window_event(|event| {
