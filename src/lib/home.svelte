@@ -1,12 +1,13 @@
 <script lang="ts">
   import { invoke } from "@tauri-apps/api/tauri"
-  import { UserStatus, storeUser } from "./user";
+  import { setItem } from "./store";
+  import { UserStatus } from "./user";
 
   let usrkey = "";
 
   function send() {
     invoke("request_room", { bs58cert: usrkey });
-    storeUser({ key: usrkey, status: UserStatus.Awaiting });
+    setItem(usrkey, JSON.stringify(UserStatus.Awaiting));
   }
 </script>
 

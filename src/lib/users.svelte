@@ -1,8 +1,9 @@
 <script lang="ts">
   import { listen } from "@tauri-apps/api/event";
   import { onMount } from "svelte";
-  import { UserStatus, storeUser, type User, Leaf } from "./user";
+  import { UserStatus, type User, Leaf } from "./user";
   import { invoke } from "@tauri-apps/api/tauri";
+  import { onStatusChange, setItem } from "./store";
 
   export let users: User[];
 
@@ -15,28 +16,37 @@
           status: UserStatus.Disconnected,
         };
         users.push(s_user);
+        listen(`usr_name_${s_user.key}`, (e: any) => {
+          console.log("event for ", s_user.key);
+          const userIndex = users.findIndex((u) => u.key === s_user.key);
+          if (userIndex === -1)
+          {
+            console.error(`username of non existing user "${s_user.key}" changed`);
+            return;
+          }
+          users[userIndex].name = e.payload;
+        });
       });
       // update the rendering
       users = users;
+    });
 
-      //FIXME keep using store user while we dont have a better for status
-      if (
-        sessionStorage.getItem("has-mounted") === null ||
-        sessionStorage.getItem("has-mounted") !== "true"
-      ) {
-        for (let i = 0; i < users.length; i++) {
-          storeUser(users[i]);
-        }
-        sessionStorage.setItem("has-mounted", "true");
+    onStatusChange((key: string | null, value: UserStatus) => {
+      const userIndex = users.findIndex((u) => u.key === key);
+      if (userIndex === -1)
+      {
+        console.error(`Status of non existing user "${key}" changed`);
+        return;
       }
+      users[userIndex].status = value;
     });
 
     listen("wants-room", (e: any) => {
-      const usrkey = e.payload;
+      const usrkey = e.payload.identifier.bs58;
 
       let s_user = {
         key: usrkey,
-        name: "Change wants-room to send IdentifiedUserInfo",
+        name: e.payload.info.username,
         status: UserStatus.Pending,
       };
 
@@ -44,33 +54,21 @@
       // If this user is new then just push them into the array.
       if (userIndex === -1) {
         users.push(s_user);
+        listen(`usr_name_${s_user.key}`, (e: any) => {
+          console.log("event for ", s_user.key);
+          const userIndex = users.findIndex((u) => u.key === s_user.key);
+          if (userIndex === -1)
+          {
+            console.error(`username of non existing user "${s_user.key}" changed`);
+            return;
+          }
+          users[userIndex].name = e.payload;
+        });
         users = users; // Update the rendering
       }
       // If this user is already present then update their data.
       else users[userIndex] = s_user;
-      //FIXME keep using store user while we dont have a better for status
-      storeUser({ key: usrkey, status: UserStatus.Pending });
-    });
-
-    listen("new-room", (e: any) => {
-      const usrkey = e.payload.peer_id;
-      let s_user = {
-        key: usrkey,
-        name: "Change new-room to send IdentifiedUserInfo",
-        status: UserStatus.Pending,
-      };
-
-      const userIndex = users.findIndex((u) => u.key === usrkey);
-      if (userIndex === -1)
-        console.error("new-room event but the user was not found in users");
-      // If this user is already present then update their data.
-      else users[userIndex] = s_user; // index assignment updated the rendering
-
-      //FIXME keep using store user while we dont have a better for status
-      storeUser({
-        key: e.payload.peer_id,
-        status: UserStatus.Connected,
-      });
+      setItem(usrkey, JSON.stringify(UserStatus.Pending));
     });
   });
 </script>

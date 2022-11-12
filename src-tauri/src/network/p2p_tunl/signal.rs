@@ -1,7 +1,7 @@
 use std::{borrow::Borrow, io, sync::atomic::Ordering};
 
 use crate::data::{
-  sqlite::{exec, user::upsert},
+  sqlite::{try_exec, user::upsert},
   IdentifiedUserInfo,
 };
 
@@ -36,7 +36,7 @@ pub async fn handle_signal(
           *msg_from = format!("Message from {}", cache.info.username);
           emit_username(spawn_window, &events.usr_name, &info.info.username)
         });
-        exec(upsert, input)?;
+        try_exec(upsert, input)?;
       }
     }
     Signal::Chat(text) => {

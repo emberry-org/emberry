@@ -1,17 +1,15 @@
 use log::warn;
-use rusqlite::{params, Connection};
+use rusqlite::{params, Connection, Error::QueryReturnedNoRows};
 
 use crate::data::{IdentifiedUserInfo, UserIdentifier, UserInfo, UserRelation};
 
 /// Tries to get the user info entry from the given db
 ///
-/// If there is no entry [UserInfo] containing the bs58 encoded certificate as username
-/// and [UserRelation::Stranger]
-///
 /// # Errors
 /// This function will return:</br>
-/// The first error returned by executing the underlying SQLite query on `db`
-pub fn get(db: &mut Connection, data: &UserIdentifier) -> Result<UserInfo, rusqlite::Error> {
+/// The first error returned by executing the underlying SQLite query on `db`</br>
+/// [QueryReturnedNoRows] error if the entry is not present in the 'db'
+pub fn try_get(db: &mut Connection, data: &UserIdentifier) -> Result<UserInfo, rusqlite::Error> {
   let mut statement = db.prepare("SELECT username, relation FROM users WHERE tls_cert = (?1)")?;
   let mut rows = statement.query_map([&data.bs58], |row| {
     let username: String = row.get(0)?;
@@ -33,10 +31,25 @@ pub fn get(db: &mut Connection, data: &UserIdentifier) -> Result<UserInfo, rusql
     })
   } else {
     log::info!("no database entry for '{}'", &data.bs58);
-    Ok(UserInfo {
-      username: data.bs58.to_string(),
-      relation: UserRelation::Stranger,
-    })
+    Err(QueryReturnedNoRows)
+  }
+}
+
+/// Tries to get the user info entry from the given db
+///
+/// If there is no entry or db error,
+/// [UserInfo] containing the bs58 encoded certificate as username
+/// and [UserRelation::Stranger]
+pub fn get(db: &mut Connection, data: &UserIdentifier) -> UserInfo {
+  match try_get(db, data) {
+    Ok(data) => data,
+    Err(err) => {
+      log::info!("no database entry for '{}', SQL err: '{}'", &data.bs58, err);
+      UserInfo {
+        username: data.bs58.to_string(),
+        relation: UserRelation::Stranger,
+      }
+    }
   }
 }
 
@@ -120,7 +133,7 @@ mod tests {
     upsert(db, (&ident_info, |_| ()))
   }
 
-  fn get_sample_user(db: &mut Connection) -> Result<UserInfo, rusqlite::Error> {
+  fn get_sample_user(db: &mut Connection) -> UserInfo {
     let identifier = sample_user_ident();
 
     get(db, &identifier)
@@ -137,21 +150,14 @@ mod tests {
 
     let result = get_sample_user(&mut db);
 
-    match result {
-      Err(err) => {
-        panic!("error executing 'get' command: '{}'", err);
-      }
-      Ok(result) => {
-        let exprected = UserInfo {
-          relation: UserRelation::Stranger,
-          username: ident.bs58.into_owned(),
-        };
-        assert_eq!(
-          result, exprected,
-          "\nget returned 'left' but 'right' was expected as there is no entry for that id"
-        );
-      }
-    }
+    let exprected = UserInfo {
+      relation: UserRelation::Stranger,
+      username: ident.bs58.into_owned(),
+    };
+    assert_eq!(
+      result, exprected,
+      "\nget returned 'left' but 'right' was expected as there is no entry for that id"
+    );
   }
 
   /// Tests if the upsert command can insert a user without errors
@@ -198,18 +204,11 @@ mod tests {
 
     let result = get_sample_user(&mut db);
 
-    match result {
-      Err(err) => {
-        panic!("error executing 'get' command: '{}'", err);
-      }
-      Ok(result) => {
-        let exprected = sample_user_info();
-        assert_eq!(
-          result, exprected,
-          "\nget returned 'left' but 'right' was expected as it has previously been inserterd"
-        );
-      }
-    }
+    let exprected = sample_user_info();
+    assert_eq!(
+      result, exprected,
+      "\nget returned 'left' but 'right' was expected as it has previously been inserterd"
+    );
   }
 
   /// Tests if a get after an updating upsert returns the correct data
@@ -230,14 +229,10 @@ mod tests {
 
     let result = get_sample_user(&mut db);
 
-    match result {
-      Err(err) => {
-        panic!("error executing 'get' command: '{}'", err);
-      }
-      Ok(result) => {
-        let exprected = sample_user_info_updated();
-        assert_eq!(result, exprected, "\nget returned 'left' but 'right' was expected as it has previously been inserterd/updated");
-      }
-    }
+    let exprected = sample_user_info_updated();
+    assert_eq!(
+      result, exprected,
+      "\nget returned 'left' but 'right' was expected as it has previously been inserterd/updated"
+    );
   }
 }

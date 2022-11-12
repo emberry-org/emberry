@@ -2,28 +2,28 @@
 
 <script lang="ts">
   import { onMount } from "svelte";
-  import { getItem, onItem, setItem } from "../store";
+  import { getItem, setItem } from "../store";
+  import { invoke } from "@tauri-apps/api/tauri";
+  import { listen } from "@tauri-apps/api/event"
 
   let usernameInput: HTMLInputElement;
   let username: string = " ";
-
-  let activityInput: HTMLInputElement;
-  let activity: string = "";
+  let bs58cert: string = " ";
 
   onMount(() => {
-    username = onItem(localStorage, (val) => {
-      username = val ?? "NoName";
-    }, "username") ?? "NoName";
-    activity = onItem(localStorage, (val) => {
-      activity = val ?? "";
-    }, "activity") ?? "";
+    invoke("get_local").then((user: any) => {
+      if (user === null) {
+        username = "[no_user_pem]"
+        return;
+      }
+      username = user.info.username;
+      bs58cert = user.identifier.bs58;
+      listen(`usr_name_${bs58cert}`, (e: any) => {
+        const name: string = e.payload;
+        username = name
+      });
+    });
   });
-
-  function updateValue(key: string, value: string) {
-    if ((getItem(localStorage, key) ?? "NoName") !== value) {
-      setItem(localStorage, key, value);
-    }
-  }
 
   function keydown(evt: KeyboardEvent, input: HTMLInputElement) {
     if (evt.key === "Enter" && evt.shiftKey === false) {
@@ -37,20 +37,15 @@
 <div class="row">
   <div class="info">
     <input class="username" placeholder="Username" bind:this={usernameInput} bind:value={username} 
-      on:blur={() => updateValue("username", username)} 
+      on:blur={() => invoke("update_username", { name: username })} 
       on:keydown={(evt) => keydown(evt, usernameInput)} 
     />
-    <input class="activity" placeholder="no activity" bind:this={activityInput} bind:value={activity} 
-      on:blur={() => updateValue("activity", activity)} 
-      on:keydown={(evt) => keydown(evt, activityInput)} 
-    />
-    <!-- <p>playing spelltanks</p> -->
   </div>
   <div class="avatar" />
 </div>
 
 <div class="row">
-  <p class="desc">This is a place where you can add a description of your own :D</p>
+  <p class="desc">{ bs58cert }</p>
 </div>
 
 
@@ -97,13 +92,6 @@
       font-weight: 600;
       line-height: 17px;
       color: #eee;
-    }
-
-    .activity {
-      width: 90%;
-      font-size: 14px;
-      line-height: 17px;
-      color: #aaa;
     }
   }
 

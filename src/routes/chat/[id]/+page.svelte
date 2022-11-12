@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { onItem } from "$lib/store";
-  import { storeUsername } from "$lib/user";
   import { emit, listen } from "@tauri-apps/api/event"
   import { onMount } from "svelte";
   import { tick } from "svelte";
@@ -31,16 +29,27 @@
       listen(`usr_name_${peer_id}`, (e: any) => {
         peername = e.payload; 
       });
-    }, (err: any) => {
-      console.error("Could not get peer username from backend: ", err);
     });
 
-    // Load our local username from the storage.
-    localname = onItem(localStorage, (val) => {
-      localname = val ?? "DefaultUsername";
-      // Send our new username to the peer.
+    invoke("get_local").then((user: any) => {
+      if (user === null) {
+        console.error("lol how did you manage to open a room without an identity")
+        localname = "[no_user_pem]"
+        return;
+      }
+      localname = user.info.username;
+      // Send our username to the peer.
       emit(`send_message_${room_id}`, { Username: localname });
-    }, "username") ?? "DefaultUsername";
+
+      let local_id = user.identifier.bs58;
+      listen(`usr_name_${local_id}`, (e: any) => {
+        const name: string = e.payload;
+        console.log("localname changed");
+        localname = name
+        // Send our new username to the peer.
+        emit(`send_message_${room_id}`, { Username: localname });
+      });
+    });
 
     // Listen for incoming messages.
     listen(`message_recieved_${room_id}`, (e: any) => {
@@ -49,9 +58,6 @@
       const msg = { type, content: e.payload.message[type], sender: peername };
       addMessage(msg.content, peername);
     });
-
-    // Send our username to the peer.
-    emit(`send_message_${room_id}`, { Username: localname });
 
     // Set the list to scroll to the bottom of the messages.
     feed.scrollTop = feed.scrollHeight;
