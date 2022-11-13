@@ -11,12 +11,12 @@ import type { MessageEvent } from "./msg.event";
 }
 
 /**
- * Send a message in a room.
+ * Send a username update in a room.
  * @param id The id of the room.
- * @param sender The name of the sender of this message. `(local username)`
+ * @param name The name of the local user.
  */
-export function sendUsername(id: string, sender: any) {
-  emit(`send_message_${id}`, { Username: sender });
+export function sendUsername(id: string, name: any) {
+  emit(`send_message_${id}`, { Username: name });
 }
 
 /**
