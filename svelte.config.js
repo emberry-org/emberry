@@ -1,5 +1,6 @@
 import staticAdapter from "@sveltejs/adapter-static";
 import preprocess from "svelte-preprocess";
+import path from "path";
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -8,6 +9,11 @@ const config = {
   preprocess: preprocess(),
 
   kit: {
+    alias: {
+      'routes/*': './src/routes/*',
+      'lib/*': './src/lib/*',
+      'comms': './src/comms'
+    },
     adapter: staticAdapter({
       // Fallback page has to be named `index.html` otherwise build won't work.
       // The fallback page will be loaded if svelte cannot work out a dynamic route.
