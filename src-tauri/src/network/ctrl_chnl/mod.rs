@@ -1,19 +1,27 @@
-mod certs;
 mod messages;
 pub mod requests;
 pub mod responses;
+mod room_creation;
 mod state;
+mod certs;
 
 use std::{
   io::{self, Error, ErrorKind},
   sync::Arc,
   time::Instant,
 };
+use room_creation::hole_punch;
 
-use crate::network::hole_punch;
+use crate::{
+  data::{
+    config,
+    sqlite::{exec, user::get},
+    IdentifiedUserInfo, UserIdentifier,
+  },
+};
 
 pub use self::state::RwOption;
-use log::trace;
+use log::{error, trace};
 pub use messages::EmberryMessage;
 use rustls::{ClientConfig, RootCertStore, ServerName};
 use serde_json::json;
@@ -35,7 +43,7 @@ use tokio::{
 };
 use tokio_rustls::{client::TlsStream, TlsConnector};
 
-use super::{Networking, RRState, ENV};
+use super::{Networking, RRState};
 
 #[tauri::command(async)]
 pub async fn connect(
@@ -52,10 +60,21 @@ pub async fn connect(
     )));
   }
 
-  let mut root_store = RootCertStore::empty();
+  let server_cert = certs::craft();
+  let (client_cert, _) = match config::PEM_DATA.as_ref() {
+    Some(data) => data,
+    None => {
+      return Err(tauri::Error::Io(io::Error::new(
+        io::ErrorKind::Unsupported,
+        "Identity needed to connect with rhizome",
+      )))
+    }
+  };
 
-  let cert = certs::craft();
-  root_store.add(&cert).unwrap(); // unwrap is safe here as invalid certificates wont be returned from load
+  let mut root_store = RootCertStore::empty();
+  root_store
+    .add(&server_cert)
+    .map_err(|err| tauri::Error::Io(io::Error::new(ErrorKind::InvalidData, err)))?;
 
   let config = ClientConfig::builder()
     .with_safe_defaults()
@@ -69,7 +88,8 @@ pub async fn connect(
 
   let mut plaintext = String::new();
   tls.read_line(&mut plaintext).await?;
-  if plaintext != "rhizome v0.2.0\n" {
+  if plaintext != "rhizome v0.3.0\n" {
+    error!("invalid rhizome version");
     return Err(tauri::Error::Io(io::Error::new(
       io::ErrorKind::Unsupported,
       "Server did greet with rhizome signature",
@@ -79,7 +99,17 @@ pub async fn connect(
     .emit("rz-con", start.elapsed().as_millis() as u64)
     .expect("Failed to emit event");
 
-  tls.write_all(dotenv!("PUBLIC_KEY").as_bytes()).await?;
+  let cobs_cert = match postcard::to_vec_cobs::<Vec<u8>, 1024>(&client_cert.0) {
+    Ok(cobs) => cobs,
+    Err(err) => {
+      error!("Error serializing USER_CERT in 1024 bytes: {}", err);
+      return Err(tauri::Error::Io(io::Error::new(
+        io::ErrorKind::InvalidData,
+        "cannot serialize USER_CERT",
+      )));
+    }
+  };
+  tls.write_all(&cobs_cert).await?;
 
   let (tx, rx) = mpsc::channel::<EmberryMessage>(25);
 
@@ -109,6 +139,7 @@ async fn run_channel_result<'a>(
   loop {
     select! {
       Some(msg) = rx.recv() => {
+        trace!("crtl send: {:?}", &msg);
         match msg {
             EmberryMessage::Direct(msg) => msg.send_with(&mut tls).await?,
             EmberryMessage::Close() => return Ok(()),
@@ -132,7 +163,10 @@ async fn handle_rhiz_msg(
     HasRoute(usr) => {
       let pending = net.pending.lock().unwrap().contains_key(&usr);
       window
-        .emit("has-route", json!({ "pending": pending, "usr": usr, }))
+        .emit(
+          "has-route",
+          json!({ "pending": pending, "usr": UserIdentifier::from(&usr).bs58, }),
+        )
         .expect("Failed to emit HasRoute")
     }
     NoRoute(usr) => {
@@ -141,7 +175,7 @@ async fn handle_rhiz_msg(
       window
         .emit(
           "no-route",
-          json!({ "pending": pending.is_some(), "usr": usr, }),
+          json!({ "pending": pending.is_some(), "usr": UserIdentifier::from(&usr).bs58, }),
         )
         .expect("Failed to emit NoRoute")
     }
@@ -152,26 +186,40 @@ async fn handle_rhiz_msg(
         let mut guard = net.pending.lock().unwrap();
         none = guard.get(&usr).is_none();
         if none {
+          let ident = UserIdentifier::from(&usr);
+          let info = exec(get, &ident);
+          let ident_info = IdentifiedUserInfo {
+            identifier: ident,
+            info,
+          };
           window
-            .emit("wants-room", std::str::from_utf8(&usr.key).unwrap())
+            .emit("wants-room", ident_info)
             .expect("Failed to emit WantsRoom event");
         } else {
           // Here we get a WantsRoom while we already want a room with them (they were unaware when they made their request)
           // In this situation the user with the higher value as pub key rejects the request
           // the client with the lower value pub key auto accepts
           // this is done to remove the dublicate request
-          guard.insert(usr, super::RRState::Agreement);
+          guard.insert(usr.clone(), super::RRState::Agreement);
         }
       }
 
       if !none {
         // this is the same case where guard.insert(Agreement) happens just outside scope because we want to drop guard before await
-        let msg = EmbMessage::Accept(ENV.public_key.as_bytes() < usr.key.as_slice());
+        //                    we can unsafe unwrap here because we know that PEM_DATA is not None because the receive loop
+        //                    only starts if PEM_DATA is Some()
+        let priority = unsafe { &config::PEM_DATA.as_ref().unwrap_unchecked().0.0 } < &usr.cert_data;
+        let msg = EmbMessage::Accept(
+          priority,
+        );
         state::send(rc, msg).await?;
       }
     }
     AcceptedRoom(id, usr) => {
-      try_holepunch(window.clone(), app_handle, net.clone(), id, usr).await?
+      //                    we can unsafe unwrap here because we know that PEM_DATA is not None because the receive loop
+      //                    only starts if PEM_DATA is Some()
+      let priority = unsafe { &config::PEM_DATA.as_ref().unwrap_unchecked().0.0 } < &usr.cert_data;
+      try_holepunch(window.clone(), app_handle, net.clone(), id, usr, priority).await?
     }
     ServerError(err) => {
       return Err(tauri::Error::Io(io::Error::new(
@@ -190,11 +238,12 @@ async fn try_holepunch(
   net_state: tauri::State<'_, Networking>,
   room_id: Option<RoomId>,
   usr: User,
+  priority: bool,
 ) -> tauri::Result<()> {
   if let Some(room_id) = room_id {
     if net_state.pending.lock().unwrap().remove(&usr).is_some() {
       // only hole punch if there is a connection pending
-      hole_punch(window, app_handle, net_state, room_id, usr.key).await?;
+      hole_punch(window, app_handle, net_state, room_id, usr, priority).await?;
     } else {
       // This is rather weak protection as a compromized rhizome server could still just send a different room id with a valid user
       // Room id procedure is subject to change in the future. (plan is to use cryptographic signatures to mitigated unwanted ip leak)

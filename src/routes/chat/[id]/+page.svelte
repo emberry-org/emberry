@@ -1,11 +1,10 @@
 <script lang="ts">
-  import { onItem } from "$lib/store";
-  import { storeUsername } from "$lib/user";
   import { emit, listen } from "@tauri-apps/api/event"
   import { onMount } from "svelte";
   import { tick } from "svelte";
   import Msg from "$lib/chat/msg.svelte";
   import type { Message } from "$lib/chat/msg";
+  import { invoke } from "@tauri-apps/api/tauri";
 
   /** Chat ID format : 'peer_id:room_id' */
   /** @type {import('./$types').PageData} */
@@ -25,29 +24,40 @@
   let input: HTMLInputElement;
 
   onMount(() => {
-    // Load our local username from the storage.
-    localname = onItem(localStorage, (val) => {
-      localname = val ?? "NoName";
-      // Send our new username to the peer.
+    invoke("get_usr_info", { bs58cert: peer_id}).then((info: any) => {
+      peername = info.username;
+      listen(`usr_name_${peer_id}`, (e: any) => {
+        peername = e.payload; 
+      });
+    });
+
+    invoke("get_local").then((user: any) => {
+      if (user === null) {
+        console.error("lol how did you manage to open a room without an identity")
+        localname = "[no_user_pem]"
+        return;
+      }
+      localname = user.info.username;
+      // Send our username to the peer.
       emit(`send_message_${room_id}`, { Username: localname });
-    }, "username") ?? "NoName";
+
+      let local_id = user.identifier.bs58;
+      listen(`usr_name_${local_id}`, (e: any) => {
+        const name: string = e.payload;
+        console.log("localname changed");
+        localname = name
+        // Send our new username to the peer.
+        emit(`send_message_${room_id}`, { Username: localname });
+      });
+    });
 
     // Listen for incoming messages.
     listen(`message_recieved_${room_id}`, (e: any) => {
       const type: string = Object.keys(e.payload.message)[0];
 
-      if (type === "Username") {
-        peername = e.payload.message[type];
-        storeUsername(peer_id, peername);
-        return;
-      }
-
       const msg = { type, content: e.payload.message[type], sender: peername };
       addMessage(msg.content, peername);
     });
-
-    // Send our username to the peer.
-    emit(`send_message_${room_id}`, { Username: localname });
 
     // Set the list to scroll to the bottom of the messages.
     feed.scrollTop = feed.scrollHeight;
@@ -71,7 +81,7 @@
     messages = [...messages];
 
     // Check if the user has scrolled all the way to the bottom.
-    if (feed.scrollTop !== feed.scrollHeight - feed.clientHeight) return;
+    if (feed.scrollTop < feed.scrollHeight - feed.clientHeight - 100) return;
     await tick(); // Wait a tick for the UI to update.
 
     // Move the list up with the new message that was added.
@@ -93,7 +103,7 @@
 
 
 <div class="header">
-  <h2>{ data.id }</h2>
+  <h2>{ peername }</h2>
 </div>
 
 <div class="chat">

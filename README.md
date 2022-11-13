@@ -45,10 +45,9 @@ For the backend setup add a ``.env`` file to the ``src-tauri`` directory :
 /src-tauri/.env
 
 SERVER_ADDRESS=<server_ip>:<udp_port>
-SERVER_DOMAIN=<certificate domain name>
 CONTROL_ADDRESS=<server_ip>:<ctrl_chnl_port>
-PUBLIC_KEY=<32 byte string>
-CERT=<X509Certificate>
+SERVER_DOMAIN=<certificate domain name>
+CERT=<server X509Certificate>
 ```
 
 <br>

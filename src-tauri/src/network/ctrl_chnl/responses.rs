@@ -1,19 +1,30 @@
-use crate::network::{Networking, RRState};
+use crate::{
+  data::UserIdentifier,
+  network::{Networking, RRState},
+};
 
 use super::{state, RhizomeConnection};
 use smoke::messages::EmbMessage;
 use smoke::User;
-use std::io::{Error, ErrorKind};
+use std::{
+  borrow::Cow,
+  io::{Error, ErrorKind},
+};
 use tauri::Result;
 
 #[tauri::command(async)]
 pub async fn accept_room(
-  usr: User,
+  bs58cert: String,
   accepted: bool,
   net: tauri::State<'_, Networking>,
   rc: tauri::State<'_, RhizomeConnection>,
 ) -> Result<()> {
   {
+    let usr: User = UserIdentifier {
+      bs58: Cow::Owned(bs58cert),
+    }
+    .try_into()?;
+
     let mut guard = net.pending.lock().unwrap();
     let some = if accepted {
       guard.insert(usr, RRState::Agreement).is_some()

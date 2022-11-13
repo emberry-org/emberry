@@ -1,8 +1,9 @@
 <!-- User.Leaf : a small wide display of a user (usually displayed within a list) -->
 
 <script lang="ts">
+  import { setItem } from "$lib/store";
   import { invoke } from "@tauri-apps/api/tauri";
-  import { storeUser, UserStatus, type User } from ".";
+  import { UserStatus, type User } from ".";
 
   /** The user this leaf belongs too */
   export let user: User;
@@ -13,7 +14,7 @@
       /** If a pending user was clicked accept their request */
       case UserStatus.Pending:
         invoke('accept_room', {
-          usr: { key: user.key },
+          bs58cert: user.key,
           accepted: true,
         });
         // TODO: Need to check if actually connected !
@@ -38,10 +39,8 @@
 
   /** Attempt to request a room with this user. */
   function tryRequest() {
-    let utf8Encode = new TextEncoder();
-    invoke("request_room", { usr: { key: Array.from(utf8Encode.encode(user.key)) } });
-    // The request has been send, mark this user as awaiting response.
-    storeUser({ key: user.key, status: UserStatus.Awaiting });
+    invoke("request_room", { bs58cert: user.key });
+    setItem(user.key, JSON.stringify(UserStatus.Awaiting));
   }
 </script>
 

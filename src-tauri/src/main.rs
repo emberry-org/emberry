@@ -6,26 +6,27 @@
 #[macro_use]
 extern crate dotenv_codegen;
 
-mod network;
-mod history;
+mod data;
 mod embed;
+mod history;
+mod network;
 
 use std::sync::atomic::AtomicBool;
 
+use data::tauri::*;
+use embed::embed;
 use log::trace;
 use network::ctrl_chnl::{connect, requests::*, responses::*, State};
 use network::{chat_exists, Networking};
 use std::sync::atomic::Ordering;
 use tokio::sync::RwLock;
-use embed::embed;
 
 pub static FOCUS: AtomicBool = AtomicBool::new(false);
 
 fn main() {
   env_logger::init();
 
-  trace!("Running as: {}", dotenv!("PUBLIC_KEY"));
-
+  trace!(concat!("emberry-rs v", env!("CARGO_PKG_VERSION")));
   tauri::Builder::default()
     // Application State
     .manage(Networking {
@@ -39,7 +40,12 @@ fn main() {
       connect,
       request_room,
       accept_room,
+      get_usr_info,
+      get_usrs,
+      update_username,
+      get_local,
       embed,
+      generate_user_certificate,
     ])
     // TEMP / TODO : This will be obsolete once the `window.is_focused()` function is released from Tauri.
     .on_window_event(|event| {

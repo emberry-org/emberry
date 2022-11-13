@@ -13,11 +13,15 @@ tauri-build = { version = "1.1", features = [] }
 
 [dependencies]
 serde_json = "1.0"
+postcard = "1"
 serde = { version = "1.0", features = ["derive"] }
 tauri = { version = "1.1", features = ["api-all"] }
 smoke = { git = "https://github.com/emberry-org/smoke" }
 dotenv_codegen = "0.15.0"
 bs58 = "0.4"
+lazy_static = "1.4.0"
+rusqlite = { version = "0.28", features = ["bundled"] }
+rcgen = { version = "0.9" }
 
 tokio = { version = "1.18.2", features = ["net", "macros", "rt", "sync"] }
 
@@ -27,7 +31,7 @@ tokio_kcp = "0.9.3"
 # tls dependencies
 tokio-rustls = "0.23"
 rustls = { version = "0.20" }
-rustls-pemfile = { version="0.2" }
+rustls-pemfile = { version = "0.2" }
 
 # http dependencies
 reqwest = "0.11.12"
