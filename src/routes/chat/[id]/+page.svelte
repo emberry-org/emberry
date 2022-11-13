@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { emit, listen } from "@tauri-apps/api/event"
   import { onMount } from "svelte";
   import { tick } from "svelte";
-  import Msg from "$lib/chat/msg.svelte";
-  import type { Message } from "$lib/chat/msg";
-  import { invoke } from "@tauri-apps/api/tauri";
+  import Msg from "lib/chat/msg.svelte";
+  import type { Message } from "lib/chat/msg";
+  import { getLocalUserInfo, getUserInfo, onUserInfo } from "comms/warehouse";
+  import { onMessage, sendMessage, sendUsername } from "comms/msg";
 
   /** Chat ID format : 'peer_id:room_id' */
   /** @type {import('./$types').PageData} */
@@ -23,40 +23,25 @@
   let feed: HTMLOListElement;
   let input: HTMLInputElement;
 
-  onMount(() => {
-    invoke("get_usr_info", { bs58cert: peer_id}).then((info: any) => {
-      peername = info.username;
-      listen(`usr_name_${peer_id}`, (e: any) => {
-        peername = e.payload; 
-      });
+  onMount(async () => {
+    /* Setup the online user */
+    getUserInfo(peer_id).then((info) => { peername = info.name; });
+    onUserInfo(peer_id, (e) => { peername = e.name; });
+
+    /* Setup the local user */
+    const user = await getLocalUserInfo();
+
+    localname = user.name;
+    sendUsername(room_id, localname);
+
+    onUserInfo(user.id, (e) => {
+      localname = e.name;
+      sendUsername(room_id, localname);
     });
 
-    invoke("get_local").then((user: any) => {
-      if (user === null) {
-        console.error("lol how did you manage to open a room without an identity")
-        localname = "[no_user_pem]"
-        return;
-      }
-      localname = user.info.username;
-      // Send our username to the peer.
-      emit(`send_message_${room_id}`, { Username: localname });
-
-      let local_id = user.identifier.bs58;
-      listen(`usr_name_${local_id}`, (e: any) => {
-        const name: string = e.payload;
-        console.log("localname changed");
-        localname = name
-        // Send our new username to the peer.
-        emit(`send_message_${room_id}`, { Username: localname });
-      });
-    });
-
-    // Listen for incoming messages.
-    listen(`message_recieved_${room_id}`, (e: any) => {
-      const type: string = Object.keys(e.payload.message)[0];
-
-      const msg = { type, content: e.payload.message[type], sender: peername };
-      addMessage(msg.content, peername);
+    /* Listen for incoming messages */
+    onMessage(room_id, (e) => {
+      if (e.msg.type === "Chat") addMessage(e.msg.content, peername);
     });
 
     // Set the list to scroll to the bottom of the messages.
@@ -64,9 +49,7 @@
 
     // Send a message when the enter key is pressed.
     input.addEventListener('keydown', (e: KeyboardEvent) => {
-      if (e.key === "Enter" && e.shiftKey === false) {
-        sendMessage();
-      }
+      if (e.key === "Enter" && e.shiftKey === false) send();
     });
   });
 
@@ -88,12 +71,11 @@
     feed.scrollTop = feed.scrollHeight;
   }
 
-  async function sendMessage() {
-    // Don't send anything if the message is whitespace.
+  async function send() {
     if (msg.trim().length === 0) return;
 
     // Send the message and add it to our own feed.
-    emit(`send_message_${room_id}`, { Chat: msg });
+    sendMessage(room_id, { Chat: msg });
     addMessage(msg, localname);
 
     // Empty the input box.
@@ -130,7 +112,7 @@
   <div class="bar">
 
     <input class="default" placeholder="Enter a message..." bind:value={msg} bind:this={input} />
-    <button class="default" on:click={sendMessage}>
+    <button class="default" on:click={send}>
       Send Msg
     </button>
 

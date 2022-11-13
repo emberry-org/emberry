@@ -1,7 +1,7 @@
 <!-- User.Leaf : a small wide display of a user (usually displayed within a list) -->
 
 <script lang="ts">
-  import { setItem } from "$lib/store";
+  import { setItem } from "lib/store";
   import { invoke } from "@tauri-apps/api/tauri";
   import { UserStatus, type User } from ".";
 

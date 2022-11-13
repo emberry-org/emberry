@@ -2,26 +2,23 @@
 
 <script lang="ts">
   import { onMount } from "svelte";
-  import { getItem, setItem } from "../store";
-  import { invoke } from "@tauri-apps/api/tauri";
-  import { listen } from "@tauri-apps/api/event"
+  import { getLocalUserInfo, onUserInfo, setUsername } from "comms/warehouse";
 
   let usernameInput: HTMLInputElement;
   let username: string = " ";
   let bs58cert: string = " ";
 
-  onMount(() => {
-    invoke("get_local").then((user: any) => {
-      if (user === null) {
-        username = "[no_user_pem]"
-        return;
-      }
-      username = user.info.username;
-      bs58cert = user.identifier.bs58;
-      listen(`usr_name_${bs58cert}`, (e: any) => {
-        const name: string = e.payload;
-        username = name
-      });
+  onMount(async () => {
+    const user = await getLocalUserInfo();
+
+    /* Check if the local user is set */
+    if (user === null) { username = "[no_user_pem]"; return; }
+
+    username = user.name;
+    bs58cert = user.id;
+
+    onUserInfo(user.id, (e) => {
+      username = e.name;
     });
   });
 
@@ -37,7 +34,7 @@
 <div class="row">
   <div class="info">
     <input class="username" placeholder="Username" bind:this={usernameInput} bind:value={username} 
-      on:blur={() => invoke("update_username", { name: username })} 
+      on:blur={() => setUsername(username)} 
       on:keydown={(evt) => keydown(evt, usernameInput)} 
     />
   </div>

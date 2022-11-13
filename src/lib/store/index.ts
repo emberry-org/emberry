@@ -1,4 +1,4 @@
-import type { UserStatus } from "$lib/user";
+import type { UserStatus } from "lib/user";
 
 /**
  * Sets an item in the given storage and dispatches an event for that storage.
