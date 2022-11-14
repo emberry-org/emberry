@@ -1,23 +1,24 @@
+mod certs;
 mod messages;
 pub mod requests;
 pub mod responses;
 mod room_creation;
 mod state;
-mod certs;
 
+use room_creation::hole_punch;
 use std::{
   io::{self, Error, ErrorKind},
   sync::Arc,
   time::Instant,
 };
-use room_creation::hole_punch;
 
-use crate::{
-  data::{
-    config,
-    sqlite::{exec, user::get},
-    IdentifiedUserInfo, UserIdentifier,
+use crate::data::{
+  config,
+  sqlite::{
+    exec, try_exec,
+    user::{try_get, upsert},
   },
+  IdentifiedUserInfo, UserIdentifier, UserInfo,
 };
 
 pub use self::state::RwOption;
@@ -187,11 +188,38 @@ async fn handle_rhiz_msg(
         none = guard.get(&usr).is_none();
         if none {
           let ident = UserIdentifier::from(&usr);
-          let info = exec(get, &ident);
-          let ident_info = IdentifiedUserInfo {
-            identifier: ident,
-            info,
+          let info = exec(try_get, &ident);
+          let ident_info = match info {
+            Ok(info) => IdentifiedUserInfo {
+              identifier: ident,
+              info,
+            },
+            Err(rusqlite::Error::QueryReturnedNoRows) => {
+              let ident_info = IdentifiedUserInfo {
+                info: UserInfo {
+                  username: ident.bs58.to_string(),
+                  relation: crate::data::UserRelation::Stranger,
+                },
+                identifier: ident.as_ref(),
+              };
+              let new_user_event = |ident_info: &IdentifiedUserInfo| {
+                window
+                  .emit("new-user", &ident_info.info.username)
+                  .expect("Failed to emit new-user event")
+              };
+              try_exec(upsert, (&ident_info, new_user_event))?;
+
+              ident_info
+            }
+            Err(err) => {
+              log::error!("SQLite access error : '{}'", err);
+              return Err(tauri::Error::Io(io::Error::new(
+                ErrorKind::Other,
+                "SQLite error",
+              )));
+            }
           };
+
           window
             .emit("wants-room", ident_info)
             .expect("Failed to emit WantsRoom event");

@@ -36,7 +36,7 @@ impl<'a> From<&User> for UserIdentifier<'a> {
   }
 }
 
-impl TryInto<User> for UserIdentifier<'_> {
+impl TryInto<User> for &UserIdentifier<'_> {
   type Error = std::io::Error;
   fn try_into(self) -> Result<User, Self::Error> {
     let usr = User {

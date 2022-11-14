@@ -3,7 +3,7 @@
   import { onMount } from "svelte";
   import { UserStatus, type User, Leaf } from "./user";
   import { onStatusChange, setItem } from "./store";
-  import { getUserList, onUserInfo } from "comms/warehouse";
+  import { getUserList, onNewUser, onUserInfo } from "comms/warehouse";
   import { merge } from "utils/object";
 
   export let users: User[];
@@ -24,6 +24,20 @@
       });
     });
 
+    onNewUser((user: User) => {
+      // If this user is new then just push them into the array.
+      users.push(user);
+
+      onUserInfo(user.key, (diff) => {
+        const i = users.findIndex((u) => u.key === user.key);
+        if (i < 0) { console.error(`username updated of non-existing user (${ user.key })`); return; }
+
+        users[i] = merge(users[i], <User>diff);
+      });
+
+      users = users; // Update the rendering
+    });
+
     onStatusChange((key: string | null, value: UserStatus) => {
       const userIndex = users.findIndex((u) => u.key === key);
       if (userIndex === -1)
@@ -37,28 +51,6 @@
     listen("wants-room", (e: any) => {
       const usrkey = e.payload.identifier.bs58;
 
-      let s_user = {
-        key: usrkey,
-        name: e.payload.info.username,
-        status: UserStatus.Pending,
-      };
-
-      const userIndex = users.findIndex((u) => u.key === usrkey);
-      // If this user is new then just push them into the array.
-      if (userIndex === -1) {
-        users.push(s_user);
-
-        onUserInfo(s_user.key, (diff) => {
-          const i = users.findIndex((u) => u.key === s_user.key);
-          if (i < 0) { console.error(`username updated of non-existing user (${ s_user.key })`); return; }
-
-          users[i] = merge(users[i], <User>diff);
-        });
-
-        users = users; // Update the rendering
-      }
-      // If this user is already present then update their data.
-      else users[userIndex] = s_user;
       setItem(usrkey, JSON.stringify(UserStatus.Pending));
     });
   });

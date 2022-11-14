@@ -20,10 +20,10 @@ pub async fn accept_room(
   rc: tauri::State<'_, RhizomeConnection>,
 ) -> Result<()> {
   {
-    let usr: User = UserIdentifier {
-      bs58: Cow::Owned(bs58cert),
-    }
-    .try_into()?;
+    let ident = UserIdentifier {
+      bs58: Cow::Borrowed(&bs58cert),
+    };
+    let usr: User = (&ident).try_into()?;
 
     let mut guard = net.pending.lock().unwrap();
     let some = if accepted {

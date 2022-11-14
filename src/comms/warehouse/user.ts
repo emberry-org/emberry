@@ -68,3 +68,17 @@ export async function onUserInfo(id: string, cb: (e: UserUpdatedEvent) => void) 
     });
   });
 }
+
+/**
+ * Add a listener to the new user event.
+ * @param cb A callback for whenever the event is fired.
+ */
+export async function onNewUser(cb: (e: User) => void) {
+  listen("new-user", (bs58_event: any) => {
+    cb({
+      key: bs58_event.payload,
+      name: bs58_event.payload,
+      status: UserStatus.Disconnected,
+    });
+  });
+}
