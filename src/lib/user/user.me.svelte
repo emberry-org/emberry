@@ -10,11 +10,11 @@
 
   onMount(async () => {
     const user = await getLocalUserInfo();
+    username = user.name;
 
     /* Check if the local user is set */
-    if (user === null) { username = "[no_user_pem]"; return; }
+    if (user.id === "unknown") { return; }
 
-    username = user.name;
     bs58cert = user.id;
 
     onUserInfo(user.id, (e) => {
