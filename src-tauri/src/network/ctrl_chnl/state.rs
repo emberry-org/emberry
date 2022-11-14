@@ -15,7 +15,6 @@ pub struct State {
 
 /// Tries to send msg using the inner "channel" if it is there returning io error if not
 pub async fn send(rc: &RhizomeConnection, msg: EmbMessage) -> io::Result<()> {
-  trace!("ctrl send: {:?}", msg);
   let guard = rc.read().await;
 
   let tx = match &*guard {
