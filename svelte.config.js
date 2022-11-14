@@ -1,6 +1,5 @@
 import staticAdapter from "@sveltejs/adapter-static";
 import preprocess from "svelte-preprocess";
-import path from "path";
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -12,6 +11,7 @@ const config = {
     alias: {
       'routes/*': './src/routes/*',
       'lib/*': './src/lib/*',
+      'utils/*': './src/utils/*',
       'comms': './src/comms'
     },
     adapter: staticAdapter({
