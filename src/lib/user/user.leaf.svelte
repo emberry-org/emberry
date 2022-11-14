@@ -45,6 +45,7 @@
 </script>
 
 
+<!-- svelte-ignore a11y-click-events-have-key-events -->
 <li class="leaf { user.status == UserStatus.Pending || user.status == UserStatus.Disconnected || user.status == UserStatus.Offline ? 'pending' : '' }" name={ user.name ?? 'unknown' } on:click={onActivate}>
   <p class="name">{ user.name ?? user.key }</p>
   <p class="status">{ UserStatus[user.status] }</p>
