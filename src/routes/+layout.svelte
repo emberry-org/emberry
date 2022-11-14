@@ -1,17 +1,17 @@
 <script lang="ts">
   import "../app.css";
-  import loadBundle from "../lib/icons/bundle";
+  import loadBundle from "lib/icons/bundle";
   import { goto } from '$app/navigation';
   import { invoke } from "@tauri-apps/api/tauri";
   import { emit, listen } from "@tauri-apps/api/event";
-  import NavBar from "../lib/layout/navbar.svelte";
-  import StatusBar from "../lib/layout/statusbar.svelte";
-  import Users from "../lib/users.svelte";
-  import Me from "../lib/user/user.me.svelte";
+  import NavBar from "lib/layout/navbar.svelte";
+  import StatusBar from "lib/layout/statusbar.svelte";
+  import Users from "lib/users.svelte";
+  import Me from "lib/user/user.me.svelte";
   import { onMount } from "svelte";
-  import Cmd from "$lib/cmd/cmd.svelte";
-  import { setItem } from "$lib/store";
-  import { UserStatus } from "$lib/user";
+  import Cmd from "lib/cmd/cmd.svelte";
+  import { setItem } from "lib/store";
+  import { UserStatus } from "lib/user";
 
   onMount(() => {
     loadBundle();

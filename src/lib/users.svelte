@@ -2,33 +2,28 @@
   import { listen } from "@tauri-apps/api/event";
   import { onMount } from "svelte";
   import { UserStatus, type User, Leaf } from "./user";
-  import { invoke } from "@tauri-apps/api/tauri";
   import { onStatusChange, setItem } from "./store";
+  import { getUserList, onUserInfo } from "comms/warehouse";
 
   export let users: User[];
 
   onMount(() => {
-    invoke("get_usrs", { limit: -1, offset: 0 }).then((b_users: any) => {
-      b_users.forEach((user: any) => {
-        let s_user = {
-          key: user.identifier.bs58,
-          name: user.info.username,
-          status: UserStatus.Disconnected,
-        };
-        users.push(s_user);
-        listen(`usr_name_${s_user.key}`, (e: any) => {
-          console.log("event for ", s_user.key);
-          const userIndex = users.findIndex((u) => u.key === s_user.key);
-          if (userIndex === -1)
-          {
-            console.error(`username of non existing user "${s_user.key}" changed`);
-            return;
+    /* Load the user list */
+    getUserList().then((list) => {
+      users = list;
+
+      /* Listen for user info updates from all users within the list */
+      users.forEach(user => {
+        onUserInfo(user.key, (diff) => {
+          const i = users.findIndex((u) => u.key === user.key);
+          if (i < 0) { console.error(`username updated of non-existing user (${ user.key })`); return; }
+
+          users[i] = <User>{
+            ...users[i],
+            name: diff.name,
           }
-          users[userIndex].name = e.payload;
         });
       });
-      // update the rendering
-      users = users;
     });
 
     onStatusChange((key: string | null, value: UserStatus) => {
@@ -54,16 +49,17 @@
       // If this user is new then just push them into the array.
       if (userIndex === -1) {
         users.push(s_user);
-        listen(`usr_name_${s_user.key}`, (e: any) => {
-          console.log("event for ", s_user.key);
-          const userIndex = users.findIndex((u) => u.key === s_user.key);
-          if (userIndex === -1)
-          {
-            console.error(`username of non existing user "${s_user.key}" changed`);
-            return;
+
+        onUserInfo(s_user.key, (e) => {
+          const i = users.findIndex((u) => u.key === s_user.key);
+          if (i < 0) { console.error(`username updated of non-existing user (${ s_user.key })`); return; }
+
+          users[i] = <User>{
+            ...users[i],
+            name: e.name,
           }
-          users[userIndex].name = e.payload;
         });
+
         users = users; // Update the rendering
       }
       // If this user is already present then update their data.
