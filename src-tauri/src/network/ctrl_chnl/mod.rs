@@ -8,7 +8,7 @@ mod state;
 use room_creation::hole_punch;
 use std::{
   io::{self, Error, ErrorKind},
-  sync::Arc,
+  sync::{atomic::Ordering, Arc},
   time::Instant,
 };
 
@@ -33,7 +33,7 @@ use smoke::{
 };
 pub use state::RhizomeConnection;
 pub use state::State;
-use tauri::Window;
+use tauri::{api::notification::Notification, Window};
 use tokio::{
   io::{AsyncBufReadExt, AsyncWriteExt, BufReader},
   net::TcpStream,
@@ -221,8 +221,16 @@ async fn handle_rhiz_msg(
           };
 
           window
-            .emit("wants-room", ident_info)
+            .emit("wants-room", &ident_info)
             .expect("Failed to emit WantsRoom event");
+
+          /* Create a new notification for the message */
+          if !crate::FOCUS.load(Ordering::SeqCst) {
+            Notification::new(&app_handle.config().tauri.bundle.identifier)
+              .title(format!("{} wants to connect to you", ident_info.info.username))
+              .show()
+              .expect("Failed to send desktop notification");
+          }
         } else {
           // Here we get a WantsRoom while we already want a room with them (they were unaware when they made their request)
           // In this situation the user with the higher value as pub key rejects the request
