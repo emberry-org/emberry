@@ -9,18 +9,18 @@
 
   onMount(() => {
     /* Load the user list */
-    getUserList().then((e) => {
-      users = e;
+    getUserList().then((list) => {
+      users = list;
 
       /* Listen for user info updates from all users within the list */
       users.forEach(user => {
-        onUserInfo(user.key, (e) => {
+        onUserInfo(user.key, (diff) => {
           const i = users.findIndex((u) => u.key === user.key);
           if (i < 0) { console.error(`username updated of non-existing user (${ user.key })`); return; }
 
           users[i] = <User>{
             ...users[i],
-            name: e.name,
+            name: diff.name,
           }
         });
       });
