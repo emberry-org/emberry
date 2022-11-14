@@ -26,7 +26,7 @@
   onMount(async () => {
     /* Setup the online user */
     getUserInfo(peer_id).then((info) => { peername = info.name; });
-    onUserInfo(peer_id, (e) => { peername = e.name; });
+    onUserInfo(peer_id, (e) => { if (e.name) peername = e.name; });
 
     /* Setup the local user */
     const user = await getLocalUserInfo();
@@ -35,7 +35,7 @@
     sendUsername(room_id, localname);
 
     onUserInfo(user.id, (e) => {
-      localname = e.name;
+      if (e.name) localname = e.name;
       sendUsername(room_id, localname);
     });
 
