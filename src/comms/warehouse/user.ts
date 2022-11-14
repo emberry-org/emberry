@@ -62,9 +62,9 @@ export async function getUserInfo(id: string): Promise<UserPayload> {
  * @param cb A callback for whenever the event is fired.
  */
 export async function onUserInfo(id: string, cb: (e: UserUpdatedEvent) => void) {
-  listen(`usr_name_${id}`, (e: any) => {
+  listen(`usr_name_${id}`, (name: any) => {
     cb({
-      name: e.payload
+      name: name.payload
     });
   });
 }
