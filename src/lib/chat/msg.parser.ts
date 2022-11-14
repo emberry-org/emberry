@@ -30,6 +30,10 @@ export async function getEmbed(content: string): Promise<{ title: string, desc: 
 
   const url = content.match(/((ftp|http|https|file):\/\/[\S]+(\b|$))(?![^<]*>|[^<>]*<)/gim);
 
+  if (url && (url[0].endsWith(".png") || url[0].endsWith(".jpg"))) {
+    return { title: '', desc: '', preview: url[0], url: url[0] };
+  }
+
   if (url) {
     // Fetch the html from the url using the backend.
     let result: string = await invoke('embed', {

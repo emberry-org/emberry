@@ -53,7 +53,7 @@
     <img class="preview"
       src={ embed.preview } 
       alt={ embed.title } 
-      height={ embedHeight } 
+      height={ embed.title.length == 0 && embed.desc.length == 0 ? 240 : embedHeight } 
       on:error={ (e) => e.currentTarget.style.display = 'none' }
     >
   {/if}
@@ -174,6 +174,8 @@
         margin: 8px 0 6px 0;
         font-weight: inherit;
         font-size: 12px;
+        overflow: hidden;
+        text-overflow: ellipsis;
         color: #6BA0D6;
 
         &:hover {
