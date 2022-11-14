@@ -3,7 +3,7 @@ import type { UserStatus } from "lib/user";
 /**
  * User information payload.
  */
-export interface UserInfo {
+export interface UserPayload {
   id: string;
   name: string;
   status?: UserStatus;

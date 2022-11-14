@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api";
 import { listen } from "@tauri-apps/api/event";
 import { UserStatus, type User } from "lib/user";
-import type { UserInfo } from "./user.event";
+import type { UserPayload } from "./user.event";
 
 /**
  * Set the local username.
@@ -28,7 +28,7 @@ export async function getUserList(): Promise<User[]> {
  * Get the user information of the local user.
  * @returns The information of the local user.
  */
-export async function getLocalUserInfo(): Promise<UserInfo> {
+export async function getLocalUserInfo(): Promise<UserPayload> {
   const event = await invoke("get_local") as any;
 
   if (event === null) {
@@ -49,7 +49,7 @@ export async function getLocalUserInfo(): Promise<UserInfo> {
  * @param id The id of the user.
  * @returns The information of the user.
  */
-export async function getUserInfo(id: string): Promise<UserInfo> {
+export async function getUserInfo(id: string): Promise<UserPayload> {
   const event = await invoke("get_usr_info", { bs58cert: id }) as any;
   return { id,
     name: event.username
@@ -61,7 +61,7 @@ export async function getUserInfo(id: string): Promise<UserInfo> {
  * @param id The id of the user.
  * @param cb A callback for whenever the event is fired.
  */
-export async function onUserInfo(id: string, cb: (e: UserInfo) => void) {
+export async function onUserInfo(id: string, cb: (e: UserPayload) => void) {
   listen(`usr_name_${id}`, (e: any) => {
     cb({ id,
       name: e.payload
