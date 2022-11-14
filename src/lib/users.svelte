@@ -4,6 +4,7 @@
   import { UserStatus, type User, Leaf } from "./user";
   import { onStatusChange, setItem } from "./store";
   import { getUserList, onUserInfo } from "comms/warehouse";
+  import { merge } from "utils/object";
 
   export let users: User[];
 
@@ -18,10 +19,7 @@
           const i = users.findIndex((u) => u.key === user.key);
           if (i < 0) { console.error(`username updated of non-existing user (${ user.key })`); return; }
 
-          users[i] = <User>{
-            ...users[i],
-            name: diff.name,
-          }
+          users[i] = merge(users[i], <User>diff);
         });
       });
     });
@@ -50,14 +48,11 @@
       if (userIndex === -1) {
         users.push(s_user);
 
-        onUserInfo(s_user.key, (e) => {
+        onUserInfo(s_user.key, (diff) => {
           const i = users.findIndex((u) => u.key === s_user.key);
           if (i < 0) { console.error(`username updated of non-existing user (${ s_user.key })`); return; }
 
-          users[i] = <User>{
-            ...users[i],
-            name: e.name,
-          }
+          users[i] = merge(users[i], <User>diff);
         });
 
         users = users; // Update the rendering

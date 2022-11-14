@@ -18,7 +18,7 @@
     bs58cert = user.id;
 
     onUserInfo(user.id, (e) => {
-      username = e.name;
+      if (e.name) username = e.name;
     });
   });
 

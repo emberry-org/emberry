@@ -1,10 +1,14 @@
-import type { UserStatus } from "lib/user";
-
 /**
  * User information payload.
  */
 export interface UserPayload {
   id: string;
   name: string;
-  status?: UserStatus;
+}
+
+/**
+ * Event information for the user update event.
+ */
+export interface UserUpdatedEvent {
+  name?: string;
 }

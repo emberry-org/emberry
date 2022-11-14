@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api";
 import { listen } from "@tauri-apps/api/event";
 import { UserStatus, type User } from "lib/user";
-import type { UserPayload } from "./user.event";
+import type { UserPayload, UserUpdatedEvent } from "./user.event";
 
 /**
  * Set the local username.
@@ -61,9 +61,9 @@ export async function getUserInfo(id: string): Promise<UserPayload> {
  * @param id The id of the user.
  * @param cb A callback for whenever the event is fired.
  */
-export async function onUserInfo(id: string, cb: (e: UserPayload) => void) {
+export async function onUserInfo(id: string, cb: (e: UserUpdatedEvent) => void) {
   listen(`usr_name_${id}`, (e: any) => {
-    cb({ id,
+    cb({
       name: e.payload
     });
   });
