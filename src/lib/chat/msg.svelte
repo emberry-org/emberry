@@ -35,7 +35,7 @@
 <li class="embed">
 	<div class="content" bind:clientHeight={embedHeight}>
 
-    <a href={ embed.url } target="_blank">{ embed.url }</a>
+    <a href={ embed.url } target="_blank" rel="noreferrer">{ embed.url }</a>
     <h2>
       {#if embed.icon && embed.icon.length > 0}
         <img class="favicon" src={ embed.icon } alt={ embed.title } on:error={ (e) => e.currentTarget.style.display = 'none' }>
@@ -198,7 +198,6 @@
           background-color: #ddd;
           border-radius: 6px;
           padding: 4px;
-          image-rendering: optimizeSpeed;
 
           user-select: none;
           -webkit-user-select: none;
@@ -218,7 +217,6 @@
     .preview {
       margin-left: 6px;
       border-radius: 12px;
-      image-rendering: optimizeSpeed;
     }
   }
 </style>
