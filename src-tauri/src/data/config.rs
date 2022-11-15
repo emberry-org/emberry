@@ -24,7 +24,11 @@ fn maybe_pem_data() -> Option<(Certificate, PrivateKey)> {
   match PEM.parse() {
     Ok(data) => Some(data),
     Err(err) => {
-      log::warn!("Failed to parse Certificate and PrivateKey from '{}', Err: '{}'", PEM.filepath.to_string_lossy(), err);
+      log::warn!(
+        "Failed to parse Certificate and PrivateKey from '{}', Err: '{}'",
+        PEM.filepath.to_string_lossy(),
+        err
+      );
       None
     }
   }
@@ -48,7 +52,10 @@ fn maybe_info<'a>() -> Option<IdentifiedUserInfo<'a>> {
 
 fn maybe_identifier<'a>() -> Option<UserIdentifier<'a>> {
   if !PEM.filepath.exists() {
-    log::warn!("User identity PEM file does not exist: '{}'", PEM.filepath.to_string_lossy());
+    log::warn!(
+      "User identity PEM file does not exist: '{}'",
+      PEM.filepath.to_string_lossy()
+    );
     return None;
   }
   match (&*PEM).try_into() {

@@ -11,7 +11,6 @@ pub struct PemfileReader {
 }
 
 impl PemfileReader {
-
   /// Opens the filepath from [self] in readonly mode and reads one
   /// X509Certificate and one PKCS8Key from it.
   /// The order in which those items are expected is: X509Certificate, PKCS8Key

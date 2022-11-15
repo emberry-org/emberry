@@ -12,7 +12,7 @@ use tauri::{AppHandle, Window};
 
 use crate::{
   data::{
-    sqlite::{user::get, exec},
+    sqlite::{exec, user::get},
     IdentifiedUserInfo, UserIdentifier,
   },
   network::p2p_tunl,

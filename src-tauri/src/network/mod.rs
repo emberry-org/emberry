@@ -5,7 +5,7 @@ use smoke::messages::RoomId;
 use smoke::User;
 use tauri::EventHandler;
 
-use tokio::sync::{oneshot};
+use tokio::sync::oneshot;
 
 pub mod ctrl_chnl;
 mod holepunch;

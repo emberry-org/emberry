@@ -227,7 +227,10 @@ async fn handle_rhiz_msg(
           /* Create a new notification for the message */
           if !crate::FOCUS.load(Ordering::SeqCst) {
             Notification::new(&app_handle.config().tauri.bundle.identifier)
-              .title(format!("{} wants to connect to you", ident_info.info.username))
+              .title(format!(
+                "{} wants to connect to you",
+                ident_info.info.username
+              ))
               .show()
               .expect("Failed to send desktop notification");
           }
@@ -244,17 +247,16 @@ async fn handle_rhiz_msg(
         // this is the same case where guard.insert(Agreement) happens just outside scope because we want to drop guard before await
         //                    we can unsafe unwrap here because we know that PEM_DATA is not None because the receive loop
         //                    only starts if PEM_DATA is Some()
-        let priority = unsafe { &config::PEM_DATA.as_ref().unwrap_unchecked().0.0 } < &usr.cert_data;
-        let msg = EmbMessage::Accept(
-          priority,
-        );
+        let priority =
+          unsafe { &config::PEM_DATA.as_ref().unwrap_unchecked().0 .0 } < &usr.cert_data;
+        let msg = EmbMessage::Accept(priority);
         state::send(rc, msg).await?;
       }
     }
     AcceptedRoom(id, usr) => {
       //                    we can unsafe unwrap here because we know that PEM_DATA is not None because the receive loop
       //                    only starts if PEM_DATA is Some()
-      let priority = unsafe { &config::PEM_DATA.as_ref().unwrap_unchecked().0.0 } < &usr.cert_data;
+      let priority = unsafe { &config::PEM_DATA.as_ref().unwrap_unchecked().0 .0 } < &usr.cert_data;
       try_holepunch(window.clone(), app_handle, net.clone(), id, usr, priority).await?
     }
     ServerError(err) => {
