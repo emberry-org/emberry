@@ -36,9 +36,9 @@ pub async fn request_room(
 
   // try to add to pending list
   let msg = match net.pending.lock().unwrap().entry(usr.clone()) {
-    std::collections::hash_map::Entry::Occupied(mut e) => {
-      e.insert(crate::network::RRState::Agreement);
-      EmbMessage::Accept(true)
+    std::collections::hash_map::Entry::Occupied(_) => {
+      log::warn!("You have already requested a connection with this user");
+      return Ok(());
     }
     std::collections::hash_map::Entry::Vacant(e) => {
       e.insert(crate::network::RRState::Pending);
