@@ -5,7 +5,7 @@ use tauri::Window;
 
 use crate::data::sqlite::user::{try_get, upsert};
 use crate::data::sqlite::{exec, try_exec};
-use crate::data::{IdentifiedUserInfo, UserIdentifier, UserInfo};
+use crate::data::{config, IdentifiedUserInfo, UserIdentifier, UserInfo};
 use crate::network::ctrl_chnl::RhizomeConnection;
 use crate::network::Networking;
 
@@ -23,6 +23,16 @@ pub async fn request_room(
     bs58: Cow::Borrowed(&bs58cert),
   };
   let usr: User = (&ident).try_into()?;
+
+  if let Some((cert, _)) = config::PEM_DATA.as_ref() {
+    if cert.0 == usr.cert_data {
+      log::warn!("Cannot request a room with yourself");
+      return Ok(());
+    }
+  } else {
+    log::warn!("Cannot request a room without being authenticated to the server");
+    return Ok(());
+  }
 
   // try to add to pending list
   let msg = match net.pending.lock().unwrap().entry(usr.clone()) {
