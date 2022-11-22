@@ -29,6 +29,7 @@ pub async fn handle_signal(
   cache: &mut IdentifiedUserInfo<'_>,
 ) -> Result<(), io::Error> {
   match signal {
+    Signal::Kap => (),
     Signal::Username(name) => {
       if &cache.info.username != name {
         cache.info.username = name.to_string();
