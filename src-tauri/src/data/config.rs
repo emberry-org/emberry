@@ -3,7 +3,7 @@ use std::sync::RwLock;
 use crate::data::{IdentifiedUserInfo, UserIdentifier};
 
 use super::{
-  path::CONFIG,
+  path::DATA,
   sqlite::{try_exec, user::try_get},
   PemfileReader, UserInfo, UserRelation,
 };
@@ -68,7 +68,7 @@ fn maybe_identifier<'a>() -> Option<UserIdentifier<'a>> {
 }
 
 fn pem_reader() -> PemfileReader {
-  let mut filepath = CONFIG.clone();
+  let mut filepath = DATA.clone();
   filepath.push("identity.pem");
   PemfileReader { filepath }
 }
