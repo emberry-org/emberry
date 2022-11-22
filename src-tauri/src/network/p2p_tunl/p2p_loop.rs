@@ -58,6 +58,7 @@ where
     select! {
       msg = Signal::recv_with(stream, &mut buf) => {
         let msg = msg?;
+        next_kap = kap_timeout();
         log::trace!("Received message: {:?} in {}", msg, emit_identity);
         if let Err(err) = p2p_tunl::signal::handle_signal(
           &msg,
