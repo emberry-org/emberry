@@ -1,5 +1,5 @@
 use lazy_static::lazy_static;
-use log::info;
+use log::debug;
 use std::{env::args, path::PathBuf};
 
 lazy_static! {
@@ -21,7 +21,7 @@ fn data_dir() -> PathBuf {
     "./.data".into()
   };
 
-  info!("using data dir at: {:?}", warehouse);
+  debug!("using data dir at: {:?}", warehouse);
   warehouse
 }
 
@@ -38,7 +38,7 @@ fn cache_dir() -> PathBuf {
     "./.cache".into()
   };
 
-  info!("Using cache dir at: {:?}", cache);
+  debug!("Using cache dir at: {:?}", cache);
   cache
 }
 
@@ -55,6 +55,6 @@ fn config_dir() -> PathBuf {
     "./.config".into()
   };
 
-  info!("Using config dir at: {:?}", config);
+  debug!("Using config dir at: {:?}", config);
   config
 }

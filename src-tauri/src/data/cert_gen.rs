@@ -1,3 +1,4 @@
+use log::info;
 use rcgen::generate_simple_self_signed;
 #[allow(unused_imports)] // doc import
 use rustls::{Certificate, PrivateKey};
@@ -21,6 +22,8 @@ pub fn generate_cert(pemfile: &PathBuf) -> io::Result<()> {
   DirBuilder::new().recursive(true).create(dir)?;
 
   let mut pemfile = OpenOptions::new().create(true).write(true).open(pemfile)?;
+  info!("[created/overwritten] file: {pemfile:?}");
+
   pemfile.write_all(cert.serialize_pem().unwrap().as_bytes())?;
 
   pemfile.write_all(cert.serialize_private_key_pem().as_bytes())?;
