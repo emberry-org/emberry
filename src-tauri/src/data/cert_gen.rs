@@ -3,7 +3,7 @@ use rcgen::generate_simple_self_signed;
 #[allow(unused_imports)] // doc import
 use rustls::{Certificate, PrivateKey};
 use std::fs::{DirBuilder, OpenOptions};
-use std::io::Write;
+use std::io::{ErrorKind, Write};
 use std::{io, path::PathBuf};
 
 /// Generates a new pair of self signed [`X509 Certificate`](Certificate) and [`PKCS8 Key`](PrivateKey)
@@ -18,7 +18,16 @@ pub fn generate_cert(pemfile: &PathBuf) -> io::Result<()> {
   let cert = generate_simple_self_signed(subject_alt_names).unwrap();
 
   // since every path that is a filepath has at least "/" as parent unchecked unwrap is ok here
-  let dir = unsafe { pemfile.parent().unwrap_unchecked() };
+  let dir = match pemfile.parent() {
+    Some(dir) => dir,
+    None => {
+      return Err(io::Error::new(
+        ErrorKind::Other,
+        "cannot use '/' as path for a file",
+      ))
+    }
+  };
+
   DirBuilder::new().recursive(true).create(dir)?;
 
   let mut pemfile = OpenOptions::new().create(true).write(true).open(pemfile)?;
