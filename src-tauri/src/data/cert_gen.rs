@@ -17,13 +17,12 @@ pub fn generate_cert(pemfile: &PathBuf) -> io::Result<()> {
   let subject_alt_names = vec!["embery_user".to_string()];
   let cert = generate_simple_self_signed(subject_alt_names).unwrap();
 
-  // since every path that is a filepath has at least "/" as parent unchecked unwrap is ok here
   let dir = match pemfile.parent() {
     Some(dir) => dir,
     None => {
       return Err(io::Error::new(
         ErrorKind::Other,
-        "cannot use '/' as path for a file",
+        "cannot use root or prefix terminated path as filepath",
       ))
     }
   };
