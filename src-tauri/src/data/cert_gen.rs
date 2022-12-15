@@ -7,12 +7,12 @@ use std::io::Write;
 use std::{io, path::PathBuf};
 
 /// Generates a new pair of self signed [`X509 Certificate`](Certificate) and [`PKCS8 Key`](PrivateKey)
-/// and stores them in pemfile in the order []
+/// and stores them in pemfile in the order Certificate, PrivateKey
 ///
-/// Certificate will have "rhizome" as subject name
+/// Certificate will have "emberry_user" as subject name
 ///
 /// # Errors
-/// Will return any errors from creating and writing "certfile"/"keyfile"
+/// Will return any errors from creating and writing "pemfile"
 pub fn generate_cert(pemfile: &PathBuf) -> io::Result<()> {
   let subject_alt_names = vec!["embery_user".to_string()];
   let cert = generate_simple_self_signed(subject_alt_names).unwrap();
