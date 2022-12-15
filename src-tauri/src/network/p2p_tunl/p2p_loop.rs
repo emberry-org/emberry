@@ -1,4 +1,4 @@
-use std::io;
+use std::{io, time::Duration};
 
 use smoke::Signal;
 use tokio::{
@@ -6,6 +6,7 @@ use tokio::{
   select,
   sync::mpsc::Receiver,
   sync::oneshot,
+  time::Instant,
 };
 
 use tauri::{AppHandle, Window};
@@ -50,10 +51,14 @@ where
     info,
   };
 
+  // Anonymous function to avoid redundant code and have the seconds controlled in a single space
+  let kap_timeout = || Instant::now() + Duration::from_secs(20);
+  let mut next_kap = kap_timeout();
   loop {
     select! {
       msg = Signal::recv_with(stream, &mut buf) => {
         let msg = msg?;
+        next_kap = kap_timeout();
         log::trace!("Received message: {:?} in {}", msg, emit_identity);
         if let Err(err) = p2p_tunl::signal::handle_signal(
           &msg,
@@ -72,7 +77,14 @@ where
         log::trace!("p2ploop {} closed by handle", emit_identity);
         return Ok(())
       },
+      _ = tokio::time::sleep_until(next_kap) => {
+        let msg = Signal::Kap;
+        next_kap = kap_timeout();
+        log::trace!("Sending message: {:?} in {}", msg, emit_identity);
+        msg.send_with(stream).await?
+      }
       Some(msg) = msg_rx.recv() => {
+        next_kap = kap_timeout();
         log::trace!("Sending message: {:?} in {}", msg, emit_identity);
         msg.send_with(stream).await?
       },

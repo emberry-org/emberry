@@ -2,7 +2,7 @@ mod actions;
 mod schema;
 
 use lazy_static::lazy_static;
-use log::warn;
+use log::{warn, info};
 use rusqlite::Connection;
 use std::sync::Mutex;
 
@@ -17,11 +17,11 @@ lazy_static! {
 fn generate() -> Mutex<Connection> {
   let mut path = DATA.clone();
   path.push("warehouse.db3");
-  let db = Connection::open(path);
+  let db = Connection::open(&path);
 
   match db {
     Err(err) => {
-      warn!("Unable to open database: {}", err);
+      warn!("Unable to open database file: {}", err);
       warn!("Using in memory database");
       // using unwrap here is safe as sqlite does not return an error
       // when creating in memory database
@@ -30,6 +30,7 @@ fn generate() -> Mutex<Connection> {
       Mutex::new(db)
     }
     Ok(mut db) => {
+      info!("[created/write_open] file: {path:?}");
       schema::validate(&mut db);
       Mutex::new(db)
     }

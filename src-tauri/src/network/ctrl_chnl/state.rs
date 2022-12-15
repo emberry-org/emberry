@@ -1,7 +1,6 @@
 use std::io::{self, Error, ErrorKind};
 
 use super::EmberryMessage;
-use log::trace;
 use smoke::messages::EmbMessage;
 use tokio::sync::mpsc::Sender;
 use tokio::sync::RwLock;

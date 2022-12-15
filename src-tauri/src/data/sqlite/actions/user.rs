@@ -30,7 +30,7 @@ pub fn try_get(db: &mut Connection, data: &UserIdentifier) -> Result<UserInfo, r
       relation,
     })
   } else {
-    log::info!("no database entry for '{}'", &data.bs58);
+    log::debug!("no database entry for '{}'", &data.bs58);
     Err(QueryReturnedNoRows)
   }
 }
@@ -44,7 +44,7 @@ pub fn get(db: &mut Connection, data: &UserIdentifier) -> UserInfo {
   match try_get(db, data) {
     Ok(data) => data,
     Err(err) => {
-      log::info!("no database entry for '{}', SQL err: '{}'", &data.bs58, err);
+      log::debug!("no database entry for '{}', SQL err: '{}'", &data.bs58, err);
       UserInfo {
         username: data.bs58.to_string(),
         relation: UserRelation::Stranger,
