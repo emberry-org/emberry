@@ -60,24 +60,21 @@ impl<'a> ControlChannel<'a> {
               EmberryMessage::Close() => return Ok(()),
           }
         }
-        msg = RhizMessage::recv_with(&mut self.tls, &mut buf) => Self::handle_rhiz_msg(msg, self.window, self.app, &self.net, self.rc).await?
+        msg = RhizMessage::recv_with(&mut self.tls, &mut buf) => self.handle_rhiz_msg(msg).await?
       }
     }
   }
 
   async fn handle_rhiz_msg(
+    &mut self,
     msg: Result<RhizMessage, io::Error>,
-    window: &Window,
-    app_handle: &tauri::AppHandle,
-    net: &tauri::State<'_, Networking>,
-    rc: &tauri::State<'_, RhizomeConnection>,
   ) -> tauri::Result<()> {
     trace!("ctrl recv: {:?}", msg);
     match msg? {
       Shutdown() => return Ok(()),
       HasRoute(usr) => {
-        let pending = net.pending.lock().unwrap().contains_key(&usr);
-        window
+        let pending = self.net.pending.lock().unwrap().contains_key(&usr);
+        self.window
           .emit(
             "has-route",
             json!({ "pending": pending, "usr": UserIdentifier::from(&usr).bs58, }),
@@ -86,8 +83,8 @@ impl<'a> ControlChannel<'a> {
       }
       NoRoute(usr) => {
         // might want to remove the ".remove(&usr)" when trying to auto reconnect...
-        let pending = net.pending.lock().unwrap().remove(&usr);
-        window
+        let pending = self.net.pending.lock().unwrap().remove(&usr);
+        self.window
           .emit(
             "no-route",
             json!({ "pending": pending.is_some(), "usr": UserIdentifier::from(&usr).bs58, }),
@@ -98,7 +95,7 @@ impl<'a> ControlChannel<'a> {
         // only option here is None or RRState::RemoteUnaware
         let none;
         {
-          let mut guard = net.pending.lock().unwrap();
+          let mut guard = self.net.pending.lock().unwrap();
           none = guard.get(&usr).is_none();
           if none {
             let ident = UserIdentifier::from(&usr);
@@ -117,7 +114,7 @@ impl<'a> ControlChannel<'a> {
                   identifier: ident.as_ref(),
                 };
                 let new_user_event = |ident_info: &IdentifiedUserInfo| {
-                  window
+                  self.window
                     .emit("new-user", &ident_info.info.username)
                     .expect("Failed to emit new-user event")
                 };
@@ -134,13 +131,13 @@ impl<'a> ControlChannel<'a> {
               }
             };
 
-            window
+            self.window
               .emit("wants-room", &ident_info)
               .expect("Failed to emit WantsRoom event");
 
             /* Create a new notification for the message */
             if !crate::FOCUS.load(Ordering::SeqCst) {
-              Notification::new(&app_handle.config().tauri.bundle.identifier)
+              Notification::new(self.app.config().tauri.bundle.identifier.clone())
                 .title(format!(
                   "{} wants to connect to you",
                   ident_info.info.username
@@ -164,7 +161,7 @@ impl<'a> ControlChannel<'a> {
           let priority =
             unsafe { &config::PEM_DATA.as_ref().unwrap_unchecked().0 .0 } < &usr.cert_data;
           let msg = EmbMessage::Accept(priority);
-          state::send(rc, msg).await?;
+          state::send(self.rc, msg).await?;
         }
       }
       AcceptedRoom(id, usr) => {
