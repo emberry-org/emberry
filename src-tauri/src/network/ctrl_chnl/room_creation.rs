@@ -13,6 +13,7 @@ use tokio_kcp::{KcpConfig, KcpStream};
 use log::error;
 
 use crate::data::UserIdentifier;
+use crate::network::RRState;
 use crate::network::{Connection, Networking};
 
 use super::super::holepunch::punch_hole;
@@ -41,7 +42,42 @@ struct NewRoomPayload {
   peer_id: String,
 }
 
-pub async fn hole_punch(
+pub async fn try_holepunch(
+  window: tauri::Window,
+  app_handle: &tauri::AppHandle,
+  net_state: tauri::State<'_, Networking>,
+  room_id: Option<RoomId>,
+  usr: User,
+  priority: bool,
+) -> tauri::Result<()> {
+  if let Some(room_id) = room_id {
+    if net_state.pending.lock().unwrap().remove(&usr).is_some() {
+      // only hole punch if there is a connection pending
+      hole_punch(window, app_handle, net_state, room_id, usr, priority).await?;
+    } else {
+      // This is rather weak protection as a compromized rhizome server could still just send a different room id with a valid user
+      // Room id procedure is subject to change in the future. (plan is to use cryptographic signatures to mitigated unwanted ip leak)
+      return Err(tauri::Error::Io(Error::new(
+        ErrorKind::Other,
+        "Rhizome just sent a malicious room opening packet (this should not happen)",
+      )));
+    }
+  } else {
+    let mut guard = net_state.pending.lock().unwrap();
+    if let Some(kv) = guard.get_key_value(&usr) {
+      match kv.1 {
+        RRState::Agreement => return Ok(()), // We got the edgecase of colliding requests, throw away this one
+        RRState::Pending => {
+          guard.remove(&usr); // This case is a normal rejection
+        }
+      }
+    }
+  }
+
+  Ok(())
+}
+
+async fn hole_punch(
   window: tauri::Window,
   app_handle: &tauri::AppHandle,
   state: tauri::State<'_, Networking>,
