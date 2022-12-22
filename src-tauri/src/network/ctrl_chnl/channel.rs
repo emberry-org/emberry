@@ -1,6 +1,6 @@
 use super::room_creation::try_holepunch;
 use std::{
-  io::{self, Error, ErrorKind},
+  io::{self, ErrorKind},
   sync::atomic::Ordering,
 };
 
@@ -21,23 +21,14 @@ pub use super::state::RwOption;
 pub use super::state::{RhizomeConnection, State};
 use log::trace;
 use serde_json::json;
-use smoke::messages::{EmbMessage, RoomId};
-use smoke::{
-  messages::RhizMessage::{self, *},
-  User,
-};
+use smoke::messages::EmbMessage;
+use smoke::messages::RhizMessage::{self, *};
 use tauri::{api::notification::Notification, AppHandle, Window};
-use tokio::{
-  io::BufReader,
-  net::TcpStream,
-};
-use tokio::{
-  select,
-  sync::mpsc::Receiver,
-};
-use tokio_rustls::{client::TlsStream};
+use tokio::{io::BufReader, net::TcpStream};
+use tokio::{select, sync::mpsc::Receiver};
+use tokio_rustls::client::TlsStream;
 
-use super::{Networking, RRState};
+use super::Networking;
 
 pub struct ControlChannel<'a> {
   pub window: &'a Window,
