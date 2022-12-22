@@ -6,7 +6,6 @@ use std::{
 
 use crate::{
   data::{
-    config,
     sqlite::{
       exec, try_exec,
       user::{try_get, upsert},
@@ -20,6 +19,7 @@ pub use super::messages::EmberryMessage;
 pub use super::state::RwOption;
 pub use super::state::{RhizomeConnection, State};
 use log::trace;
+use rustls::Certificate;
 use serde_json::json;
 use smoke::messages::EmbMessage;
 use smoke::messages::RhizMessage::{self, *};
@@ -37,6 +37,7 @@ pub struct ControlChannel<'a> {
   pub tls: BufReader<TlsStream<TcpStream>>,
   pub net: tauri::State<'a, Networking>,
   pub rc: &'a tauri::State<'a, RhizomeConnection>,
+  pub identity: Certificate,
 }
 
 impl<'a> ControlChannel<'a> {
@@ -147,19 +148,13 @@ impl<'a> ControlChannel<'a> {
 
         if !none {
           // this is the same case where guard.insert(Agreement) happens just outside scope because we want to drop guard before await
-          //                    we can unsafe unwrap here because we know that PEM_DATA is not None because the receive loop
-          //                    only starts if PEM_DATA is Some()
-          let priority =
-            unsafe { &config::PEM_DATA.as_ref().unwrap_unchecked().0 .0 } < &usr.cert_data;
+          let priority = self.identity.0 < usr.cert_data;
           let msg = EmbMessage::Accept(priority);
           state::send(self.rc, msg).await?;
         }
       }
       AcceptedRoom(id, usr) => {
-        //                    we can unsafe unwrap here because we know that PEM_DATA is not None because the receive loop
-        //                    only starts if PEM_DATA is Some()
-        let priority =
-          unsafe { &config::PEM_DATA.as_ref().unwrap_unchecked().0 .0 } < &usr.cert_data;
+        let priority = self.identity.0 < usr.cert_data;
         try_holepunch(self.window.clone(), self.app, self.net.clone(), id, usr, priority).await?
       }
       ServerError(err) => {

@@ -109,6 +109,7 @@ pub async fn connect(
     tls,
     net,
     rc: &rc,
+    identity: client_cert,
   };
 
   let res = chnl.spin().await;
