@@ -1,12 +1,12 @@
-use lazy_static::lazy_static;
 use log::debug;
+use once_cell::sync::Lazy;
 use std::{env::args, path::PathBuf};
 
-lazy_static! {
-  pub static ref DATA: PathBuf = data_dir();
-  pub static ref CACHE: PathBuf = cache_dir();
-  pub static ref CONFIG: PathBuf = config_dir();
-}
+pub static DATA: Lazy<PathBuf> = Lazy::new(data_dir);
+#[allow(dead_code)]
+pub static CACHE: Lazy<PathBuf> = Lazy::new(cache_dir);
+#[allow(dead_code)]
+pub static CONFIG: Lazy<PathBuf> = Lazy::new(config_dir);
 
 fn data_dir() -> PathBuf {
   let warehouse = if let Some(mut data_dir) = tauri::api::path::data_dir() {

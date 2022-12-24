@@ -1,8 +1,8 @@
 mod actions;
 mod schema;
 
-use lazy_static::lazy_static;
 use log::{warn, info};
+use once_cell::sync::Lazy;
 use rusqlite::Connection;
 use std::sync::Mutex;
 
@@ -10,9 +10,7 @@ use crate::data::path::DATA;
 
 pub use actions::*;
 
-lazy_static! {
-  pub static ref DATABASE: Mutex<Connection> = generate();
-}
+pub static DATABASE: Lazy<Mutex<Connection>> = Lazy::new(generate);
 
 fn generate() -> Mutex<Connection> {
   let mut path = DATA.clone();

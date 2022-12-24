@@ -5,14 +5,12 @@ use std::{
 
 use super::resolver::ClientCertResolver;
 use crate::data::config::PEM_DATA;
-use lazy_static::lazy_static;
+use once_cell::sync::Lazy;
 use rustls::{server::AllowAnyAuthenticatedClient, Certificate, ClientConfig, RootCertStore};
 use tokio_kcp::KcpStream;
 use tokio_rustls::{TlsAcceptor, TlsConnector, TlsStream};
 
-lazy_static! {
-  static ref CAC_RESOLVER: Arc<ClientCertResolver> = cacr();
-}
+static CAC_RESOLVER: Lazy<Arc<ClientCertResolver>> = Lazy::new(cacr);
 
 fn cacr() -> Arc<ClientCertResolver> {
   //                    we can unsafe unwrap here because we know that PEM_DATA is not None because the ctrl_chnl loop
