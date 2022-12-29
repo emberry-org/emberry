@@ -48,29 +48,35 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <li class="leaf { user.status == UserStatus.Pending || user.status == UserStatus.Disconnected || user.status == UserStatus.Offline ? 'pending' : '' }" name={ user.name ?? 'unknown' } on:click={onActivate}>
   <p class="name">{ user.name ?? user.key }</p>
-  <p class="status">{ UserStatus[user.status] }</p>
+  <p class="status">
+    <span class="id">@0000</span>
+    <span class="connection">{ UserStatus[user.status] }</span>
+  </p>
 </li>
 
 
 <style lang="scss">
 
 .leaf {
-  height: 42px;
+  height: 45px;
 
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
 
   padding: 0 12px;
   margin: 0 8px;
 
   border-radius: 8px;
+  transition: background-color 100ms;
 
   &:hover {
-    background-color: #fff1;
+    background-color: #191919;
 
-    .status {
-      display: none;
-    }
+    // .status {
+    //   display: none;
+    // }
   }
 
   &.pending {
@@ -84,13 +90,26 @@
     text-overflow: ellipsis;
     overflow: hidden;
 
+    font-size: 15px;
+    line-height: 18px;
+    font-weight: 700;
     padding-right: 12px;
-    color: #ccc;
+    margin: 0;
+    color: #fff;
   }
 
   .status {
-    font-size: 14px;
-    color: #888;
+    font-size: 15px;
+    line-height: 18px;
+    margin: 0;
+    
+    .id {
+      color: #888;
+    }
+
+    .connection {
+      color: #686868;
+    }
   }
 }
 

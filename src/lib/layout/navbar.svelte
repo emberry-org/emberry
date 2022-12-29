@@ -12,7 +12,7 @@
 
 <nav>
   <button class:is-active={ path === "" } on:click={() => goto('/')}>
-    <Icon icon="bry:explore" width="24px" />
+    <Icon icon="16x16:telescope" width="24px" />
   </button>
 
   <button class="move-bottom">
@@ -32,6 +32,8 @@ nav {
   align-items: center;
 
   padding: 12px 0 0 0;
+  margin-right: 20px;
+  background-color: #111;
 
   button {
     position: relative;
@@ -39,25 +41,29 @@ nav {
     height: 48px;
     margin-bottom: 12px;
 
-    color: #aaa;
+    color: #45403D;
 
     border-radius: 12px;
-    background-color: #ffffff08;
+    //background-color: #ffffff08;
     border: none;
     transition: color 0.1s;
 
     &:not(&.is-active):hover {
-      color: #ED9450;
+      color: #7C6F64;
       cursor: pointer;
     }
 
     &:not(&.is-active):active {
-      background-color: #ffffff18;
+      //background-color: #ffffff18;
       cursor: pointer;
     }
 
+    &:hover {
+      background-color: #ffffff0d;
+    }
+
     &.is-active {
-      color: #ED9450;
+      color: #7C6F64;
     }
 
     &.is-active:after {
@@ -68,9 +74,9 @@ nav {
       transform: translateY(-50%);
       left: -13px;
       width: 5px;
-      height: 24px;
+      height: 16px;
 
-      background-color: #ED9450;
+      background-color: #7C6F64;
       border-radius: 0 4px 4px 0;
 
       pointer-events: none;

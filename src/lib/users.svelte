@@ -56,7 +56,7 @@
   });
 </script>
 
-<div class="tools" />
+<!-- <div class="tools" /> -->
 
 <ol class="users">
   {#each users as user}
@@ -65,26 +65,26 @@
 </ol>
 
 <style lang="scss">
-  .tools {
-    width: 100%;
-    height: 60px;
-    min-height: 60px;
+  // .tools {
+  //   width: 100%;
+  //   height: 60px;
+  //   min-height: 60px;
 
-    margin: 0 0 12px 0;
-    background-color: #ffffff08;
-    border-radius: 10px;
-  }
+  //   margin: 0 0 12px 0;
+  //   background-color: #ffffff08;
+  //   border-radius: 10px;
+  // }
 
   .users {
     width: 100%;
-    height: 100%;
+    height: fit-content;
 
     margin: 0;
-    padding: 8px 0 0 0;
+    padding: 8px 0;
 
     list-style: none;
 
-    background-color: #2c2c2c;
+    background-color: #111;
     border-radius: 12px;
   }
 </style>

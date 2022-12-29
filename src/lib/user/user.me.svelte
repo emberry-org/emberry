@@ -37,6 +37,7 @@
       on:blur={() => setUsername(username)} 
       on:keydown={(evt) => keydown(evt, usernameInput)} 
     />
+    <p class="id">@0000</p>
   </div>
   <div class="avatar" />
 </div>
@@ -58,8 +59,8 @@
     min-width: 42px;
     height: 42px;
 
-    background-color: #888;
-    border-radius: 8px;
+    background-color: #2f2f2f;
+    border-radius: 12px;
     margin-left: auto;
   }
 
@@ -69,33 +70,41 @@
 
     input {
       margin: 0;
-      padding: 2px 4px;
+      padding: 0;
       margin-left: -4px;
       background-color: #0000;
       outline: none;
-      border-radius: 6px;
       border: none;
       font-family: inherit;
-
-      &:focus, &:hover {
-        background-color: #0004;
-      }
     }
 
     .username {
       width: 90%;
 
-      font-size: 16px;
-      font-weight: 600;
-      line-height: 17px;
-      color: #eee;
+      font-size: 18px;
+      line-height: 18px;
+      font-weight: 700;
+      padding-right: 12px;
+      margin: 0;
+      color: #fff;
+    }
+
+    .id {
+      font-size: 15px;
+      line-height: 18px;
+      margin: 0;
+      color: #888;
     }
   }
 
   .desc {
+    height: fit-content;
     font-size: 14px;
     line-height: 21px;
-    color: #aaa;
+    color: #bbb;
+
+    overflow: hidden;
+    text-overflow: ellipsis;;
   }
 }
 
