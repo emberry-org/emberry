@@ -63,7 +63,7 @@ button {
 
 .disconnected { color: #444; }
 .failed { color: rgb(217, 82, 82); }
-.connected { color: #888; &:hover { color: #f9c15c; } }
+.connected { color: #888; &:hover { color: var(--primary); } }
 .connecting { color: #aaa; }
 
 </style>

@@ -46,7 +46,7 @@
 
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<li class="leaf { user.status == UserStatus.Pending || user.status == UserStatus.Disconnected || user.status == UserStatus.Offline ? 'pending' : '' }" name={ user.name ?? 'unknown' } on:click={onActivate}>
+<li class="leaf { user.status == UserStatus.Pending || user.status == UserStatus.Disconnected || user.status == UserStatus.Offline ? 'pending' : '' }" title={ user.name ?? 'unknown' } on:click={onActivate}>
   <p class="name">{ user.name ?? user.key }</p>
   <p class="status">
     <span class="id">@0000</span>
@@ -69,7 +69,7 @@
   margin: 0 8px;
 
   border-radius: 8px;
-  transition: background-color 100ms;
+  transition: background-color 10ms;
 
   &:hover {
     background-color: #191919;
