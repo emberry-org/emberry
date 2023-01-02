@@ -72,7 +72,7 @@
   transition: background-color 10ms;
 
   &:hover {
-    background-color: #191919;
+    background-color: var(--bg-100-active);
 
     // .status {
     //   display: none;
@@ -104,11 +104,11 @@
     margin: 0;
     
     .id {
-      color: #888;
+      color: var(--text-secondary);
     }
 
     .connection {
-      color: #686868;
+      color: var(--text-secondary-light);
     }
   }
 }

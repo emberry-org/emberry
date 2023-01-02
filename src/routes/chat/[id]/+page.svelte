@@ -85,7 +85,7 @@
 
 
 <div class="header">
-  <h2>{ peername }</h2>
+  <h2>{ peername } <span class="id">@0000</span></h2>
 </div>
 
 <div class="chat">
@@ -126,12 +126,12 @@
 .chat {
   display: flex;
   flex-direction: column;
-  padding: 12px;
+  padding: 12px 12px 12px 0;
 
   .feed {
     position: relative;
     flex-grow: 1;
-    overflow: none;
+    overflow: hidden;
 
     ol {
       max-height: calc(100% - 12px);
@@ -159,20 +159,26 @@
 h2 {
   overflow-wrap: break-word;
   font-size: 20px;
+  font-weight: 800;
 
-  padding: 0 16px;
-  color: #eee;
+  padding: 0 20px;
+  color: var(--text-base);
+
+  .id {
+    color: var(--text-secondary);
+    font-weight: 400;
+  }
 }
 
 input {
   width: 100%;
-  margin-right: 12px;
+  margin: 0 12px;
 
-  background-color: #1F1F1F;
-  color: #eee;
+  background-color: var(--bg-100);
+  color: var(--text-base);
   
   &::placeholder {
-    color: #fff5;
+    color: var(--text-secondary-light);
   }
 }
 
@@ -180,8 +186,8 @@ button {
   width: 160px;
   white-space: nowrap;
 
-  background-color: #1F1F1F;
-  color: #eee;
+  background-color: var(--bg-100);
+  color: var(--text-base);
 }
 
 </style>

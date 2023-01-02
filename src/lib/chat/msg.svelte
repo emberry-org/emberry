@@ -69,7 +69,7 @@
     width: 100%;
     height: fit-content;
 
-    margin-bottom: 6px;
+    //margin-bottom: 6px;
     padding-left: 42px;
     font-weight: 400;
 
@@ -77,11 +77,11 @@
       position: absolute;
 
       left: 0;
-      top: -3px;
+      top: 3px;
       width: 34px;
       height: 34px;
 
-      background-color: #1c1c1c;
+      background-color: var(--bg-100);
       background-size: contain;
       border-radius: 8px;
 
@@ -106,40 +106,40 @@
 
     h3 {
       height: 24px;
-      color: #ddd;
-      font-weight: 400;
-      font-size: 14px;
-      margin: 16px 0 0 0;
+      color: var(--text-base);
+      font-weight: 700;
+      font-size: 15px;
+      margin: 8px 0 0 0;
 
       span {
-        font-size: 10px;
-        color: #777;
+        font-size: 12px;
+        color: var(--text-secondary);
         font-weight: 500;
         margin-left: 10px;
       }
     }
 
     .content {
-      background-color: #282828;
+      //background-color: var(--bg-300);
       height: fit-content;
       width: fit-content;
-      padding: 0px 12px 0px 12px;
-      margin: 4px 0 0 0;
+      padding: 0;//padding: 0px 12px 0px 12px;
+      margin: 0;//margin: 4px 0 0 0;
       border-radius: 10px;
       display: flex;
       flex-direction: column;
 
       p {
         height: fit-content;
-        color: #ddd;
-        font-size: 14px;
+        color: var(--text-base);
+        font-size: 15px;
         white-space: pre-wrap;
-        line-height: 14px;
-        margin: 10px 0 12px 0;
+        line-height: 20px;
+        margin: 0;//margin: 10px 0 12px 0;
 
         :global(a) {
           font-weight: inherit;
-          color: #6BA0D6;
+          color: var(--primary);
 
           &:hover {
             text-decoration: underline;
@@ -155,17 +155,18 @@
     width: fit-content;
     height: min-content;
 
-    margin-bottom: 6px;
+    margin: 8px 0 6px 0;
     padding-left: 42px;
     display: flex;
 
     .content {
-      background-color: #202020;
+      background-color: var(--bg-100);
       height: fit-content;
       min-width: 240px;
       max-width: 480px;
       width: fit-content;
       padding: 0px 12px 0px 12px;
+      margin-right: 16px;
       border-radius: 10px;
       display: flex;
       flex-direction: column;
@@ -173,10 +174,10 @@
       a {
         margin: 8px 0 6px 0;
         font-weight: inherit;
-        font-size: 12px;
+        font-size: 15px;
         overflow: hidden;
         text-overflow: ellipsis;
-        color: #6BA0D6;
+        color: var(--text-secondary-light);
 
         &:hover {
           text-decoration: underline;
@@ -184,7 +185,7 @@
       }
 
       h2 {
-        color: #ddd;
+        color: var(--text-base);
         font-weight: 400;
         font-size: 18px;
         line-height: 22px;
@@ -208,8 +209,8 @@
 
       p {
         height: fit-content;
-        color: #888;
-        font-size: 14px;
+        color: var(--text-secondary);
+        font-size: 15px;
         white-space: pre-wrap;
         line-height: 18px;
         margin: 0 0 15px 0;
@@ -217,7 +218,6 @@
     }
 
     .preview {
-      margin-left: 6px;
       border-radius: 12px;
     }
   }

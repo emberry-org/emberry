@@ -98,7 +98,7 @@
     display: flex;
     flex-direction: row;
 
-    background-color: #1A1A1A;
+    background-color: var(--bg-200);
 
     > aside {
       height: 100vh;
@@ -149,7 +149,7 @@
             margin-top: 12px;
             border-radius: 12px;
 
-            background-color: #111;
+            background-color: var(--bg-100);
           }
         }
 
@@ -161,14 +161,14 @@
           display: flex;
           flex-direction: column;
 
-          margin: 0 12px;
+          margin: 0 20px;
 
           .header {
             height: 160px;
 
             border-radius: 12px;
 
-            background-color: #242424;
+            background-color: var(--bg-300);
           }
 
           .chat {
@@ -177,7 +177,7 @@
             margin-top: 12px;
             border-radius: 12px;
 
-            background-color: #383838;
+            background-color: var(--bg-300);
           }
         }
       }

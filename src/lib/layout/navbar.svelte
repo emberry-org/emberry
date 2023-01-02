@@ -22,6 +22,10 @@
   <button class="move-bottom">
     <Icon icon="bry:settings" width="24px" />
   </button>
+
+  <button class:is-active={ path.startsWith('/chat/') } on:click={() => goto('/chat/debug')}>
+    <Icon icon="cmd:debug" width="24px" />
+  </button>
 </nav>
 
 
@@ -37,7 +41,7 @@ nav {
 
   padding: 12px 0 0 0;
   margin-right: 20px;
-  background-color: #111;
+  background-color: var(--bg-100);
 
   button {
     position: relative;
@@ -49,6 +53,7 @@ nav {
     color: #6e6660;
     border: none;
     transition: color 10ms;
+    background-color: transparent;
     cursor: pointer;
 
     &:not(&.is-active):hover {
@@ -57,7 +62,7 @@ nav {
     }
 
     &:hover {
-      background-color: #ffffff0d;
+      background-color: var(--bg-100-active);
     }
 
     &.is-active {

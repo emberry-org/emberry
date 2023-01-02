@@ -84,7 +84,7 @@
 
     list-style: none;
 
-    background-color: #111;
+    background-color: var(--bg-100);
     border-radius: 12px;
   }
 </style>

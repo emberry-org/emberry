@@ -14,6 +14,20 @@
   -webkit-text-size-adjust: 100%;
 
   --primary: #EA8A44;
+  --primary-active: #c16338;
+  --primary-light: #e4873b1a;
+  --border: #222;
+  --border-dark: #545251;
+  --bg-100: #131414;
+  --bg-100-active: #1b1c1c;
+  --bg-200: #202020;
+  --bg-200-active: #282828;
+  --bg-300: #303030;
+  --text-base: #f3f3f3;
+  --text-secondary: #888;
+  --text-secondary-light: #686868;
+  --bg-btn-disabled: #2a2a2a;
+  --text-btn-disabled: #919191;
 }
 
 .container {
