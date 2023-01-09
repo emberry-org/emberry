@@ -112,7 +112,7 @@
       margin: 8px 0 0 0;
 
       span {
-        font-size: 12px;
+        font-size: 11px;
         color: var(--text-secondary);
         font-weight: 500;
         margin-left: 10px;

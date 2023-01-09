@@ -164,7 +164,7 @@
           margin: 0 20px;
 
           .header {
-            height: 160px;
+            height: 100px;
 
             border-radius: 12px;
 
