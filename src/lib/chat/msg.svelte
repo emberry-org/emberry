@@ -107,7 +107,7 @@
     h3 {
       height: 24px;
       color: var(--text-base);
-      font-weight: 700;
+      font-weight: 500;
       font-size: 15px;
       margin: 8px 0 0 0;
 
