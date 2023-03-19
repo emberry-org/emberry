@@ -1,6 +1,9 @@
 use std::{io, time::Duration};
 
-use smoke::Signal;
+use smoke::{
+  messages::{Drain, Source},
+  Signal,
+};
 use tokio::{
   io::{AsyncRead, AsyncWrite, BufReader},
   select,
@@ -36,8 +39,6 @@ pub async fn p2p_loop<'a, T>(
 where
   T: AsyncRead + AsyncWrite + Unpin,
 {
-  let mut buf = Vec::new();
-
   let msg_recv = format!("message_recieved_{}", emit_identity);
   let usr_name = format!("usr_name_{}", peer_ident.bs58);
   let events = EventNames { msg_recv, usr_name };
@@ -51,12 +52,15 @@ where
     info,
   };
 
+  let mut ser_buf = [0u8; smoke::messages::signal::MAX_SIGNAL_BUF_SIZE];
+  let mut de_buf = Vec::with_capacity(smoke::messages::signal::MAX_SIGNAL_BUF_SIZE);
+
   // Anonymous function to avoid redundant code and have the seconds controlled in a single space
   let kap_timeout = || Instant::now() + Duration::from_secs(20);
   let mut next_kap = kap_timeout();
   loop {
     select! {
-      msg = Signal::recv_with(stream, &mut buf) => {
+      msg = stream.read_message_cancelable(&mut de_buf) => {
         let msg = msg?;
         next_kap = kap_timeout();
         log::trace!("Received message: {:?} in {}", msg, emit_identity);
@@ -81,12 +85,12 @@ where
         let msg = Signal::Kap;
         next_kap = kap_timeout();
         log::trace!("Sending message: {:?} in {}", msg, emit_identity);
-        msg.send_with(stream).await?
+        msg.serialize_to(stream, &mut ser_buf).expect("unable to serialize kap message").await?
       }
       Some(msg) = msg_rx.recv() => {
         next_kap = kap_timeout();
         log::trace!("Sending message: {:?} in {}", msg, emit_identity);
-        msg.send_with(stream).await?
+        msg.serialize_to(stream, &mut ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?
       },
     }
   }
