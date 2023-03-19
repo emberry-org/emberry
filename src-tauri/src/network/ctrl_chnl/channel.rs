@@ -57,16 +57,14 @@ impl<'a> ControlChannel<'a> {
     }
   }
 
-  async fn handle_rhiz_msg(
-    &mut self,
-    msg: Result<RhizMessage, io::Error>,
-  ) -> tauri::Result<()> {
+  async fn handle_rhiz_msg(&mut self, msg: Result<RhizMessage, io::Error>) -> tauri::Result<()> {
     trace!("ctrl recv: {:?}", msg);
     match msg? {
       Shutdown() => return Ok(()),
       HasRoute(usr) => {
         let pending = self.net.pending.lock().unwrap().contains_key(&usr);
-        self.window
+        self
+          .window
           .emit(
             "has-route",
             json!({ "pending": pending, "usr": UserIdentifier::from(&usr).bs58, }),
@@ -76,7 +74,8 @@ impl<'a> ControlChannel<'a> {
       NoRoute(usr) => {
         // might want to remove the ".remove(&usr)" when trying to auto reconnect...
         let pending = self.net.pending.lock().unwrap().remove(&usr);
-        self.window
+        self
+          .window
           .emit(
             "no-route",
             json!({ "pending": pending.is_some(), "usr": UserIdentifier::from(&usr).bs58, }),
@@ -106,7 +105,8 @@ impl<'a> ControlChannel<'a> {
                   identifier: ident.as_ref(),
                 };
                 let new_user_event = |ident_info: &IdentifiedUserInfo| {
-                  self.window
+                  self
+                    .window
                     .emit("new-user", &ident_info.info.username)
                     .expect("Failed to emit new-user event")
                 };
@@ -123,7 +123,8 @@ impl<'a> ControlChannel<'a> {
               }
             };
 
-            self.window
+            self
+              .window
               .emit("wants-room", &ident_info)
               .expect("Failed to emit WantsRoom event");
 
@@ -155,7 +156,21 @@ impl<'a> ControlChannel<'a> {
       }
       AcceptedRoom(id, usr) => {
         let priority = self.identity.0 < usr.cert_data;
-        try_holepunch(self.window.clone(), self.app, self.net.clone(), id, usr, priority).await?
+        if let Err(err) = try_holepunch(
+          self.window.clone(),
+          self.app,
+          self.net.clone(),
+          id,
+          &usr,
+          priority,
+        )
+        .await
+        {
+          self
+            .window
+            .emit("error", format!("Connecting to {usr:?} failed! ERROR: '{}'", err))
+            .expect("Failed to emit error event");
+        }
       }
       ServerError(err) => {
         return Err(tauri::Error::Io(io::Error::new(
@@ -167,5 +182,4 @@ impl<'a> ControlChannel<'a> {
 
     Ok(())
   }
-
 }

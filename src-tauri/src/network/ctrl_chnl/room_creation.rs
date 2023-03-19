@@ -47,7 +47,7 @@ pub async fn try_holepunch(
   app_handle: &tauri::AppHandle,
   net_state: tauri::State<'_, Networking>,
   room_id: Option<RoomId>,
-  usr: User,
+  usr: &User,
   priority: bool,
 ) -> tauri::Result<()> {
   if let Some(room_id) = room_id {
@@ -82,7 +82,7 @@ async fn hole_punch(
   app_handle: &tauri::AppHandle,
   state: tauri::State<'_, Networking>,
   room_id: RoomId,
-  peer: User,
+  peer: &User,
   priority: bool,
 ) -> tauri::Result<()> {
   /* Get the server ip from .env */
@@ -91,7 +91,7 @@ async fn hole_punch(
 
   window
     .emit("punching", &identity)
-    .expect("Failed to emit WantsRoom event");
+    .expect("Failed to emit punching event");
 
   /* Holepunch using rhizome */
   let socket = punch_hole(dotenv!("SERVER_ADDRESS"), &room_id.0).await?;
@@ -135,7 +135,7 @@ async fn hole_punch(
   let emit_identity = identity.clone();
   let spawn_window = window.clone();
   let app_handle = app_handle.clone();
-  let ident = UserIdentifier::from(&peer);
+  let ident = UserIdentifier::from(peer);
   tokio::spawn(async move {
     if let Err(err) = p2p_loop(
       &emit_identity,
@@ -167,7 +167,7 @@ async fn hole_punch(
       "new-room",
       NewRoomPayload {
         room_id: identity,
-        peer_id: UserIdentifier::from(&peer).bs58.into_owned(),
+        peer_id: UserIdentifier::from(peer).bs58.into_owned(),
       },
     )
     .expect("Failed to emit WantsRoom event");
