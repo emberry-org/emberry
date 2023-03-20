@@ -13,6 +13,7 @@ use tokio_kcp::{KcpConfig, KcpStream};
 use log::error;
 
 use crate::data::UserIdentifier;
+use crate::network::RRState;
 use crate::network::{Connection, Networking};
 
 use super::super::holepunch::punch_hole;
@@ -41,12 +42,47 @@ struct NewRoomPayload {
   peer_id: String,
 }
 
-pub async fn hole_punch(
+pub async fn try_holepunch(
+  window: tauri::Window,
+  app_handle: &tauri::AppHandle,
+  net_state: tauri::State<'_, Networking>,
+  room_id: Option<RoomId>,
+  usr: &User,
+  priority: bool,
+) -> tauri::Result<()> {
+  if let Some(room_id) = room_id {
+    if net_state.pending.lock().unwrap().remove(&usr).is_some() {
+      // only hole punch if there is a connection pending
+      hole_punch(window, app_handle, net_state, room_id, usr, priority).await?;
+    } else {
+      // This is rather weak protection as a compromized rhizome server could still just send a different room id with a valid user
+      // Room id procedure is subject to change in the future. (plan is to use cryptographic signatures to mitigated unwanted ip leak)
+      return Err(tauri::Error::Io(Error::new(
+        ErrorKind::Other,
+        "Rhizome just sent a malicious room opening packet (this should not happen)",
+      )));
+    }
+  } else {
+    let mut guard = net_state.pending.lock().unwrap();
+    if let Some(kv) = guard.get_key_value(&usr) {
+      match kv.1 {
+        RRState::Agreement => return Ok(()), // We got the edgecase of colliding requests, throw away this one
+        RRState::Pending => {
+          guard.remove(&usr); // This case is a normal rejection
+        }
+      }
+    }
+  }
+
+  Ok(())
+}
+
+async fn hole_punch(
   window: tauri::Window,
   app_handle: &tauri::AppHandle,
   state: tauri::State<'_, Networking>,
   room_id: RoomId,
-  peer: User,
+  peer: &User,
   priority: bool,
 ) -> tauri::Result<()> {
   /* Get the server ip from .env */
@@ -55,7 +91,7 @@ pub async fn hole_punch(
 
   window
     .emit("punching", &identity)
-    .expect("Failed to emit WantsRoom event");
+    .expect("Failed to emit punching event");
 
   /* Holepunch using rhizome */
   let socket = punch_hole(dotenv!("SERVER_ADDRESS"), &room_id.0).await?;
@@ -99,7 +135,7 @@ pub async fn hole_punch(
   let emit_identity = identity.clone();
   let spawn_window = window.clone();
   let app_handle = app_handle.clone();
-  let ident = UserIdentifier::from(&peer);
+  let ident = UserIdentifier::from(peer);
   tokio::spawn(async move {
     if let Err(err) = p2p_loop(
       &emit_identity,
@@ -131,7 +167,7 @@ pub async fn hole_punch(
       "new-room",
       NewRoomPayload {
         room_id: identity,
-        peer_id: UserIdentifier::from(&peer).bs58.into_owned(),
+        peer_id: UserIdentifier::from(peer).bs58.into_owned(),
       },
     )
     .expect("Failed to emit WantsRoom event");
