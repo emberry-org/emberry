@@ -9,31 +9,39 @@ edition = "2021"
 rust-version = "1.57"
 
 [build-dependencies]
-tauri-build = { version = "1.2.1", features = [] }
+tauri-build = "1.2.1"
 
 [dependencies]
+tokio = { version = "1.26.0", features = ["net", "macros", "rt", "sync"] }
+
 # tauri
 tauri = { version = "1.2.4", features = ["api-all"] }
-tokio = { version = "1.18.2", features = ["net", "macros", "rt", "sync"] }
+
 # serialization
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 postcard = "1"
-smoke = { git = "https://github.com/emberry-org/smoke" }
+
+# local data storage
 rusqlite = { version = "0.28", features = ["bundled"] }
-bs58 = "0.4"
-rcgen = { version = "0.9" }
 
 # utils
 dotenv_codegen = "0.15.0"
 once_cell = "1.16"
+bs58 = "0.4"
 
-# kcp
+# rhizome communication
+smoke = { git = "https://github.com/emberry-org/smoke" }
+
+# reliable udp
 tokio_kcp = "0.9.3"
+
 # tls
 tokio-rustls = "0.23"
 rustls = { version = "0.20" }
 rustls-pemfile = { version = "0.2" }
+rcgen = "0.9.3"
+
 # http
 reqwest = "0.11.12"
 
