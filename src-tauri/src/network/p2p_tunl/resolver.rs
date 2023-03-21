@@ -2,20 +2,20 @@ use std::sync::Arc;
 
 use rustls::{client::ResolvesClientCert, sign::CertifiedKey, Certificate, PrivateKey};
 
-use crate::data::PemfileReader;
+use crate::{data::PemfileReader, network::UserIdentification};
 
 pub struct ClientCertResolver {
   cert_key: Arc<CertifiedKey>,
 }
 
 impl ClientCertResolver {
-  pub fn new(cert: Certificate, key: PrivateKey) -> ClientCertResolver {
-    let sig_key = rustls::sign::any_ecdsa_type(&key).unwrap();
+  pub fn new(cert: Certificate, key: &PrivateKey) -> Arc<ClientCertResolver> {
+    let sig_key = rustls::sign::any_ecdsa_type(key).unwrap();
     let cert_key = CertifiedKey::new(vec![cert], sig_key);
 
-    ClientCertResolver {
+    Arc::new(ClientCertResolver {
       cert_key: Arc::new(cert_key),
-    }
+    })
   }
 }
 
@@ -33,7 +33,13 @@ impl ResolvesClientCert for ClientCertResolver {
   }
 }
 
-impl TryFrom<&PemfileReader> for ClientCertResolver {
+impl From<&UserIdentification> for Arc<ClientCertResolver> {
+  fn from(value: &UserIdentification) -> Self {
+    ClientCertResolver::new(value.certificate.clone(), &value.private_key)
+  }
+}
+
+impl TryFrom<&PemfileReader> for Arc<ClientCertResolver> {
   type Error = std::io::Error;
 
   /// Opens the filepath from [PemfileReader] in readonly mode and reads one
@@ -44,10 +50,10 @@ impl TryFrom<&PemfileReader> for ClientCertResolver {
   /// This function will return:</br>
   /// Any [std::io::Error] from opening/reading the file</br>
   /// [ErrorKind::InvalidData] when the items are malformed or out of order
-  fn try_from(value: &PemfileReader) -> Result<ClientCertResolver, Self::Error> {
+  fn try_from(value: &PemfileReader) -> Result<Arc<ClientCertResolver>, Self::Error> {
     value
       .parse()
-      .map(|(cert, key)| ClientCertResolver::new(cert, key))
+      .map(|(cert, key)| ClientCertResolver::new(cert, &key))
   }
 }
 
@@ -57,6 +63,7 @@ mod tests {
     fs::remove_file,
     fs::OpenOptions,
     io::{BufWriter, Write},
+    sync::Arc,
   };
 
   use crate::network::p2p_tunl::resolver::ClientCertResolver;
@@ -107,7 +114,7 @@ dyOIEqrkHHicDvb8zi40n682DWVFUDQu
       filepath: FILENAME.into(),
     };
 
-    let resolver = ClientCertResolver::try_from(&reader);
+    let resolver = Arc::<ClientCertResolver>::try_from(&reader);
 
     remove_file(FILENAME).expect("!!! ERROR DELETING './randomfilename' MANUAL DELETION NECESSARY");
 

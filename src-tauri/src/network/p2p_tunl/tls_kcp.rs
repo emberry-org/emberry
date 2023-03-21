@@ -3,25 +3,17 @@ use std::{
   sync::Arc,
 };
 
+use crate::network::UserIdentification;
+
 use super::resolver::ClientCertResolver;
-use crate::data::config::PEM_DATA;
-use once_cell::sync::Lazy;
 use rustls::{server::AllowAnyAuthenticatedClient, Certificate, ClientConfig, RootCertStore};
 use tokio_kcp::KcpStream;
 use tokio_rustls::{TlsAcceptor, TlsConnector, TlsStream};
 
-static CAC_RESOLVER: Lazy<Arc<ClientCertResolver>> = Lazy::new(cacr);
-
-fn cacr() -> Arc<ClientCertResolver> {
-  //                    we can unsafe unwrap here because we know that PEM_DATA is not None because the ctrl_chnl loop
-  //                    only starts if PEM_DATA is Some() (from which this func is called)
-  let (cert, key) = unsafe { &PEM_DATA.as_ref().unwrap_unchecked() };
-  Arc::new(ClientCertResolver::new(cert.clone(), key.clone()))
-}
-
 pub async fn wrap_client(
   stream: KcpStream,
   peer_cert: &Certificate,
+  identification: &UserIdentification,
 ) -> Result<TlsStream<KcpStream>, io::Error> {
   let mut root_store = RootCertStore::empty();
 
@@ -30,7 +22,7 @@ pub async fn wrap_client(
     io::Error::new(ErrorKind::InvalidData, "Invalid peer cert")
   })?;
 
-  let cac_resolver = CAC_RESOLVER.clone();
+  let cac_resolver = Arc::<ClientCertResolver>::from(identification);
 
   let config = ClientConfig::builder()
     .with_safe_defaults()
@@ -46,6 +38,7 @@ pub async fn wrap_client(
 pub async fn wrap_server(
   stream: KcpStream,
   peer_cert: &Certificate,
+  identification: &UserIdentification,
 ) -> Result<TlsStream<KcpStream>, io::Error> {
   let mut client_cert_store = RootCertStore::empty();
   client_cert_store.add(peer_cert).map_err(|err| {
@@ -54,16 +47,13 @@ pub async fn wrap_server(
   })?;
 
   let client_cert_verifier = AllowAnyAuthenticatedClient::new(client_cert_store);
-  //                    we can unsafe unwrap here because we know that PEM_DATA is not None because the ctrl_chnl loop
-  //                    only starts if PEM_DATA is Some() (from which this func is called)
-  let (cert, key) = unsafe { &PEM_DATA.as_ref().unwrap_unchecked() };
 
   // Build TLS configuration.
   let tls_cfg = {
     // Load public certificate.
-    let certs = vec![cert.clone()];
+    let certs = vec![identification.certificate.clone()];
     // Load private key.
-    let key = key.clone();
+    let key = identification.private_key.clone();
     // Do not use client certificate authentication.
     let cfg = rustls::ServerConfig::builder()
       .with_safe_defaults()

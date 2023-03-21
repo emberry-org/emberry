@@ -7,9 +7,12 @@ use tauri::EventHandler;
 
 use tokio::sync::oneshot;
 
+pub use user_identification::UserIdentification;
+
 pub mod ctrl_chnl;
 mod holepunch;
 mod p2p_tunl;
+mod user_identification;
 
 type ConnectionMap = HashMap<RoomId, Connection>;
 pub struct Connection {
