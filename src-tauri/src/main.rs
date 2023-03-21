@@ -8,7 +8,6 @@ extern crate dotenv_codegen;
 
 mod data;
 mod embed;
-mod history;
 mod network;
 
 use std::sync::atomic::AtomicBool;
