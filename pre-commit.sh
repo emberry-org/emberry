@@ -2,13 +2,6 @@
 # requires gum
 #
 # This script runs a few checks that should be run before commiting
-#
-# This script will automatically add itself to the git-hooks if there
-# is no other pre-commit hook present
-
-if [ ! -f .git/hooks/pre-commit ]; then
-	ln -s pre-commit.sh .git/hooks/pre-commit
-fi
 
 git_newline() {
 	for f in $(git grep --cached -Il '')
