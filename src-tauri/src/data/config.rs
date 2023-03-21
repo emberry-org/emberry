@@ -14,11 +14,12 @@ use tokio_rustls::rustls::{Certificate, PrivateKey};
 pub static PEM: Lazy<PemfileReader> = Lazy::new(pem_reader);
 /// IdentifiedUserInfo of the current user;
 /// None if [PEM] has no valid cert
-pub static IDI: Lazy<RwLock<Option<IdentifiedUserInfo<'static>>>> = Lazy::new(|| RwLock::new(maybe_info()));
+pub static IDI: Lazy<RwLock<Option<IdentifiedUserInfo<'static>>>> =
+  Lazy::new(|| RwLock::new(maybe_info()));
 
 #[deprecated]
 /// cert and key of the local user from .pem file
-pub static PEM_DATA:  Lazy<Option<(Certificate, PrivateKey)>> = Lazy::new(maybe_pem_data);
+pub static PEM_DATA: Lazy<Option<(Certificate, PrivateKey)>> = Lazy::new(maybe_pem_data);
 
 fn maybe_pem_data() -> Option<(Certificate, PrivateKey)> {
   match PEM.parse() {

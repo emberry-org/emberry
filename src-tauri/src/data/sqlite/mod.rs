@@ -1,7 +1,7 @@
 mod actions;
 mod schema;
 
-use log::{warn, info};
+use log::{info, warn};
 use once_cell::sync::Lazy;
 use rusqlite::Connection;
 use std::sync::Mutex;
