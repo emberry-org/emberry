@@ -6,7 +6,7 @@ authors = ["devensiv <devensiv@gmail.com>", "max <mx.coppen@gmail.com>"]
 license = "GPLv3"
 repository = "https://github.com/emberry-org/emberry.git"
 edition = "2021"
-rust-version = "1.57"
+rust-version = "1.68"
 
 [build-dependencies]
 tauri-build = "1.2.1"
@@ -48,6 +48,9 @@ reqwest = "0.11.12"
 # logging / debugging
 log = "0.4"
 env_logger = "0.9"
+
+[patch."https://github.com/emberry-org/smoke"]
+smoke = { path = "../../smoke" }
 
 [features]
 # by default Tauri runs in production mode

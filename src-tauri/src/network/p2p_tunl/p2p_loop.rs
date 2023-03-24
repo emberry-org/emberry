@@ -4,6 +4,7 @@ use smoke::{
   messages::{Drain, Source},
   Signal,
 };
+use tokio::sync::mpsc;
 use tokio::{
   io::{AsyncRead, AsyncWrite, BufReader},
   select,
@@ -11,6 +12,10 @@ use tokio::{
   sync::oneshot,
   time::Instant,
 };
+
+use log::error;
+
+use super::vlan;
 
 use tauri::{AppHandle, Window};
 
@@ -55,6 +60,9 @@ where
   let mut ser_buf = [0u8; smoke::messages::signal::MAX_SIGNAL_BUF_SIZE];
   let mut de_buf = Vec::with_capacity(smoke::messages::signal::MAX_SIGNAL_BUF_SIZE);
 
+  let mut vlan = None;
+  let (vlan_tx, mut vlan_rx) = mpsc::channel::<Vec<u8>>(10);
+
   // Anonymous function to avoid redundant code and have the seconds controlled in a single space
   let kap_timeout = || Instant::now() + Duration::from_secs(20);
   let mut next_kap = kap_timeout();
@@ -71,6 +79,7 @@ where
           &events,
           &mut msg_from,
           &mut usr_status_cache,
+          &mut vlan,
         )
         .await
         {
@@ -87,8 +96,46 @@ where
         log::trace!("Sending message: {:?} in {}", msg, emit_identity);
         msg.serialize_to(stream, &mut ser_buf).expect("unable to serialize kap message").await?
       }
+      // VLAN HACK -------
+      Some(buf) = vlan_rx.recv() => {
+        next_kap = kap_timeout();
+        log::trace!("Sending vlan in {emit_identity}");
+        Signal::Vlan(Ok(buf)).serialize_to(stream, &mut ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?;
+      }
+      // --------- VLAN HACK
       Some(msg) = msg_rx.recv() => {
         next_kap = kap_timeout();
+        // VLAN HACK ---------
+        if let Signal::Chat(msg) = msg.clone() {
+          if let Some(Ok(port)) = msg // accept hack
+          .strip_prefix("/vlan_accept ")
+          .map(|port_string| port_string.parse::<u16>())
+          {
+            let (tx, rx) = mpsc::channel::<Vec<u8>>(10);
+            tokio::spawn(vlan::connect(port, rx, vlan_tx.clone()));
+            if vlan.is_some() {
+              error!("got vlan-accept while it was already connected");
+              return Ok(());
+            }
+            vlan = Some(tx);
+            Signal::VlanAccept(Ok(port)).serialize_to(stream, &mut ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?;
+            continue;
+          } else if let Some(Ok(port)) = msg // request hack
+          .strip_prefix("/vlan ")
+          .map(|port_string| port_string.parse::<u16>())
+          {
+            let (tx, rx) = mpsc::channel::<Vec<u8>>(10);
+            tokio::spawn(vlan::listen(port, rx, vlan_tx.clone()));
+            if vlan.is_some() {
+              error!("made vlan-req while it was already connected");
+              return Ok(());
+            }
+            vlan = Some(tx);
+            Signal::VlanRequest(port).serialize_to(stream, &mut ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?;
+            continue;
+          }
+        }
+        // --------- VLAN HACK
         log::trace!("Sending message: {:?} in {}", msg, emit_identity);
         msg.serialize_to(stream, &mut ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?
       },

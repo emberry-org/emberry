@@ -8,6 +8,9 @@ use crate::data::{
 use smoke::Signal;
 use tauri::{api::notification::Notification, AppHandle, Window};
 
+use log::{error, trace, warn};
+use tokio::sync::mpsc::Sender;
+
 use super::p2p_loop::EventNames;
 
 #[derive(Clone, serde::Serialize)]
@@ -27,6 +30,7 @@ pub async fn handle_signal(
   events: &EventNames,
   msg_from: &mut String,
   cache: &mut IdentifiedUserInfo<'_>,
+  vlan: &mut Option<Sender<Vec<u8>>>,
 ) -> Result<(), io::Error> {
   match signal {
     Signal::Kap => (),
@@ -52,6 +56,62 @@ pub async fn handle_signal(
           .expect("Failed to send desktop notification");
       }
     }
+    // VLAN HACK --------
+    Signal::Vlan(data) => {
+      let Some(vlan) = vlan else {
+        warn!("got vlan while is was not available: {data:?}");
+        return Ok(());
+      };
+
+      match &data {
+        Ok(bytes) => {
+          vlan.send(bytes.clone()).await.expect("vlan intercom fail");
+        }
+        Err(err) => {
+          error!("err from vlan {err}");
+          vlan.send(Vec::new()).await.expect("vlan intercom fail");
+        }
+      }
+    }
+    Signal::VlanAccept(data) => {
+      let Some(vlan) = vlan else {
+        warn!("got vlan_accept while is was not available: {data:?}");
+        return Ok(());
+      };
+
+      match data {
+        Err(err) => {
+          trace!("vlan was declined: '{err}'");
+          vlan.send(Vec::new()).await.expect("vlan intercom fail");
+        }
+        Ok(port) => {
+          trace!("vlan accept, target port: {port}");
+          emit_msg(
+          spawn_window,
+          &events.msg_recv,
+          &Signal::Chat(format!(
+            "ACCEPTED A VLAN CONNECTION TO THEIR \"127.0.0.1:{port}\", which is mapped to your \"127.0.0.1:{port}\""
+          )),
+        );
+        }
+      }
+    }
+    Signal::VlanRequest(port) => {
+      trace!("vlan requested, target port: {port}");
+      spawn_window
+        .emit("vlan-req", port)
+        .expect("failed to emit vlan-req");
+
+      error!("advertise vlan hack");
+      emit_msg(
+          spawn_window,
+          &events.msg_recv,
+          &Signal::Chat(format!(
+            "WANTS TO OPEN A VLAN CONNECTION TO CONNECT TO YOUR \"127.0.0.1:{port}\"\n\nTYPE: \"/vlan_accept\" TO ACCEPT THE REQUEST"
+          )),
+        );
+    }
+    // --------- VLAN HACK
     _ => emit_msg(spawn_window, &events.msg_recv, signal),
   }
 
