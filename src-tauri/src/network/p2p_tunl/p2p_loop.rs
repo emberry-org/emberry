@@ -13,7 +13,7 @@ use tokio::{
   time::Instant,
 };
 
-use log::{trace, error};
+use log::{error, trace};
 
 use super::vlan;
 
@@ -98,7 +98,7 @@ where
       }
       // VLAN HACK -------
       Some(buf) = vlan_rx.recv() => {
-        if buf.is_empty() { 
+        if buf.is_empty() {
           vlan = None;
           trace!("dropping vlan handle");
         }
