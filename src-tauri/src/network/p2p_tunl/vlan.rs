@@ -9,6 +9,8 @@ use log::trace;
 
 /// The part connecting to the game client
 pub async fn listen(port: u16, mut rx: Receiver<Vec<u8>>, tx: Sender<Vec<u8>>) {
+  trace!("starting VLAN Listener");
+
   let listener = TcpListener::bind(format!("127.0.0.1:{port}"))
     .await
     .expect("could not bind vlan socket");
@@ -41,6 +43,9 @@ pub async fn listen(port: u16, mut rx: Receiver<Vec<u8>>, tx: Sender<Vec<u8>>) {
 
 /// The part connecting to the game server
 pub async fn connect(port: u16, mut rx: Receiver<Vec<u8>>, tx: Sender<Vec<u8>>) {
+
+  trace!("connecting VLAN socket");
+
   let socket = TcpSocket::new_v4().expect("could not make socket");
   let mut socket = socket.connect(format!("127.0.0.1:{port}").parse().unwrap()).await.expect("could not connect socket");
 
