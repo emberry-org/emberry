@@ -61,7 +61,7 @@ where
   let mut de_buf = Vec::with_capacity(smoke::messages::signal::MAX_SIGNAL_BUF_SIZE);
 
   let mut vlan = None;
-  let (vlan_tx, mut vlan_rx) = mpsc::channel::<Vec<u8>>(10);
+  let (vlan_tx, mut vlan_local_rx) = mpsc::channel::<Vec<u8>>(10);
 
   // Anonymous function to avoid redundant code and have the seconds controlled in a single space
   let kap_timeout = || Instant::now() + Duration::from_secs(20);
@@ -97,14 +97,14 @@ where
         msg.serialize_to(stream, &mut ser_buf).expect("unable to serialize kap message").await?
       }
       // VLAN HACK -------
-      Some(buf) = vlan_rx.recv() => {
-        if buf.is_empty() {
+      Some(data_l) = vlan_local_rx.recv() => {
+        if data_l.is_empty() {
           vlan = None;
           trace!("dropping vlan handle");
         }
         next_kap = kap_timeout();
-        log::trace!("Sending {} in {emit_identity} vlan: {}", buf.len() ,String::from_utf8_lossy(&buf));
-        Signal::Vlan(Ok(buf)).serialize_to(stream, &mut ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?;
+        log::trace!("Sending {} in {emit_identity} vlan: {}", data_l.len() ,String::from_utf8_lossy(&data_l));
+        Signal::Vlan(Ok(data_l)).serialize_to(stream, &mut ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?;
       }
       // --------- VLAN HACK
       Some(msg) = msg_rx.recv() => {
