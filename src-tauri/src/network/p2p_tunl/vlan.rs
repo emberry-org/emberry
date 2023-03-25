@@ -35,6 +35,7 @@ pub async fn listen(local_port: u16, mut remote_rx: Receiver<Vec<u8>>, remote_tx
       Some(data_r) = remote_rx.recv() => {
         if data_r.is_empty() {
           remote_tx.send(vec![]).await.expect("vlan sender fail");
+          trace!("VLAN: closed");
           return;
         }
         local_tx.write_all(&data_r).await.expect("could not write all remote vlan data");
@@ -49,6 +50,7 @@ pub async fn connect(
   mut remote_rx: Receiver<Vec<u8>>,
   remote_tx: Sender<Vec<u8>>,
 ) {
+  // wait for data before we even connect the socket (could be extra signal)
   let data = remote_rx.recv().await.expect("no first msg");
   trace!("connecting VLAN socket");
 
@@ -58,11 +60,12 @@ pub async fn connect(
     .await
     .expect("could not connect socket");
 
-  let (mut local_rx, mut local_tx) = local_trx.split();
-  local_tx
+  local_trx
     .write_all(&data)
     .await
     .expect("could not send initial");
+
+  let (mut local_rx, mut local_tx) = local_trx.split();
 
   let mut buf = vec![0u8; 4092];
   loop {
