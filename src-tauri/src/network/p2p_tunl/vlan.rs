@@ -1,8 +1,11 @@
 use tokio::{
   io::{AsyncReadExt, AsyncWriteExt},
   net::{TcpListener, TcpSocket},
-  sync::mpsc::{Receiver, Sender}, select,
+  select,
+  sync::mpsc::{Receiver, Sender},
 };
+
+use log::trace;
 
 /// The part connecting to the game client
 pub async fn listen(port: u16, mut rx: Receiver<Vec<u8>>, tx: Sender<Vec<u8>>) {
@@ -20,8 +23,16 @@ pub async fn listen(port: u16, mut rx: Receiver<Vec<u8>>, tx: Sender<Vec<u8>>) {
         let amount = maybe_amount.expect("vlan socket read error");
         let data = Vec::from(&buf[0..amount]);
         tx.send(data).await.expect("vlan sender fail");
+        if amount == 0 {
+          trace!("VLAN: closed");
+          return;
+        }
       }
       Some(data) = rx.recv() => {
+        if data.is_empty() {
+          tx.send(vec![]).await.expect("vlan sender fail");
+          return;
+        }
         socket.write_all(&data).await.expect("could not write all remote vlan data");
       }
     }
@@ -40,8 +51,17 @@ pub async fn connect(port: u16, mut rx: Receiver<Vec<u8>>, tx: Sender<Vec<u8>>) 
         let amount = maybe_amount.expect("vlan socket read error");
         let data = Vec::from(&buf[0..amount]);
         tx.send(data).await.expect("vlan sender fail");
+        if amount == 0 {
+          trace!("VLAN: closed");
+          return;
+        }
       }
       Some(data) = rx.recv() => {
+        if data.is_empty() {
+          tx.send(vec![]).await.expect("vlan sender fail");
+          trace!("VLAN: closed");
+          return;
+        }
         socket.write_all(&data).await.expect("could not write all remote vlan data");
       }
     }

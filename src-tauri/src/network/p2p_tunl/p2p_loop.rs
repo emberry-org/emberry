@@ -98,6 +98,10 @@ where
       }
       // VLAN HACK -------
       Some(buf) = vlan_rx.recv() => {
+        if buf.is_empty() { 
+          vlan = None;
+          trace!("dropping vlan handle");
+        }
         next_kap = kap_timeout();
         log::trace!("Sending {} in {emit_identity} vlan: {}", buf.len() ,String::from_utf8_lossy(&buf));
         Signal::Vlan(Ok(buf)).serialize_to(stream, &mut ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?;
