@@ -44,10 +44,16 @@ pub async fn listen(port: u16, mut rx: Receiver<Vec<u8>>, tx: Sender<Vec<u8>>) {
 /// The part connecting to the game server
 pub async fn connect(port: u16, mut rx: Receiver<Vec<u8>>, tx: Sender<Vec<u8>>) {
 
+  let data = rx.recv().await.expect("no first msg");
   trace!("connecting VLAN socket");
 
   let socket = TcpSocket::new_v4().expect("could not make socket");
-  let mut socket = socket.connect(format!("127.0.0.1:{port}").parse().unwrap()).await.expect("could not connect socket");
+  let mut socket = socket
+    .connect(format!("127.0.0.1:{port}").parse().unwrap())
+    .await
+    .expect("could not connect socket");
+  
+  socket.write_all(&data).await.expect("could not send initial");
 
   let mut buf = vec![0u8; 10_000_000];
   loop {
