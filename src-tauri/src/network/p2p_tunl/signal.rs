@@ -118,7 +118,7 @@ async fn handle_hypha(
           spawn_window,
           &events.msg_recv,
           &Signal::Chat(format!(
-            "WANTS TO OPEN A VLAN CONNECTION TO CONNECT TO YOUR \"127.0.0.1:{port}\"\n\nTYPE: \"/vlan_accept\" TO ACCEPT THE REQUEST"
+            "WANTS TO OPEN A VLAN CONNECTION TO CONNECT TO YOUR \"127.0.0.1:{port}\"\n\nTYPE: \"/vlan_accept {port}\" TO ACCEPT THE REQUEST\nYOU CAN ALWAYS CLOSE THE CONNECTION USING: \"/vlan_kill\""
           )),
         );
     }
@@ -129,6 +129,11 @@ async fn handle_hypha(
       };
       kill.send(()).expect("failed to kill vlan");
       trace!("killed vlan");
+      emit_msg(
+        spawn_window,
+        &events.msg_recv,
+        &Signal::Chat("HAS KILLED THE VLAN".to_string()),
+      );
     }
   }
 

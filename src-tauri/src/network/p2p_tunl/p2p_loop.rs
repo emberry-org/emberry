@@ -144,6 +144,16 @@ where
             log::trace!("Sending message: {:?} in {}", msg, emit_identity);
             msg.serialize_to(stream, &mut ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?;
             continue;
+          }else if msg == "/vlan_kill" {
+            if let Some((_, kill)) = vlan.take() {
+              kill.send(()).expect("could not kill vlan");
+              let hypha = hypha::Signal::Kill;
+              let msg = Signal::Hypha(hypha);
+              log::trace!("Sending message: {:?} in {}", msg, emit_identity);
+              msg.serialize_to(stream, &mut ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?;
+            }else{
+              log::warn!("tried to kill non existing vlan with command");
+            }
           }
         }
         // --------- VLAN HACK
