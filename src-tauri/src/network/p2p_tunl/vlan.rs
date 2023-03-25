@@ -1,6 +1,6 @@
 use tokio::{
   io::{AsyncReadExt, AsyncWriteExt},
-  net::{TcpListener, TcpSocket},
+  net::{TcpListener, TcpSocket, TcpStream},
   select,
   sync::mpsc::{Receiver, Sender},
 };
@@ -19,29 +19,7 @@ pub async fn listen(local_port: u16, mut remote_rx: Receiver<Vec<u8>>, remote_tx
     .await
     .expect("could not accept connection to vlan");
 
-  let (mut local_rx, mut local_tx) = local_trx.split();
-  let mut buf = vec![0u8; 4092];
-  loop {
-    select! {
-      opt_amount_l = local_rx.read(&mut buf) => {
-        let amount_l = opt_amount_l.expect("vlan socket read error");
-        let data_l = Vec::from(&buf[0..amount_l]);
-        remote_tx.send(data_l).await.expect("vlan sender fail");
-        if amount_l == 0 {
-          trace!("VLAN: closed");
-          return;
-        }
-      }
-      Some(data_r) = remote_rx.recv() => {
-        if data_r.is_empty() {
-          remote_tx.send(vec![]).await.expect("vlan sender fail");
-          trace!("VLAN: closed");
-          return;
-        }
-        local_tx.write_all(&data_r).await.expect("could not write all remote vlan data");
-      }
-    }
-  }
+  spin(&mut local_trx, (&mut remote_rx, &remote_tx)).await;
 }
 
 /// The part connecting to the game server
@@ -65,7 +43,12 @@ pub async fn connect(
     .await
     .expect("could not send initial");
 
+  spin(&mut local_trx, (&mut remote_rx, &remote_tx)).await;
+}
+
+async fn spin(local_trx: &mut TcpStream, remote_trx: (&mut Receiver<Vec<u8>>, &Sender<Vec<u8>>)) {
   let (mut local_rx, mut local_tx) = local_trx.split();
+  let (remote_rx, remote_tx) = remote_trx;
 
   let mut buf = vec![0u8; 4092];
   loop {
