@@ -13,7 +13,7 @@ use tokio::{
   time::Instant,
 };
 
-use log::error;
+use log::{trace, error};
 
 use super::vlan;
 
@@ -99,7 +99,7 @@ where
       // VLAN HACK -------
       Some(buf) = vlan_rx.recv() => {
         next_kap = kap_timeout();
-        log::trace!("Sending vlan in {emit_identity}");
+        log::trace!("Sending {} in {emit_identity} vlan: {}", buf.len() ,String::from_utf8_lossy(&buf));
         Signal::Vlan(Ok(buf)).serialize_to(stream, &mut ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?;
       }
       // --------- VLAN HACK
@@ -118,7 +118,9 @@ where
               return Ok(());
             }
             vlan = Some(tx);
-            Signal::VlanAccept(Ok(port)).serialize_to(stream, &mut ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?;
+            let msg = Signal::VlanAccept(Ok(port));
+            log::trace!("Sending message: {:?} in {}", msg, emit_identity);
+            msg.serialize_to(stream, &mut ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?;
             continue;
           } else if let Some(Ok(port)) = msg // request hack
           .strip_prefix("/vlan ")
@@ -131,7 +133,9 @@ where
               return Ok(());
             }
             vlan = Some(tx);
-            Signal::VlanRequest(port).serialize_to(stream, &mut ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?;
+            let msg = Signal::VlanRequest(port);
+            log::trace!("Sending message: {:?} in {}", msg, emit_identity);
+            msg.serialize_to(stream, &mut ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?;
             continue;
           }
         }
