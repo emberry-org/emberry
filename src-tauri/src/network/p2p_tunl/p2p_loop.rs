@@ -13,7 +13,7 @@ use tokio::{
   time::Instant,
 };
 
-use log::{error, trace};
+use log::error;
 
 use super::vlan;
 
@@ -98,10 +98,6 @@ where
       }
       // VLAN HACK -------
       Some(data_l) = vlan_local_rx.recv() => {
-        if data_l.is_empty() {
-          vlan = None;
-          trace!("dropping vlan handle");
-        }
         next_kap = kap_timeout();
         log::trace!("Sending {} in {emit_identity} vlan: {}", data_l.len() ,String::from_utf8_lossy(&data_l));
         Signal::Vlan(Ok(data_l)).serialize_to(stream, &mut ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?;
