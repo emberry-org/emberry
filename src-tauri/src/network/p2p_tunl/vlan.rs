@@ -1,5 +1,5 @@
 use tokio::{
-  io::{AsyncReadExt, AsyncWriteExt},
+  io::{AsyncReadExt, AsyncWriteExt, ReadBuf},
   net::{TcpListener, TcpSocket},
   select,
   sync::mpsc::{Receiver, Sender},
@@ -18,7 +18,7 @@ pub async fn listen(port: u16, mut rx: Receiver<Vec<u8>>, tx: Sender<Vec<u8>>) {
     .accept()
     .await
     .expect("could not accept connection to vlan");
-  let mut buf = vec![0u8; 10_000_000];
+  let mut buf = vec![0u8; 4092];
   loop {
     select! {
       maybe_amount = socket.read(&mut buf) => {
@@ -55,7 +55,7 @@ pub async fn connect(port: u16, mut rx: Receiver<Vec<u8>>, tx: Sender<Vec<u8>>) 
   
   socket.write_all(&data).await.expect("could not send initial");
 
-  let mut buf = vec![0u8; 10_000_000];
+  let mut buf = vec![0u8; 4092];
   loop {
     select! {
       maybe_amount = socket.read(&mut buf) => {
