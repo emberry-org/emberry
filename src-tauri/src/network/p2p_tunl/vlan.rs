@@ -13,10 +13,10 @@ pub async fn listen(port: u16, mut rx: Receiver<Vec<u8>>, tx: Sender<Vec<u8>>) {
     .accept()
     .await
     .expect("could not accept connection to vlan");
-  let mut buf = Box::new([0u8; 10_000_000]);
+  let mut buf = vec![0u8; 10_000_000];
   loop {
-    select!{
-      maybe_amount = socket.read(&mut *buf) => {
+    select! {
+      maybe_amount = socket.read(&mut buf) => {
         let amount = maybe_amount.expect("vlan socket read error");
         let data = Vec::from(&buf[0..amount]);
         tx.send(data).await.expect("vlan sender fail");
@@ -33,10 +33,10 @@ pub async fn connect(port: u16, mut rx: Receiver<Vec<u8>>, tx: Sender<Vec<u8>>) 
   let socket = TcpSocket::new_v4().expect("could not make socket");
   let mut socket = socket.connect(format!("127.0.0.1:{port}").parse().unwrap()).await.expect("could not connect socket");
 
-  let mut buf = Box::new([0u8; 10_000_000]);
+  let mut buf = vec![0u8; 10_000_000];
   loop {
-    select!{
-      maybe_amount = socket.read(&mut *buf) => {
+    select! {
+      maybe_amount = socket.read(&mut buf) => {
         let amount = maybe_amount.expect("vlan socket read error");
         let data = Vec::from(&buf[0..amount]);
         tx.send(data).await.expect("vlan sender fail");
