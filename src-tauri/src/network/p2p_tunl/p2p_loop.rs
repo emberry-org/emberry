@@ -1,9 +1,11 @@
 use std::{io, time::Duration};
 
+use smoke::messages::hypha;
 use smoke::{
   messages::{Drain, Source},
   Signal,
 };
+
 use tokio::sync::mpsc;
 use tokio::{
   io::{AsyncRead, AsyncWrite, BufReader},
@@ -100,7 +102,8 @@ where
       Some(data_l) = vlan_local_rx.recv() => {
         next_kap = kap_timeout();
         log::trace!("Sending {} in {emit_identity} vlan: {}", data_l.len() ,String::from_utf8_lossy(&data_l));
-        Signal::Vlan(Ok(data_l)).serialize_to(stream, &mut ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?;
+        let hypha = hypha::Signal::Data(data_l);
+        Signal::Hypha(hypha).serialize_to(stream, &mut ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?;
       }
       // --------- VLAN HACK
       Some(msg) = msg_rx.recv() => {
@@ -112,13 +115,15 @@ where
           .map(|port_string| port_string.parse::<u16>())
           {
             let (tx, rx) = mpsc::channel::<Vec<u8>>(10);
-            tokio::spawn(vlan::connect(port, rx, vlan_tx.clone()));
+            let (kill_tx, kill_rx) = oneshot::channel::<()>();
+            tokio::spawn(vlan::connect(port, rx, vlan_tx.clone(), kill_rx));
             if vlan.is_some() {
               error!("got vlan-accept while it was already connected");
               return Ok(());
             }
-            vlan = Some(tx);
-            let msg = Signal::VlanAccept(Ok(port));
+            vlan = Some((tx, kill_tx));
+            let hypha = hypha::Signal::Accept(Ok(port));
+            let msg = Signal::Hypha(hypha);
             log::trace!("Sending message: {:?} in {}", msg, emit_identity);
             msg.serialize_to(stream, &mut ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?;
             continue;
@@ -127,13 +132,15 @@ where
           .map(|port_string| port_string.parse::<u16>())
           {
             let (tx, rx) = mpsc::channel::<Vec<u8>>(10);
-            tokio::spawn(vlan::listen(port, rx, vlan_tx.clone()));
+            let (kill_tx, kill_rx) = oneshot::channel::<()>();
+            tokio::spawn(vlan::listen(port, rx, vlan_tx.clone(), kill_rx));
             if vlan.is_some() {
               error!("made vlan-req while it was already connected");
               return Ok(());
             }
-            vlan = Some(tx);
-            let msg = Signal::VlanRequest(port);
+            vlan = Some((tx, kill_tx));
+            let hypha = hypha::Signal::Request(port);
+            let msg = Signal::Hypha(hypha);
             log::trace!("Sending message: {:?} in {}", msg, emit_identity);
             msg.serialize_to(stream, &mut ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?;
             continue;
