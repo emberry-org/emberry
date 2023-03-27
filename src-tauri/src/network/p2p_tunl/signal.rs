@@ -9,7 +9,7 @@ use smoke::{messages::hypha, Signal};
 use tauri::{api::notification::Notification, AppHandle, Window};
 
 use log::{error, trace, warn};
-use tokio::sync::{mpsc::Sender, oneshot};
+use tokio::sync::mpsc::Sender;
 
 use super::p2p_loop::EventNames;
 
@@ -30,7 +30,7 @@ pub async fn handle_signal(
   events: &EventNames,
   msg_from: &mut String,
   cache: &mut IdentifiedUserInfo<'_>,
-  vlan: &mut Option<(Sender<Vec<u8>>, oneshot::Sender<()>)>,
+  vlan: &mut Option<Sender<Vec<u8>>>,
 ) -> Result<(), io::Error> {
   match signal {
     Signal::Kap => (),
@@ -69,12 +69,12 @@ pub async fn handle_signal(
 async fn handle_hypha(
   signal: &hypha::Signal,
   spawn_window: &Window,
-  vlan: &mut Option<(Sender<Vec<u8>>, oneshot::Sender<()>)>,
+  vlan: &mut Option<Sender<Vec<u8>>>,
   events: &EventNames,
 ) -> Result<(), io::Error> {
   match signal {
     hypha::Signal::Data(data_r) => {
-      let Some((local_tx, _)) = vlan else {
+      let Some(local_tx) = vlan else {
         warn!("got vlan while is was not available: {data_r:?}");
         return Ok(());
       };
@@ -85,7 +85,7 @@ async fn handle_hypha(
         .expect("vlan intercom fail");
     }
     hypha::Signal::Accept(data) => {
-      let Some((vlan, _)) = vlan else {
+      let Some(vlan) = vlan else {
         warn!("got vlan_accept while is was not available: {data:?}");
         return Ok(());
       };
@@ -123,11 +123,11 @@ async fn handle_hypha(
         );
     }
     hypha::Signal::Kill => {
-      let Some((_, kill)) = vlan.take() else {
+      let Some(kill) = vlan.take() else {
         warn!("got vlan_kill while is was not available");
         return Ok(());
       };
-      kill.send(()).expect("failed to kill vlan");
+      drop(kill); // drop the sender to signal closing
       trace!("killed vlan");
       emit_msg(
         spawn_window,

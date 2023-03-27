@@ -2,20 +2,16 @@ use tokio::{
   io::{AsyncReadExt, AsyncWriteExt},
   net::{TcpListener, TcpSocket, TcpStream},
   select,
-  sync::{
-    mpsc::{Receiver, Sender},
-    oneshot,
-  },
+  sync::mpsc::{Receiver, Sender},
 };
 
-use log::trace;
+use log::{trace, warn};
 
 /// The part connecting to the game client
 pub async fn listen(
   local_port: u16,
   mut remote_rx: Receiver<Vec<u8>>,
   remote_tx: Sender<Vec<u8>>,
-  mut kill_rx: oneshot::Receiver<()>,
 ) -> Result<(), &'static str> {
   let listener_l = TcpListener::bind(format!("127.0.0.1:{local_port}"))
     .await
@@ -23,12 +19,17 @@ pub async fn listen(
 
   loop {
     trace!("starting VLAN Listener");
-    let (mut local_trx, _) = listener_l
-      .accept()
-      .await
-      .expect("could not accept connection to vlan");
 
-    spin(&mut local_trx, (&mut remote_rx, &remote_tx), &mut kill_rx).await?;
+    select! {
+      opt_data_r = remote_rx.recv() => match opt_data_r {
+        Some(data_r) => warn!("got {}bytes data before socket", data_r.len()),
+        None => return Err("vlan killed"),
+      },
+      res_socket_l = listener_l.accept() => match res_socket_l {
+        Ok((mut local_trx, _)) => spin(&mut local_trx, (&mut remote_rx, &remote_tx)).await?,
+        Err(err) => warn!("err from listener {}", err),
+      },
+    }
   }
 }
 
@@ -37,11 +38,13 @@ pub async fn connect(
   local_port: u16,
   mut remote_rx: Receiver<Vec<u8>>,
   remote_tx: Sender<Vec<u8>>,
-  mut kill_rx: oneshot::Receiver<()>,
 ) -> Result<(), &'static str> {
   loop {
     // wait for data before we even connect the socket (could be extra signal)
-    let data = remote_rx.recv().await.expect("no first msg");
+    let Some(data_r) = remote_rx.recv().await else {
+      return Err("vlan killed");
+    };
+
     trace!("connecting VLAN socket");
 
     let local_s = TcpSocket::new_v4().expect("could not make socket");
@@ -51,18 +54,17 @@ pub async fn connect(
       .expect("could not connect socket");
 
     local_trx
-      .write_all(&data)
+      .write_all(&data_r)
       .await
       .expect("could not send initial");
 
-    spin(&mut local_trx, (&mut remote_rx, &remote_tx), &mut kill_rx).await?;
+    spin(&mut local_trx, (&mut remote_rx, &remote_tx)).await?;
   }
 }
 
 async fn spin(
   local_trx: &mut TcpStream,
   remote_trx: (&mut Receiver<Vec<u8>>, &Sender<Vec<u8>>),
-  kill_rx: &mut oneshot::Receiver<()>,
 ) -> Result<(), &'static str> {
   let (mut local_rx, mut local_tx) = local_trx.split();
   let (remote_rx, remote_tx) = remote_trx;
@@ -79,16 +81,16 @@ async fn spin(
           return Ok(());
         }
       }
-      Some(data_r) = remote_rx.recv() => {
+      opt_data_r = remote_rx.recv() => {
+        let Some(data_r) = opt_data_r else {
+          return Err("vlan killed");
+        };
+
         if data_r.is_empty() {
           trace!("VLAN: closed remote, restarting");
           return Ok(());
         }
         local_tx.write_all(&data_r).await.expect("could not write all remote vlan data");
-      }
-      _ = &mut *kill_rx => {
-        trace!("vlan died");
-        return Err("vlan killed by remote");
       }
     }
   }

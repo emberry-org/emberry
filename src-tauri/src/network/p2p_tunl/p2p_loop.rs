@@ -115,13 +115,12 @@ where
           .map(|port_string| port_string.parse::<u16>())
           {
             let (tx, rx) = mpsc::channel::<Vec<u8>>(10);
-            let (kill_tx, kill_rx) = oneshot::channel::<()>();
-            tokio::spawn(vlan::connect(port, rx, vlan_tx.clone(), kill_rx));
+            tokio::spawn(vlan::connect(port, rx, vlan_tx.clone()));
             if vlan.is_some() {
               error!("got vlan-accept while it was already connected");
               return Ok(());
             }
-            vlan = Some((tx, kill_tx));
+            vlan = Some(tx);
             let hypha = hypha::Signal::Accept(Ok(port));
             let msg = Signal::Hypha(hypha);
             log::trace!("Sending message: {:?} in {}", msg, emit_identity);
@@ -132,21 +131,20 @@ where
           .map(|port_string| port_string.parse::<u16>())
           {
             let (tx, rx) = mpsc::channel::<Vec<u8>>(10);
-            let (kill_tx, kill_rx) = oneshot::channel::<()>();
-            tokio::spawn(vlan::listen(port, rx, vlan_tx.clone(), kill_rx));
+            tokio::spawn(vlan::listen(port, rx, vlan_tx.clone()));
             if vlan.is_some() {
               error!("made vlan-req while it was already connected");
               return Ok(());
             }
-            vlan = Some((tx, kill_tx));
+            vlan = Some(tx);
             let hypha = hypha::Signal::Request(port);
             let msg = Signal::Hypha(hypha);
             log::trace!("Sending message: {:?} in {}", msg, emit_identity);
             msg.serialize_to(stream, &mut ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?;
             continue;
           }else if msg == "/vlan_kill" {
-            if let Some((_, kill)) = vlan.take() {
-              kill.send(()).expect("could not kill vlan");
+            if let Some(kill) = vlan.take() {
+              drop(kill); // drop the sender to signal kill
               let hypha = hypha::Signal::Kill;
               let msg = Signal::Hypha(hypha);
               log::trace!("Sending message: {:?} in {}", msg, emit_identity);
