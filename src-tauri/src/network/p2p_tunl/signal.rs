@@ -86,15 +86,10 @@ async fn handle_hypha(
         .expect("vlan intercom fail");
     }
     hypha::Signal::Accept(data) => {
-      let Some(vlan) = vlan else {
-        warn!("got vlan_accept while is was not available: {data:?}");
-        return Ok(());
-      };
-
       match data {
         Err(err) => {
           trace!("vlan was declined: '{err}'");
-          vlan.send(Vec::new()).await.expect("vlan intercom fail");
+          drop(vlan.take()); // drop vlan if available
         }
         Ok(port) => {
           trace!("vlan accept, target port: {port}");
