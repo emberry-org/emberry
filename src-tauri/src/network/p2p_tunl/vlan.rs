@@ -5,7 +5,7 @@ use tokio::{
   sync::mpsc::{Receiver, Sender},
 };
 
-use log::{trace, warn};
+use log::{info, trace, warn};
 
 /// The part connecting to the game client
 pub async fn listen(
@@ -77,7 +77,7 @@ async fn spin(
         let data_l = Vec::from(&buf[0..amount_l]);
         remote_tx.send(data_l).await.expect("vlan sender fail");
         if amount_l == 0 {
-          trace!("VLAN: closed socket, restarting");
+          info!("VLAN: closed socket, restarting");
           return Ok(());
         }
       }
@@ -87,7 +87,7 @@ async fn spin(
         };
 
         if data_r.is_empty() {
-          trace!("VLAN: closed remote, restarting");
+          info!("VLAN: closed remote, restarting");
           return Ok(());
         }
         local_tx.write_all(&data_r).await.expect("could not write all remote vlan data");
