@@ -101,7 +101,7 @@ where
       // VLAN HACK -------
       Some(data_l) = vlan_local_rx.recv() => {
         next_kap = kap_timeout();
-        log::trace!("Sending {} in {emit_identity} vlan", data_l.len());
+        log::trace!("sent {} vlan", data_l.len());
         let hypha = hypha::Signal::Data(data_l);
         Signal::Hypha(hypha).serialize_to(stream, &mut ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?;
       }

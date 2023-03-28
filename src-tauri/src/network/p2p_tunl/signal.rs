@@ -79,6 +79,7 @@ async fn handle_hypha(
         return Ok(());
       };
 
+      log::trace!("got {} vlan", data_r.len());
       local_tx
         .send(data_r.clone())
         .await
