@@ -1,5 +1,5 @@
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::{
-  io::{AsyncReadExt, AsyncWriteExt},
   net::{TcpListener, TcpSocket, TcpStream},
   select,
   sync::mpsc::{Receiver, Sender},

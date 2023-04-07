@@ -5,7 +5,7 @@ use crate::data::{
   IdentifiedUserInfo,
 };
 
-use smoke::{messages::hypha, Signal};
+use smoke::Signal;
 use tauri::{api::notification::Notification, AppHandle, Window};
 
 use log::{error, trace, warn};
@@ -56,24 +56,23 @@ pub async fn handle_signal(
           .expect("Failed to send desktop notification");
       }
     }
-    Signal::Hypha(signal) => {
-      handle_hypha(signal, spawn_window, vlan, events).await?;
-    }
-    _ => emit_msg(spawn_window, &events.msg_recv, signal),
-  }
+    Signal::Vlink(internal) => {
+      let data_r = match internal {
+        smoke::messages::hypha::Signal::Connect(_) => {
+          trace!("connect");
+          return Ok(());
+        }
+        smoke::messages::hypha::Signal::Data(_port, data_r) => data_r,
+        smoke::messages::hypha::Signal::Error(_, _) => {
+          error!("error");
+          return Ok(());
+        }
+        smoke::messages::hypha::Signal::AcceptError(_) => {
+          error!("accept error");
+          return Ok(());
+        }
+      };
 
-  Ok(())
-}
-
-#[inline]
-async fn handle_hypha(
-  signal: &hypha::Signal,
-  spawn_window: &Window,
-  vlan: &mut Option<Sender<Vec<u8>>>,
-  events: &EventNames,
-) -> Result<(), io::Error> {
-  match signal {
-    hypha::Signal::Data(data_r) => {
       let Some(local_tx) = vlan else {
         warn!("got vlan while is was not available: {data_r:?}");
         return Ok(());
@@ -85,40 +84,32 @@ async fn handle_hypha(
         .await
         .expect("vlan intercom fail");
     }
-    hypha::Signal::Accept(data) => {
-      match data {
-        Err(err) => {
-          trace!("vlan was declined: '{err}'");
-          drop(vlan.take()); // drop vlan if available
-        }
-        Ok(port) => {
-          trace!("vlan accept, target port: {port}");
-          emit_msg(
-          spawn_window,
-          &events.msg_recv,
-          &Signal::Chat(format!(
-            "ACCEPTED A VLAN CONNECTION TO THEIR \"127.0.0.1:{port}\", which is mapped to your \"127.0.0.1:{port}\""
-          )),
-        );
-        }
-      }
-    }
-    hypha::Signal::Request(port) => {
+    Signal::RequestVlink(port) => {
       trace!("vlan requested, target port: {port}");
       spawn_window
         .emit("vlan-req", port)
-        .expect("failed to emit vlan-req");
+        .expect("failed to emit vlan-req)");
 
-      error!("advertise vlan hack");
+      // TODO remove vlan hack
       emit_msg(
-          spawn_window,
-          &events.msg_recv,
-          &Signal::Chat(format!(
-            "WANTS TO OPEN A VLAN CONNECTION TO CONNECT TO YOUR \"127.0.0.1:{port}\"\n\nTYPE: \"/vlan_accept {port}\" TO ACCEPT THE REQUEST\nYOU CAN ALWAYS CLOSE THE CONNECTION USING: \"/vlan_kill\""
-          )),
-        );
+        spawn_window,
+        &events.msg_recv,
+        &Signal::Chat(format!(
+          "WANTS TO OPEN A VLAN CONNECTION TO CONNECT TO YOUR \"127.0.0.1:{port}\"\n\nTYPE: \"/vlan_accept {port}\" TO ACCEPT THE REQUEST\nYOU CAN ALWAYS CLOSE THE CONNECTION USING: \"/vlan_kill\""
+        )),
+      );
     }
-    hypha::Signal::Kill => {
+    Signal::AcceptVlink(res) => match res {
+      Ok(port) => {
+        trace!("vlan accept, port {port}");
+        emit_msg(spawn_window, &events.msg_recv, &Signal::Chat(format!("ACCEPTED A VLAN CONNECTION, MAPPING (your)\"127.0.0.1:{port}\" -> (their)\"127.0.0.1:{port}\"")))
+      }
+      Err(err) => {
+        trace!("vlan was declined: '{err}'");
+        drop(vlan.take());
+      }
+    },
+    Signal::KillVlink => {
       let Some(kill) = vlan.take() else {
         warn!("got vlan_kill while is was not available");
         return Ok(());
@@ -131,6 +122,7 @@ async fn handle_hypha(
         &Signal::Chat("HAS KILLED THE VLAN".to_string()),
       );
     }
+    Signal::EOC => todo!(),
   }
 
   Ok(())

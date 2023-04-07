@@ -102,8 +102,8 @@ where
       Some(data_l) = vlan_local_rx.recv() => {
         next_kap = kap_timeout();
         log::trace!("sent {} vlan", data_l.len());
-        let hypha = hypha::Signal::Data(data_l);
-        Signal::Hypha(hypha).serialize_to(stream, &mut ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?;
+        let hypha = hypha::Signal::Data(0, data_l);
+        Signal::Vlink(hypha).serialize_to(stream, &mut ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?;
       }
       // --------- VLAN HACK
       Some(msg) = msg_rx.recv() => {
@@ -121,8 +121,7 @@ where
               return Ok(());
             }
             vlan = Some(tx);
-            let hypha = hypha::Signal::Accept(Ok(port));
-            let msg = Signal::Hypha(hypha);
+            let msg = Signal::AcceptVlink(Ok(port));
             log::trace!("Sending message: {:?} in {}", msg, emit_identity);
             msg.serialize_to(stream, &mut ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?;
             continue;
@@ -137,16 +136,14 @@ where
               return Ok(());
             }
             vlan = Some(tx);
-            let hypha = hypha::Signal::Request(port);
-            let msg = Signal::Hypha(hypha);
+            let msg = Signal::RequestVlink(port);
             log::trace!("Sending message: {:?} in {}", msg, emit_identity);
             msg.serialize_to(stream, &mut ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?;
             continue;
           }else if msg == "/vlan_kill" {
             if let Some(kill) = vlan.take() {
               drop(kill); // drop the sender to signal kill
-              let hypha = hypha::Signal::Kill;
-              let msg = Signal::Hypha(hypha);
+              let msg = Signal::KillVlink;
               log::trace!("Sending message: {:?} in {}", msg, emit_identity);
               msg.serialize_to(stream, &mut ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?;
             }else{

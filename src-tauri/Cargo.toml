@@ -6,10 +6,10 @@ authors = ["devensiv <devensiv@gmail.com>", "max <mx.coppen@gmail.com>"]
 license = "GPLv3"
 repository = "https://github.com/emberry-org/emberry.git"
 edition = "2021"
-rust-version = "1.68"
+rust-version = "1.67"
 
 [build-dependencies]
-tauri-build = "1.2.1"
+tauri-build = { version = "1.2.1", features = [] }
 
 [dependencies]
 tokio = { version = "1.26.0", features = ["net", "macros", "rt", "sync"] }
@@ -48,6 +48,9 @@ reqwest = "0.11.12"
 # logging / debugging
 log = "0.4"
 env_logger = "0.9"
+
+[patch.crates-io]
+vlink = { path = "../../vlink" }
 
 [patch."https://github.com/emberry-org/smoke"]
 smoke = { path = "../../smoke" }
