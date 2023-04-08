@@ -1,3 +1,4 @@
+use std::future::Future;
 use std::{io, time::Duration};
 
 use smoke::messages::hypha;
@@ -16,8 +17,7 @@ use tokio::{
 };
 
 use log::error;
-
-use super::vlan;
+use vlink::{Action, TcpBridge};
 
 use tauri::{AppHandle, Window};
 
@@ -62,8 +62,8 @@ where
   let mut ser_buf = [0u8; smoke::messages::signal::MAX_SIGNAL_BUF_SIZE];
   let mut de_buf = Vec::with_capacity(smoke::messages::signal::MAX_SIGNAL_BUF_SIZE);
 
-  let mut vlan = None;
-  let (vlan_tx, mut vlan_local_rx) = mpsc::channel::<Vec<u8>>(10);
+  let mut vlink_buf = [0u8; smoke::messages::signal::MAX_SIGNAL_BUF_SIZE - 64];
+  let mut opt_bridge: Option<TcpBridge> = None;
 
   // Anonymous function to avoid redundant code and have the seconds controlled in a single space
   let kap_timeout = || Instant::now() + Duration::from_secs(20);
@@ -81,7 +81,7 @@ where
           &events,
           &mut msg_from,
           &mut usr_status_cache,
-          &mut vlan,
+          &mut opt_bridge,
         )
         .await
         {
@@ -98,14 +98,11 @@ where
         log::trace!("Sending message: {:?} in {}", msg, emit_identity);
         msg.serialize_to(stream, &mut ser_buf).expect("unable to serialize kap message").await?
       }
-      // VLAN HACK -------
-      Some(data_l) = vlan_local_rx.recv() => {
+      Some(action) = extract_maybe(opt_bridge.as_mut(), &mut vlink_buf) => {
         next_kap = kap_timeout();
-        log::trace!("sent {} vlan", data_l.len());
-        let hypha = hypha::Signal::Data(0, data_l);
+        let hypha = hypha::Signal::from_vlink(&action);
         Signal::Vlink(hypha).serialize_to(stream, &mut ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?;
       }
-      // --------- VLAN HACK
       Some(msg) = msg_rx.recv() => {
         next_kap = kap_timeout();
         // VLAN HACK ---------
@@ -114,13 +111,11 @@ where
           .strip_prefix("/vlan_accept ")
           .map(|port_string| port_string.parse::<u16>())
           {
-            let (tx, rx) = mpsc::channel::<Vec<u8>>(10);
-            tokio::spawn(vlan::connect(port, rx, vlan_tx.clone()));
-            if vlan.is_some() {
+            if opt_bridge.is_some() {
               error!("got vlan-accept while it was already connected");
               return Ok(());
             }
-            vlan = Some(tx);
+            opt_bridge = Some(TcpBridge::emit_to(port));
             let msg = Signal::AcceptVlink(Ok(port));
             log::trace!("Sending message: {:?} in {}", msg, emit_identity);
             msg.serialize_to(stream, &mut ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?;
@@ -129,19 +124,17 @@ where
           .strip_prefix("/vlan ")
           .map(|port_string| port_string.parse::<u16>())
           {
-            let (tx, rx) = mpsc::channel::<Vec<u8>>(10);
-            tokio::spawn(vlan::listen(port, rx, vlan_tx.clone()));
-            if vlan.is_some() {
+            if opt_bridge.is_some() {
               error!("made vlan-req while it was already connected");
               return Ok(());
             }
-            vlan = Some(tx);
+            opt_bridge = Some(TcpBridge::accepting_from(port).await);
             let msg = Signal::RequestVlink(port);
             log::trace!("Sending message: {:?} in {}", msg, emit_identity);
             msg.serialize_to(stream, &mut ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?;
             continue;
           }else if msg == "/vlan_kill" {
-            if let Some(kill) = vlan.take() {
+            if let Some(kill) = opt_bridge.take() {
               drop(kill); // drop the sender to signal kill
               let msg = Signal::KillVlink;
               log::trace!("Sending message: {:?} in {}", msg, emit_identity);
@@ -157,4 +150,15 @@ where
       },
     }
   }
+}
+
+async fn extract_maybe<'a>(
+  bridge: Option<&mut TcpBridge>,
+  buf: &'a mut [u8],
+) -> Option<Action<'a>> {
+  let Some(bridge) = bridge else {
+    return std::future::pending().await;
+  };
+
+  bridge.extract(buf).await
 }

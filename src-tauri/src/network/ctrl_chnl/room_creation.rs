@@ -1,4 +1,5 @@
 use std::io::{Error, ErrorKind};
+use std::thread;
 
 use rustls::Certificate;
 use smoke::messages::RoomId;

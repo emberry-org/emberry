@@ -9,7 +9,6 @@ use smoke::Signal;
 use tauri::{api::notification::Notification, AppHandle, Window};
 
 use log::{error, trace, warn};
-use tokio::sync::mpsc::Sender;
 
 use super::p2p_loop::EventNames;
 
@@ -30,7 +29,7 @@ pub async fn handle_signal(
   events: &EventNames,
   msg_from: &mut String,
   cache: &mut IdentifiedUserInfo<'_>,
-  vlan: &mut Option<Sender<Vec<u8>>>,
+  opt_bridge: &mut Option<vlink::TcpBridge>,
 ) -> Result<(), io::Error> {
   match signal {
     Signal::Kap => (),
@@ -73,16 +72,15 @@ pub async fn handle_signal(
         }
       };
 
-      let Some(local_tx) = vlan else {
+      let Some(bridge) = opt_bridge else {
         warn!("got vlan while is was not available: {data_r:?}");
         return Ok(());
       };
 
       log::trace!("got {} vlan", data_r.len());
-      local_tx
-        .send(data_r.clone())
-        .await
-        .expect("vlan intercom fail");
+      if let Some(response) = bridge.input(internal.as_vlink()).await {
+        error!("unhandled response action {response:?}");
+      }
     }
     Signal::RequestVlink(port) => {
       trace!("vlan requested, target port: {port}");
@@ -106,11 +104,11 @@ pub async fn handle_signal(
       }
       Err(err) => {
         trace!("vlan was declined: '{err}'");
-        drop(vlan.take());
+        drop(opt_bridge.take());
       }
     },
     Signal::KillVlink => {
-      let Some(kill) = vlan.take() else {
+      let Some(kill) = opt_bridge.take() else {
         warn!("got vlan_kill while is was not available");
         return Ok(());
       };

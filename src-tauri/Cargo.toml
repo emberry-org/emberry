@@ -33,6 +33,9 @@ bs58 = "0.4"
 # rhizome communication
 smoke = { git = "https://github.com/emberry-org/smoke" }
 
+# vlink
+vlink = "0.2"
+
 # reliable udp
 tokio_kcp = "0.9.3"
 
