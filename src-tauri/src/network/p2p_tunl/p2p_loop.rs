@@ -128,7 +128,7 @@ where
               error!("made vlan-req while it was already connected");
               return Ok(());
             }
-            opt_bridge = Some(TcpBridge::accepting_from(port).await);
+            opt_bridge = Some(TcpBridge::accepting_from(port).await.expect("could not bind port")); // TODO nice error for bind err
             let msg = Signal::RequestVlink(port);
             log::trace!("Sending message: {:?} in {}", msg, emit_identity);
             msg.serialize_to(stream, &mut ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?;

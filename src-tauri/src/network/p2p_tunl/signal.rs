@@ -78,9 +78,7 @@ pub async fn handle_signal(
       };
 
       log::trace!("got {} vlan", data_r.len());
-      if let Some(response) = bridge.input(internal.as_vlink()).await {
-        error!("unhandled response action {response:?}");
-      }
+      bridge.input(internal.as_vlink()).await;
     }
     Signal::RequestVlink(port) => {
       trace!("vlan requested, target port: {port}");
