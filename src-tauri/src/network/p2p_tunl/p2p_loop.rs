@@ -1,4 +1,3 @@
-use std::future::Future;
 use std::{io, time::Duration};
 
 use smoke::messages::hypha;
@@ -7,7 +6,6 @@ use smoke::{
   Signal,
 };
 
-use tokio::sync::mpsc;
 use tokio::{
   io::{AsyncRead, AsyncWrite, BufReader},
   select,
