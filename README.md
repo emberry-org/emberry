@@ -1,83 +1,45 @@
-<div align="center">
-    <img src="https://github.com/emberry-org/emberry-rework/blob/main/.github/assets/banner.png"> 
-</div>
-<div align="right"><sup>Powered by <a href="https://github.com/tauri-apps/tauri">Tauri</a> & <a href="https://github.com/sveltejs/kit">SvelteKit</a> ⠿</sup></div>
+# Emberry Chat
+A **P2P** chat application which **empowers friends** to communicate **efficiently** and **safely**.
 
-<h3 align="center">
-    A new way to Chat with Friends
-</h3>
-    
-<br>
-    
-Emberry is a peer to peer chat application with the mission<br>
-To create a **secure** and **efficient** chat platform for everyone.<br>
-<sub>⠿ <i>Emberry is still very early in its development, if <b>you</b> want to contribute <a href="https://mxcop.github.io/portfolio">contact me</a> :D</i></sub>
+## Packages
+```bash
+# frontend framework
+solid.js    18.1 kB | gzip: 6.4 kB
 
-<br>
-
-<div align="left">
-    <img width="80%" src="https://github.com/emberry-org/emberry-rework/blob/main/.github/assets/dev-banner.png"> 
-    <img align="right" width="8%" src="https://github.com/emberry-org/emberry-rework/blob/main/.github/assets/logo.png"> 
-</div>
-
-<h3>Frontend</h3>
-Install Javascript dependencies :
-<div align="right"><sup>We use Yarn as our package manager ⠿</sup></div>
-
-```
-$ yarn
+# application framework
+tauri           n/a | n/a
 ```
 
 <br>
 
-Start the development environment :
-```
-$ yarn tauri dev
+## Plugins
+[`vite-plugin-solid-svg`](https://github.com/jfgodoy/vite-plugin-solid-svg) — Static svg loader.<br>
+
+<br>
+
+## CLI Commands
+```bash
+# install pnpm
+$ npm install -g pnpm
+
+# install dependencies
+$ pnpm install
+
+# run app in dev mode (for testing)
+$ pnpm tauri dev
+
+# build frontend (useful for viewing file sizes)
+$ pnpm run build
+
+# build app
+$ pnpm tauri build
+
+# enable logging (windows)
+$ $Env:RUST_LOG="emberry,smoke,emberry_rs::network::p2p_tunl::p2p_loop=warn"
 ```
 
 <br>
 
-<h3>Backend</h3>
-
-For the backend setup add a ``.env`` file to the ``src-tauri`` directory :
-
-```js
-/src-tauri/.env
-
-SERVER_ADDRESS=<server_ip>:<udp_port>
-CONTROL_ADDRESS=<server_ip>:<ctrl_chnl_port>
-SERVER_DOMAIN=<certificate domain name>
-CERT=<server X509Certificate>
-```
-
-<br>
-
-Then add a ``build/`` directory on the same level as ``src/`` and ``src-tauri/`` as shown below :
-```graphql
-./emberry/* 
-  ├─ build/      - # Vite build output
-  ├─ src/        - # Frontend codebase
-  ├─ src-tauri/  - # Backend codebase
-  ├─ static/     - # Production assets (included within the build)
-  └─ README.md
-```
-
-<br>
-
-<h3>Dependencies</h3>
-
-To build Emberry on arch based systems the following packages need to be installed :
-
-```
-$ pacman -S webkit2gtk
-```
-
-<br>
-
-<h3>Running</h3>
-
-To run Emberry in developer mode use the following command :
-
-```
-$ yarn tauri dev
-```
+<sub>Build with [Solid JS](https://solidjs.com), [Tauri](https://tauri.app), & [Rust-lang](https://www.rust-lang.org)</sub>
+<h2></h2>
+<div align="right"><sub>© 2023 Devensiv & Max, All rights reserved — <a href="./license.md">GNU GPLv3</a>.</sub></div>

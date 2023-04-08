@@ -1,0 +1,22 @@
+.cm-scroller {
+    font-family: var(--font-sans) !important;
+    font-size: 16px;
+    font-weight: 400;
+    text-rendering: optimizeLegibility;
+    line-height: 22px;
+}
+
+.cm-editor {
+    margin: 16px 12px;
+    padding: 8px;
+
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.cm-tooltip-autocomplete {
+    background-color: var(--bg-300) !important;
+    padding: 8px;
+    border-radius: 8px;
+    transform: translateY(-20px) translateX(-12px);
+}

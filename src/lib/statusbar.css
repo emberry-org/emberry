@@ -1,0 +1,6 @@
+.statusbar {
+    height: 52px;
+
+    background-color: var(--bg-100);
+    display: flex;
+}

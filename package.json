@@ -1,30 +1,30 @@
 {
-  "name": "emberry",
-  "private": true,
-  "version": "0.1.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite dev",
-    "build": "vite build",
-    "preview": "vite preview",
-    "check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json",
-    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json --watch",
-    "tauri": "tauri"
-  },
-  "dependencies": {
-    "@tauri-apps/api": "^1.2.0"
-  },
-  "devDependencies": {
-    "@iconify/svelte": "^3.0.0",
-    "@sveltejs/adapter-static": "next",
-    "@sveltejs/kit": "next",
-    "@tauri-apps/cli": "^1.2.3",
-    "sass": "^1.55.0",
-    "svelte": "^3.53.1",
-    "svelte-check": "^2.7.1",
-    "svelte-preprocess": "^4.10.6",
-    "tslib": "^2.3.1",
-    "typescript": "^4.8.4",
-    "vite": "^3.1.0"
-  }
+    "name": "emberry",
+    "version": "0.0.0",
+    "description": "",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "serve": "vite preview"
+    },
+    "license": "GPL-3.0-only",
+    "devDependencies": {
+        "@tauri-apps/cli": "^1.2.3",
+        "@types/node": "^18.15.3",
+        "sass": "^1.59.3",
+        "terser": "^5.16.6",
+        "typescript": "^4.9.5",
+        "vite": "^4.1.1",
+        "vite-plugin-solid": "^2.5.0",
+        "vite-plugin-solid-svg": "^0.6.1"
+    },
+    "dependencies": {
+        "@codemirror/autocomplete": "^6.4.2",
+        "@codemirror/state": "^6.2.0",
+        "@codemirror/view": "^6.9.2",
+        "@solidjs/router": "^0.8.1",
+        "@tauri-apps/api": "^1.2.0",
+        "solid-codemirror": "^2.2.3",
+        "solid-js": "^1.6.10"
+    }
 }

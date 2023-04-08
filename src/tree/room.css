@@ -1,0 +1,30 @@
+.room {
+    width: 100%;
+    height: 100%;
+    max-height: calc(100vh - 130px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.room > p {
+    margin: 0;
+    font-size: 14px;
+    max-width: 50%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.room .messages {
+    overflow: auto;
+    flex-grow: 1;
+}
+
+.room .messages::-webkit-scrollbar {
+    display: none;
+}
+
+.room .messages li {
+    list-style: none;
+    margin-left: 16px;
+}

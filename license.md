@@ -631,8 +631,8 @@ to attach them to the start of each source file to most effectively
 state the exclusion of warranty; and each file should have at least
 the "copyright" line and a pointer to where the full notice is found.
 
-    Emberry is a chat application designed for gamers and programmers.
-    Copyright (C) 2022  Max Coppen, Christopher Freund
+    Emberry is an open source P2P chat application.
+    Copyright (C) 2023  Devensiv & Max
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -652,7 +652,7 @@ Also add information on how to contact you by electronic and paper mail.
   If the program does terminal interaction, make it output a short
 notice like this when it starts in an interactive mode:
 
-    Emberry  Copyright (C) 2022  Max Coppen, Christopher Freund
+    Emberry  Copyright (C) 2023  Devensiv & Max
     This program comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
     This is free software, and you are welcome to redistribute it
     under certain conditions; type `show c' for details.
