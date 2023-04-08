@@ -32,12 +32,11 @@
         commonArgs = {
           nativeBuildInputs = with pkgs; [ fenixToolchain yarn pkg-config ];
           buildInputs = with pkgs; [
-            dbus
             glib
             pango
             libsoup
             webkitgtk
-						openssl
+            openssl
           ];
         };
       in
