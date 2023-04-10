@@ -30,7 +30,7 @@
 
         # Used in both dev shell and to build the app in nix eventually
         commonArgs = {
-          nativeBuildInputs = with pkgs; [ fenixToolchain yarn pkg-config ];
+          nativeBuildInputs = with pkgs; [ fenixToolchain nodePackages.pnpm pkg-config ];
           buildInputs = with pkgs; [
             glib
             pango
