@@ -31,7 +31,7 @@ once_cell = "1.16"
 bs58 = "0.4"
 
 # rhizome communication
-smoke = { git = "https://github.com/emberry-org/smoke" }
+smoke = { git = "https://github.com/emberry-org/smoke", features = [ "client" ] }
 
 # vlink
 vlink = "0.2"

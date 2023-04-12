@@ -37,6 +37,9 @@
             libsoup
             webkitgtk
             openssl
+
+	    cargo-audit
+	    cargo-auditable
           ];
         };
       in
