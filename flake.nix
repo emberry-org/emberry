@@ -41,6 +41,9 @@
 	    cargo-audit
 	    cargo-auditable
           ];
+          shellHook = ''
+            export WEBKIT_DISABLE_COMPOSITING_MODE=1
+          '';
         };
       in
     {
