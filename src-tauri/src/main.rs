@@ -25,6 +25,13 @@ pub static FOCUS: AtomicBool = AtomicBool::new(false);
 fn main() {
   env_logger::init();
 
+  #[cfg(feature = "certgen")]
+  {
+  trace!(concat!("emberry certgen v", env!("CARGO_PKG_VERSION")));
+    generate_user_certificate();
+    return;
+  }
+
   trace!(concat!("emberry-rs v", env!("CARGO_PKG_VERSION")));
   tauri::Builder::default()
     // Application State
