@@ -28,7 +28,7 @@ use tokio::{
 };
 use tokio_rustls::TlsConnector;
 
-use super::{Networking, RRState, UserIdentification};
+use super::{Networking, UserIdentification};
 
 #[tauri::command(async)]
 pub async fn connect(
