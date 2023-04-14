@@ -10,6 +10,8 @@ mod data;
 mod embed;
 mod network;
 
+pub mod frontend;
+
 use std::sync::atomic::AtomicBool;
 
 use data::tauri::*;
@@ -17,17 +19,27 @@ use embed::embed;
 use log::trace;
 use network::ctrl_chnl::{connect, requests::*, responses::*, State};
 use network::{chat_exists, Networking};
+use once_cell::sync::Lazy;
 use std::sync::atomic::Ordering;
 use tokio::sync::RwLock;
 
 pub static FOCUS: AtomicBool = AtomicBool::new(false);
+
+pub static APPID: Lazy<String> = Lazy::new(|| {
+  tauri::generate_context!()
+    .config()
+    .tauri
+    .bundle
+    .identifier
+    .clone()
+});
 
 fn main() {
   env_logger::init();
 
   #[cfg(feature = "certgen")]
   {
-  trace!(concat!("emberry certgen v", env!("CARGO_PKG_VERSION")));
+    trace!(concat!("emberry certgen v", env!("CARGO_PKG_VERSION")));
     generate_user_certificate();
     return;
   }
