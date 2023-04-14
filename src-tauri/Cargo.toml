@@ -49,8 +49,12 @@ rcgen = "0.9.3"
 reqwest = "0.11.12"
 
 # logging / debugging
-log = "0.4"
-env_logger = "0.9"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = [ "fmt", "env-filter" ] }
+console-subscriber = { version = "0.1", optional = true }
+
+[dev-dependencies]
+test-log = { version = "0.2", features = [ "trace" ], default-features = false }
 
 [patch.crates-io]
 vlink = { path = "../../vlink" }
@@ -67,3 +71,4 @@ default = [ "custom-protocol" ]
 custom-protocol = [ "tauri/custom-protocol" ]
 
 certgen = []
+tracing = [ "dep:console-subscriber", "tokio/tracing" ]

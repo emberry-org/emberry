@@ -11,7 +11,7 @@ use crate::{
 use smoke::Signal;
 use tauri::Window;
 
-use log::{error, trace, warn};
+use tracing::{error, trace, warn};
 
 use super::p2p_loop::EventNames;
 
@@ -72,7 +72,7 @@ pub async fn handle_signal(
         return Ok(());
       };
 
-      log::trace!("got {} vlan", data_r.len());
+      trace!("got {} vlan", data_r.len());
       bridge.input(internal.as_vlink()).await;
     }
     Signal::RequestVlink(port) => {
@@ -122,7 +122,7 @@ pub async fn handle_signal(
 #[inline]
 fn emit_username(window: &Window, event_name: &str, name: &str) {
   if let Err(err) = window.emit(event_name, name) {
-    log::error!("Failed to emit event: '{}'", err);
+    error!("Failed to emit event: '{}'", err);
   }
 }
 

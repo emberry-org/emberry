@@ -1,10 +1,10 @@
-use log::info;
 use rcgen::generate_simple_self_signed;
 #[allow(unused_imports)] // doc import
 use rustls::{Certificate, PrivateKey};
 use std::fs::{DirBuilder, OpenOptions};
 use std::io::{ErrorKind, Write};
 use std::{io, path::PathBuf};
+use tracing::info;
 
 /// Generates a new pair of self signed [`X509 Certificate`](Certificate) and [`PKCS8 Key`](PrivateKey)
 /// and stores them in pemfile in the order Certificate, PrivateKey

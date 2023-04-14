@@ -1,9 +1,9 @@
 use std::borrow::Cow;
 use std::time::Instant;
 
-use log::warn;
 use smoke::{messages::EmbMessage, User};
 use tauri::Window;
+use tracing::warn;
 
 use crate::data::{config, fetch_userinfo, UserIdentifier};
 use crate::network::ctrl_chnl::RhizomeConnection;
@@ -26,11 +26,11 @@ pub async fn request_room(
 
   if let Some((cert, _)) = config::PEM_DATA.as_ref() {
     if cert.0 == usr.cert_data {
-      log::warn!("Cannot request a room with yourself");
+      warn!("Cannot request a room with yourself");
       return Ok(());
     }
   } else {
-    log::warn!("Cannot request a room without being authenticated to the server");
+    warn!("Cannot request a room without being authenticated to the server");
     return Ok(());
   }
 

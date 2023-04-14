@@ -1,7 +1,7 @@
 use std::sync::atomic::Ordering;
 
-use log::{trace, warn};
 use tauri::api::notification::Notification;
+use tracing::{trace, warn};
 
 use crate::APPID;
 

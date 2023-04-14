@@ -50,10 +50,6 @@ mod tests {
   use crate::data::sqlite::{schema, user::upsert};
   use rusqlite::Connection;
 
-  fn init() {
-    let _ = env_logger::builder().is_test(true).try_init();
-  }
-
   fn sample_users() -> Vec<IdentifiedUserInfo<'static>> {
     let mut all = vec![];
     for i in 0..10 {
@@ -87,9 +83,8 @@ mod tests {
   }
 
   /// Tests if get_limit actually return at most `limit` entries
-  #[test]
+  #[test_log::test]
   fn get_exhausted_limit() {
-    init();
     let mut db = Connection::open_in_memory().unwrap();
     schema::validate(&mut db);
 
@@ -116,9 +111,8 @@ mod tests {
   }
 
   /// Tests if get_limit actually return at most `limit` entries and if `offset` works
-  #[test]
+  #[test_log::test]
   fn get_exhausted_limit_offset() {
-    init();
     let mut db = Connection::open_in_memory().unwrap();
     schema::validate(&mut db);
 
@@ -145,9 +139,8 @@ mod tests {
   }
 
   /// Tests if get_limit return less then `limit` if there are no more in db
-  #[test]
+  #[test_log::test]
   fn get_overshoot_limit() {
-    init();
     let mut db = Connection::open_in_memory().unwrap();
     schema::validate(&mut db);
 
@@ -175,9 +168,8 @@ mod tests {
 
   /// Tests if get_limit return less then `limit` if there are no more in db
   /// and if offset works with that
-  #[test]
+  #[test_log::test]
   fn get_overshoot_limit_offset() {
-    init();
     let mut db = Connection::open_in_memory().unwrap();
     schema::validate(&mut db);
 
@@ -205,9 +197,8 @@ mod tests {
 
   /// Tests if get_limit return all if `limit = -1`
   /// and if offset works with that
-  #[test]
+  #[test_log::test]
   fn get_all_offset() {
-    init();
     let mut db = Connection::open_in_memory().unwrap();
     schema::validate(&mut db);
 
@@ -234,9 +225,8 @@ mod tests {
   }
 
   /// Tests if get_limit return all if `limit = -1`
-  #[test]
+  #[test_log::test]
   fn get_all() {
-    init();
     let mut db = Connection::open_in_memory().unwrap();
     schema::validate(&mut db);
 
@@ -263,9 +253,8 @@ mod tests {
   }
 
   /// Tests if get_limit return all if `limit = -1`
-  #[test]
+  #[test_log::test]
   fn get_all_exclude_local() {
-    init();
     let mut db = Connection::open_in_memory().unwrap();
     schema::validate(&mut db);
 

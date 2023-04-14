@@ -10,7 +10,6 @@ use crate::{
 pub use super::messages::EmberryMessage;
 pub use super::state::RwOption;
 pub use super::state::{RhizomeConnection, State};
-use log::{error, trace};
 use serde_json::json;
 use smoke::messages::EmbMessage;
 use smoke::messages::RhizMessage::{self, *};
@@ -18,6 +17,7 @@ use tauri::{AppHandle, Window};
 use tokio::{io::BufReader, net::TcpStream};
 use tokio::{select, sync::mpsc::Receiver};
 use tokio_rustls::client::TlsStream;
+use tracing::{error, trace};
 
 use super::Networking;
 

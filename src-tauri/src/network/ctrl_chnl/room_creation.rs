@@ -10,7 +10,7 @@ use tokio::sync::{mpsc, oneshot};
 
 use tokio_kcp::{KcpConfig, KcpStream};
 
-use log::error;
+use tracing::error;
 
 use crate::data::UserIdentifier;
 use crate::network::RRState;
@@ -113,7 +113,7 @@ async fn hole_punch(
   };
 
   let stream = stream.map_err(|err| {
-    log::error!("Unable to start TLS on KCP stream, Err: '{}'", err);
+    error!("Unable to start TLS on KCP stream, Err: '{}'", err);
     Error::new(ErrorKind::Other, "TLS could not be established")
   })?;
 
@@ -147,10 +147,9 @@ async fn hole_punch(
     )
     .await
     {
-      log::error!(
+      error!(
         "receive loop for identity '{}' crashed with '{}'",
-        emit_identity,
-        err
+        emit_identity, err
       );
     }
   });

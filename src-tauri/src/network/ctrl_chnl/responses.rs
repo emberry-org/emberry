@@ -4,7 +4,6 @@ use crate::{
 };
 
 use super::{state, RhizomeConnection};
-use log::warn;
 use smoke::messages::EmbMessage;
 use smoke::User;
 use std::{
@@ -12,6 +11,7 @@ use std::{
   io::{Error, ErrorKind},
 };
 use tauri::Result;
+use tracing::warn;
 
 #[tauri::command(async)]
 pub async fn accept_room(

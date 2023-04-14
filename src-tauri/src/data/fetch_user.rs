@@ -1,6 +1,7 @@
 use std::io::{self, ErrorKind};
 
 use tauri::Window;
+use tracing::error;
 
 use super::{
   sqlite::{
@@ -41,7 +42,7 @@ pub fn fetch_userinfo<'a>(
       ident_info
     }
     Err(err) => {
-      log::error!("SQLite access error : '{}'", err);
+      error!("SQLite access error : '{}'", err);
       return Err(tauri::Error::Io(io::Error::new(
         ErrorKind::Other,
         "SQLite error",

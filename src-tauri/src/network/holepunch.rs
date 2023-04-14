@@ -1,9 +1,9 @@
-use log::{error, trace};
 use std::{
   io::{self, Error, ErrorKind},
   net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr},
 };
 use tokio::net::UdpSocket;
+use tracing::{error, trace};
 
 /** Create a new socket and holepunch it! */
 pub async fn punch_hole<A>(server_addr: A, ident: &[u8]) -> Result<UdpSocket, Error>

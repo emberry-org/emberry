@@ -2,6 +2,7 @@ use std::borrow::Cow;
 
 use serde::{Deserialize, Serialize};
 use smoke::User;
+use tracing::error;
 
 use super::UserInfo;
 
@@ -43,7 +44,7 @@ impl TryInto<User> for &UserIdentifier<'_> {
       cert_data: match bs58::decode(self.bs58.as_bytes()).into_vec() {
         Ok(cert) => cert,
         Err(err) => {
-          log::error!("cannot parse base58 sting: '{}'. Error: {}", self.bs58, err);
+          error!("cannot parse base58 sting: '{}'. Error: {}", self.bs58, err);
           return Err(std::io::Error::new(
             std::io::ErrorKind::InvalidData,
             "bs58 parsing error",

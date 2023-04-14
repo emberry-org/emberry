@@ -9,6 +9,7 @@ use super::{
 };
 use once_cell::sync::Lazy;
 use tokio_rustls::rustls::{Certificate, PrivateKey};
+use tracing::{error, warn};
 
 /// PemfileReader to the .pem of the current user
 pub static PEM: Lazy<PemfileReader> = Lazy::new(pem_reader);
@@ -25,7 +26,7 @@ fn maybe_pem_data() -> Option<(Certificate, PrivateKey)> {
   match PEM.parse() {
     Ok(data) => Some(data),
     Err(err) => {
-      log::warn!(
+      warn!(
         "Failed to parse Certificate and PrivateKey from '{}', Err: '{}'",
         PEM.filepath.to_string_lossy(),
         err
@@ -53,7 +54,7 @@ fn maybe_info<'a>() -> Option<IdentifiedUserInfo<'a>> {
 
 fn maybe_identifier<'a>() -> Option<UserIdentifier<'a>> {
   if !PEM.filepath.exists() {
-    log::warn!(
+    warn!(
       "User identity PEM file does not exist: '{}'",
       PEM.filepath.to_string_lossy()
     );
@@ -62,7 +63,7 @@ fn maybe_identifier<'a>() -> Option<UserIdentifier<'a>> {
   match (&*PEM).try_into() {
     Ok(id) => Some(id),
     Err(err) => {
-      log::error!("Unable to obtain local user id: '{}'", err);
+      error!("Unable to obtain local user id: '{}'", err);
       None
     }
   }

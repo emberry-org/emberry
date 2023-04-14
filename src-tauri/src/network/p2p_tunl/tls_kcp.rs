@@ -9,6 +9,7 @@ use super::resolver::ClientCertResolver;
 use rustls::{server::AllowAnyAuthenticatedClient, Certificate, ClientConfig, RootCertStore};
 use tokio_kcp::KcpStream;
 use tokio_rustls::{TlsAcceptor, TlsConnector, TlsStream};
+use tracing::error;
 
 pub async fn wrap_client(
   stream: KcpStream,
@@ -18,7 +19,7 @@ pub async fn wrap_client(
   let mut root_store = RootCertStore::empty();
 
   root_store.add(peer_cert).map_err(|err| {
-    log::error!("Error creating root store for peer_cert, Err: '{}'", err);
+    error!("Error creating root store for peer_cert, Err: '{}'", err);
     io::Error::new(ErrorKind::InvalidData, "Invalid peer cert")
   })?;
 
@@ -42,7 +43,7 @@ pub async fn wrap_server(
 ) -> Result<TlsStream<KcpStream>, io::Error> {
   let mut client_cert_store = RootCertStore::empty();
   client_cert_store.add(peer_cert).map_err(|err| {
-    log::error!("Error creating root store for peer_cert, Err: '{}'", err);
+    error!("Error creating root store for peer_cert, Err: '{}'", err);
     io::Error::new(ErrorKind::InvalidData, "Invalid peer cert")
   })?;
 
@@ -60,7 +61,7 @@ pub async fn wrap_server(
       .with_client_cert_verifier(client_cert_verifier)
       .with_single_cert(certs, key)
       .map_err(|err| {
-        log::error!("Error creating rustls::ServerConfig '{}'", err);
+        error!("Error creating rustls::ServerConfig '{}'", err);
         io::Error::new(ErrorKind::InvalidData, "Invalid local pem")
       })?;
     std::sync::Arc::new(cfg)

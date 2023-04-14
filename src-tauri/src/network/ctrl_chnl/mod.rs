@@ -16,7 +16,6 @@ use crate::data::config;
 
 use self::channel::ControlChannel;
 pub use self::state::RwOption;
-use log::error;
 pub use messages::EmberryMessage;
 use rustls::{ClientConfig, RootCertStore, ServerName};
 pub use state::RhizomeConnection;
@@ -27,6 +26,7 @@ use tokio::{
   sync::mpsc,
 };
 use tokio_rustls::TlsConnector;
+use tracing::error;
 
 use super::{Networking, UserIdentification};
 

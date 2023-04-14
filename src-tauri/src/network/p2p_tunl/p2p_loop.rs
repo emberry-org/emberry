@@ -14,7 +14,7 @@ use tokio::{
   time::Instant,
 };
 
-use log::error;
+use tracing::{error, trace, warn};
 use vlink::{Action, TcpBridge};
 
 use tauri::Window;
@@ -70,7 +70,7 @@ where
       msg = stream.read_message_cancelable(&mut de_buf) => {
         let msg = msg?;
         next_kap = kap_timeout();
-        log::trace!("Received message: {:?} in {}", msg, emit_identity);
+        trace!("Received message: {:?} in {}", msg, emit_identity);
         if let Err(err) = p2p_tunl::signal::handle_signal(
           &msg,
           spawn_window,
@@ -81,17 +81,17 @@ where
         )
         .await
         {
-          log::warn!("failed to handle signal: '{:?}' with error: '{}'", msg, err);
+          warn!("failed to handle signal: '{:?}' with error: '{}'", msg, err);
         }
       },
       Ok(_) = &mut *rx => {
-        log::trace!("p2ploop {} closed by handle", emit_identity);
+        trace!("p2ploop {} closed by handle", emit_identity);
         return Ok(())
       },
       _ = tokio::time::sleep_until(next_kap) => {
         let msg = Signal::Kap;
         next_kap = kap_timeout();
-        log::trace!("Sending message: {:?} in {}", msg, emit_identity);
+        trace!("Sending message: {:?} in {}", msg, emit_identity);
         msg.serialize_to(stream, &mut ser_buf).expect("unable to serialize kap message").await?
       }
       Some(action) = extract_maybe(opt_bridge.as_mut(), &mut vlink_buf) => {
@@ -113,7 +113,7 @@ where
             }
             opt_bridge = Some(TcpBridge::emit_to(port));
             let msg = Signal::AcceptVlink(Ok(port));
-            log::trace!("Sending message: {:?} in {}", msg, emit_identity);
+            trace!("Sending message: {:?} in {}", msg, emit_identity);
             msg.serialize_to(stream, &mut ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?;
             continue;
           } else if let Some(Ok(port)) = msg // request hack
@@ -126,22 +126,22 @@ where
             }
             opt_bridge = Some(TcpBridge::accepting_from(port).await.expect("could not bind port")); // TODO nice error for bind err
             let msg = Signal::RequestVlink(port);
-            log::trace!("Sending message: {:?} in {}", msg, emit_identity);
+            trace!("Sending message: {:?} in {}", msg, emit_identity);
             msg.serialize_to(stream, &mut ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?;
             continue;
           }else if msg == "/vlan_kill" {
             if let Some(kill) = opt_bridge.take() {
               drop(kill); // drop the sender to signal kill
               let msg = Signal::KillVlink;
-              log::trace!("Sending message: {:?} in {}", msg, emit_identity);
+              trace!("Sending message: {:?} in {}", msg, emit_identity);
               msg.serialize_to(stream, &mut ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?;
             }else{
-              log::warn!("tried to kill non existing vlan with command");
+              warn!("tried to kill non existing vlan with command");
             }
           }
         }
         // --------- VLAN HACK
-        log::trace!("Sending message: {:?} in {}", msg, emit_identity);
+        trace!("Sending message: {:?} in {}", msg, emit_identity);
         msg.serialize_to(stream, &mut ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?
       },
     }

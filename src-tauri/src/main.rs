@@ -16,12 +16,12 @@ use std::sync::atomic::AtomicBool;
 
 use data::tauri::*;
 use embed::embed;
-use log::trace;
 use network::ctrl_chnl::{connect, requests::*, responses::*, State};
 use network::{chat_exists, Networking};
 use once_cell::sync::Lazy;
 use std::sync::atomic::Ordering;
 use tokio::sync::RwLock;
+use tracing::trace;
 
 pub static FOCUS: AtomicBool = AtomicBool::new(false);
 
@@ -35,7 +35,10 @@ pub static APPID: Lazy<String> = Lazy::new(|| {
 });
 
 fn main() {
-  env_logger::init();
+  #[cfg(not(feature = "tracing"))]
+  tracing_subscriber::fmt::init();
+  #[cfg(feature = "tracing")]
+  console_subscriber::init();
 
   #[cfg(feature = "certgen")]
   {
