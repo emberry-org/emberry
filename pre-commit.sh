@@ -6,7 +6,7 @@
 git_newline() {
 	for f in $(git grep --cached -Il '')
 	do
-		tail --bytes=1 $f | read -r _ || return 1
+		tail --bytes=1 $f | read -r _ || (echo "Missing newline: '$f'" && return 1) || return 1
 	done
 }
 
@@ -28,7 +28,7 @@ success() {
 
 run() {
 	cmd=$1
-	$cmd > /dev/null 2> /dev/null
+	$cmd
 	if [ $? -eq 0 ]; then
 		success "$cmd"
 	else
