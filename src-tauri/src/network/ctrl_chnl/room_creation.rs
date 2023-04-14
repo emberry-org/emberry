@@ -168,6 +168,7 @@ async fn hole_punch(
   let emit_identity = identity.clone();
   let spawn_window = window.clone();
   let ident = UserIdentifier::from(peer);
+  trace!("room created {}", emit_identity);
   tokio::spawn(async move {
     if let Err(err) = p2p_loop(
       &emit_identity,

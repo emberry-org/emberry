@@ -32,7 +32,7 @@ pub struct EventNames {
   pub usr_name: String,
 }
 
-#[instrument(skip_all, fields(room = %emit_identity, peer = ?peer_ident))]
+#[instrument(skip_all, fields(room = %emit_identity))]
 pub async fn p2p_loop<'a, T>(
   emit_identity: &str,
   peer_ident: UserIdentifier<'a>,
