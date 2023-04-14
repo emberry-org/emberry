@@ -36,7 +36,6 @@ pub async fn p2p_loop<'a, T>(
   emit_identity: &str,
   peer_ident: UserIdentifier<'a>,
   spawn_window: &Window,
-  app_handle: &AppHandle,
   stream: &mut BufReader<T>,
   rx: &mut oneshot::Receiver<()>,
   msg_rx: &mut Receiver<Signal>,
@@ -75,7 +74,6 @@ where
         if let Err(err) = p2p_tunl::signal::handle_signal(
           &msg,
           spawn_window,
-          app_handle,
           &events,
           &mut msg_from,
           &mut usr_status_cache,

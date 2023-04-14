@@ -1,9 +1,9 @@
 use std::{borrow::Borrow, io, sync::atomic::Ordering};
 
-use crate::data::{
+use crate::{data::{
   sqlite::{try_exec, user::upsert},
   IdentifiedUserInfo,
-};
+}, frontend::{notification, os_notify}};
 
 use smoke::Signal;
 use tauri::{api::notification::Notification, AppHandle, Window};
@@ -25,7 +25,6 @@ struct UsernameChangedPayload<'a> {
 pub async fn handle_signal(
   signal: &Signal,
   spawn_window: &Window,
-  app_handle: &AppHandle,
   events: &EventNames,
   msg_from: &mut String,
   cache: &mut IdentifiedUserInfo<'_>,
@@ -46,14 +45,7 @@ pub async fn handle_signal(
     Signal::Chat(text) => {
       emit_msg(spawn_window, &events.msg_recv, signal);
 
-      /* Create a new notification for the message */
-      if !crate::FOCUS.load(Ordering::SeqCst) {
-        Notification::new(&app_handle.config().tauri.bundle.identifier)
-          .title(msg_from.as_str())
-          .body(text)
-          .show()
-          .expect("Failed to send desktop notification");
-      }
+      os_notify(notification().title(&*msg_from).body(text));
     }
     Signal::Vlink(internal) => {
       let data_r = match internal {

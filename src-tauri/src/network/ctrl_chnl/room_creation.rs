@@ -45,7 +45,6 @@ struct NewRoomPayload {
 
 pub async fn try_holepunch(
   window: tauri::Window,
-  app_handle: &tauri::AppHandle,
   net_state: tauri::State<'_, Networking>,
   room_id: Option<RoomId>,
   usr: &User,
@@ -57,7 +56,6 @@ pub async fn try_holepunch(
       // only hole punch if there is a connection pending
       hole_punch(
         window,
-        app_handle,
         net_state,
         room_id,
         usr,
@@ -90,7 +88,6 @@ pub async fn try_holepunch(
 
 async fn hole_punch(
   window: tauri::Window,
-  app_handle: &tauri::AppHandle,
   state: tauri::State<'_, Networking>,
   room_id: RoomId,
   peer: &User,
@@ -146,14 +143,12 @@ async fn hole_punch(
   let (recv_handle, mut rx) = oneshot::channel::<()>();
   let emit_identity = identity.clone();
   let spawn_window = window.clone();
-  let app_handle = app_handle.clone();
   let ident = UserIdentifier::from(peer);
   tokio::spawn(async move {
     if let Err(err) = p2p_loop(
       &emit_identity,
       ident,
       &spawn_window,
-      &app_handle,
       &mut stream,
       &mut rx,
       &mut msg_rx,
