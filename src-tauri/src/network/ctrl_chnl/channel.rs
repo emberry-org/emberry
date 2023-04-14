@@ -11,13 +11,13 @@ pub use super::messages::EmberryMessage;
 pub use super::state::RwOption;
 pub use super::state::{RhizomeConnection, State};
 use serde_json::json;
-use smoke::messages::EmbMessage;
 use smoke::messages::RhizMessage::{self, *};
+use smoke::{messages::EmbMessage, User};
 use tauri::{AppHandle, Window};
 use tokio::{io::BufReader, net::TcpStream};
 use tokio::{select, sync::mpsc::Receiver};
 use tokio_rustls::client::TlsStream;
-use tracing::{error, trace};
+use tracing::{error, trace, trace_span, Instrument};
 
 use super::Networking;
 
@@ -74,6 +74,12 @@ impl<'a> ControlChannel<'a> {
           .expect("Failed to emit NoRoute")
       }
       WantsRoom(usr) => {
+        let target = User {
+          cert_data: self.identification.certificate.0.clone(),
+        };
+        let span = trace_span!("room_req", source = ?usr, ?target);
+        let _guard = span.enter();
+
         // only option here is None or RRState::Pending
         let message = {
           let mut guard = self.net.pending.lock().unwrap();
@@ -97,7 +103,7 @@ impl<'a> ControlChannel<'a> {
             None => {
               return handle_request();
             }
-            Some(RRState::Pending(instant)) => {
+            Some(RRState::Requested(instant)) => {
               if instant.elapsed() > smoke::ROOM_REQ_TIMEOUT {
                 guard.remove(&usr);
                 trace!("previous pending room request timed out, discarding");
@@ -113,13 +119,14 @@ impl<'a> ControlChannel<'a> {
                 EmbMessage::Accept(priority)
               }
             }
-            Some(RRState::Agreement) => {
+            Some(RRState::Accepted) => {
               error!("received room request while we are already forming one with this peer");
               return Ok(());
             }
           }
         };
-        state::send(self.rc, message).await?;
+        drop(_guard);
+        state::send(self.rc, message).instrument(span).await?;
       }
       AcceptedRoom(id, usr) => {
         let priority = self.identification.certificate.0 < usr.cert_data;

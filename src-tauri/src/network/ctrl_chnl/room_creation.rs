@@ -11,6 +11,9 @@ use tokio::sync::{mpsc, oneshot};
 use tokio_kcp::{KcpConfig, KcpStream};
 
 use tracing::error;
+use tracing::trace;
+use tracing::trace_span;
+use tracing::Instrument;
 
 use crate::data::UserIdentifier;
 use crate::network::RRState;
@@ -52,23 +55,52 @@ pub async fn try_holepunch(
   priority: bool,
 ) -> tauri::Result<()> {
   if let Some(room_id) = room_id {
-    if net_state.pending.lock().unwrap().remove(usr).is_some() {
-      // only hole punch if there is a connection pending
-      hole_punch(window, net_state, room_id, usr, identification, priority).await?;
-    } else {
-      // This is rather weak protection as a compromized rhizome server could still just send a different room id with a valid user
-      // Room id procedure is subject to change in the future. (plan is to use cryptographic signatures to mitigated unwanted ip leak)
-      return Err(tauri::Error::Io(Error::new(
-        ErrorKind::Other,
-        "Rhizome just sent a malicious room opening packet (this should not happen)",
-      )));
-    }
+    let span = match net_state.pending.lock().unwrap().get(usr) {
+      Some(RRState::Accepted) => {
+        let local = User {
+          cert_data: identification.certificate.0.clone(),
+        };
+        trace_span!("room_req", source = ?usr, target = ?local)
+      }
+      Some(RRState::Requested(_instant)) => {
+        let local = User {
+          cert_data: identification.certificate.0.clone(),
+        };
+        trace_span!("room_req", source = ?local, target = ?usr)
+      }
+      None => {
+        error!("rhizome sent accepted room for a non existing room");
+        return Err(tauri::Error::Io(Error::new(
+          ErrorKind::Other,
+          "Rhizome just sent a malicious room opening packet (this should not happen)",
+        )));
+      }
+    };
+
+    hole_punch(window, net_state, room_id, usr, identification, priority)
+      .instrument(span)
+      .await?;
   } else {
+    // rejection
     let mut guard = net_state.pending.lock().unwrap();
     if let Some(kv) = guard.get_key_value(usr) {
       match kv.1 {
-        RRState::Agreement => return Ok(()), // We got the edgecase of colliding requests, throw away this one
-        RRState::Pending(_instant) => {
+        RRState::Accepted => {
+          let local = User {
+            cert_data: identification.certificate.0.clone(),
+          };
+          let span = trace_span!("room_req", source = ?usr, target = ?local);
+          let _guard = span.enter();
+          trace!("colling requests dropping");
+          return Ok(());
+        }
+        RRState::Requested(_instant) => {
+          let local = User {
+            cert_data: identification.certificate.0.clone(),
+          };
+          let span = trace_span!("room_req", source = ?local, target = ?usr);
+          let _guard = span.enter();
+          trace!("room request rejected");
           guard.remove(usr); // This case is a normal rejection
         }
       }

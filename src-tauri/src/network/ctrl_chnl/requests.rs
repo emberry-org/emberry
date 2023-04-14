@@ -3,7 +3,7 @@ use std::time::Instant;
 
 use smoke::{messages::EmbMessage, User};
 use tauri::Window;
-use tracing::warn;
+use tracing::{error, trace_span, warn, Instrument};
 
 use crate::data::{config, fetch_userinfo, UserIdentifier};
 use crate::network::ctrl_chnl::RhizomeConnection;
@@ -24,20 +24,30 @@ pub async fn request_room(
   };
   let usr: User = (&ident).try_into()?;
 
+  let span;
   if let Some((cert, _)) = config::PEM_DATA.as_ref() {
+    let local = User {
+      cert_data: cert.0.clone(),
+    };
+    span = trace_span!("room_req", source = ?local, target = ?usr);
+    let _guard = span.enter();
+
     if cert.0 == usr.cert_data {
       warn!("Cannot request a room with yourself");
       return Ok(());
+    } else {
     }
   } else {
-    warn!("Cannot request a room without being authenticated to the server");
+    error!("Cannot request a room without being authenticated to the server");
     return Ok(());
   }
+
+  let _guard = span.enter();
 
   // try to add to pending list
   match net.pending.lock().unwrap().entry(usr.clone()) {
     std::collections::hash_map::Entry::Occupied(mut occupied) => match occupied.get_mut() {
-      RRState::Pending(instant) => {
+      RRState::Requested(instant) => {
         if instant.elapsed() > smoke::ROOM_REQ_TIMEOUT {
           *instant = Instant::now();
         } else {
@@ -45,13 +55,13 @@ pub async fn request_room(
           return Ok(());
         }
       }
-      RRState::Agreement => {
+      RRState::Accepted => {
         warn!("You have already requested a connection with this user");
         return Ok(());
       }
     },
     std::collections::hash_map::Entry::Vacant(e) => {
-      e.insert(RRState::Pending(Instant::now()));
+      e.insert(RRState::Requested(Instant::now()));
     }
   }
 
@@ -59,6 +69,10 @@ pub async fn request_room(
   // if thats not the case add it and tell the frontend about it
   fetch_userinfo(ident, &window)?;
 
-  state::send(&rc, EmbMessage::Room(usr)).await?;
+  drop(_guard);
+
+  state::send(&rc, EmbMessage::Room(usr))
+    .instrument(span)
+    .await?;
   Ok(())
 }
