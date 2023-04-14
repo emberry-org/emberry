@@ -14,7 +14,7 @@ use tokio::{
   time::Instant,
 };
 
-use tracing::{error, trace, warn};
+use tracing::{error, instrument, trace, warn};
 use vlink::{Action, TcpBridge};
 
 use tauri::Window;
@@ -32,6 +32,7 @@ pub struct EventNames {
   pub usr_name: String,
 }
 
+#[instrument(skip_all, fields(room = %emit_identity, peer = ?peer_ident))]
 pub async fn p2p_loop<'a, T>(
   emit_identity: &str,
   peer_ident: UserIdentifier<'a>,

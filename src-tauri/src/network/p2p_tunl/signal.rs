@@ -51,28 +51,11 @@ pub async fn handle_signal(
       os_notify(notification().title(&*msg_from).body(text));
     }
     Signal::Vlink(internal) => {
-      let data_r = match internal {
-        smoke::messages::hypha::Signal::Connect(_) => {
-          trace!("connect");
-          return Ok(());
-        }
-        smoke::messages::hypha::Signal::Data(_port, data_r) => data_r,
-        smoke::messages::hypha::Signal::Error(_, _) => {
-          error!("error");
-          return Ok(());
-        }
-        smoke::messages::hypha::Signal::AcceptError(_) => {
-          error!("accept error");
-          return Ok(());
-        }
-      };
-
       let Some(bridge) = opt_bridge else {
-        warn!("got vlan while is was not available: {data_r:?}");
+        warn!("got vlink package while bridge was not available: {internal:?}");
         return Ok(());
       };
 
-      trace!("got {} vlan", data_r.len());
       bridge.input(internal.as_vlink()).await;
     }
     Signal::RequestVlink(port) => {
