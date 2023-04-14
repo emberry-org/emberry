@@ -1,12 +1,15 @@
-use std::{borrow::Borrow, io, sync::atomic::Ordering};
+use std::{borrow::Borrow, io};
 
-use crate::{data::{
-  sqlite::{try_exec, user::upsert},
-  IdentifiedUserInfo,
-}, frontend::{notification, os_notify}};
+use crate::{
+  data::{
+    sqlite::{try_exec, user::upsert},
+    IdentifiedUserInfo,
+  },
+  frontend::{notification, os_notify},
+};
 
 use smoke::Signal;
-use tauri::{api::notification::Notification, AppHandle, Window};
+use tauri::Window;
 
 use log::{error, trace, warn};
 

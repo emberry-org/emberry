@@ -17,7 +17,7 @@ use tokio::{
 use log::error;
 use vlink::{Action, TcpBridge};
 
-use tauri::{AppHandle, Window};
+use tauri::Window;
 
 use crate::{
   data::{
