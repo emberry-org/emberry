@@ -76,32 +76,42 @@ impl<'a> ControlChannel<'a> {
       WantsRoom(usr) => {
         // only option here is None or RRState::Pending
         let message = {
-          let guard = self.net.pending.lock().unwrap();
+          let mut guard = self.net.pending.lock().unwrap();
+          let handle_request = || -> tauri::Result<()> {
+            let ident_info = fetch_userinfo(UserIdentifier::from(&usr), self.window)?;
+
+            self
+              .window
+              .emit("wants-room", &ident_info)
+              .expect("Failed to emit WantsRoom event");
+
+            os_notify(notification().title(format!(
+              "{} wants to connect to you",
+              ident_info.info.username
+            )));
+
+            Ok(())
+          };
+
           match guard.get(&usr) {
             None => {
-              let ident_info = fetch_userinfo(UserIdentifier::from(&usr), self.window)?;
-
-              self
-                .window
-                .emit("wants-room", &ident_info)
-                .expect("Failed to emit WantsRoom event");
-
-              os_notify(notification().title(format!(
-                "{} wants to connect to you",
-                ident_info.info.username
-              )));
-
-              return Ok(());
+              return handle_request();
             }
-            Some(RRState::Pending) => {
-              // Here we get a WantsRoom while we already requested a room with the same peer
-              // (they were unaware when they made their request).
-              //
-              // In this situation the user with the higher value as pub key rejects the request
-              // the client with the lower value pub key auto accepts
-              // this is done to remove the dublicate request
-              let priority = self.identification.certificate.0 < usr.cert_data;
-              EmbMessage::Accept(priority)
+            Some(RRState::Pending(instant)) => {
+              if instant.elapsed() > smoke::ROOM_REQ_TIMEOUT {
+                guard.remove(&usr);
+                trace!("previous pending room request timed out, discarding");
+                return handle_request();
+              } else {
+                // Here we get a WantsRoom while we already requested a room with the same peer
+                // (they were unaware when they made their request).
+                //
+                // In this situation the user with the higher value as pub key rejects the request
+                // the client with the lower value pub key auto accepts
+                // this is done to remove the dublicate request
+                let priority = self.identification.certificate.0 < usr.cert_data;
+                EmbMessage::Accept(priority)
+              }
             }
             Some(RRState::Agreement) => {
               error!("received room request while we are already forming one with this peer");

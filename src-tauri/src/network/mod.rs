@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::sync::Mutex;
+use std::time::Instant;
 
 use smoke::messages::RoomId;
 use smoke::User;
@@ -22,7 +23,7 @@ pub struct Connection {
 
 pub enum RRState {
   /// In this state we (local client) have sent a room request to the other person
-  Pending,
+  Pending(Instant),
   /// In this state both (locan and peer) have agreed to form a p2p connection
   Agreement,
 }
