@@ -10,7 +10,9 @@ use super::{
   IdentifiedUserInfo, UserIdentifier, UserInfo,
 };
 
-/// Fetches [IdentifiedUserInfo] about a [User] from the database and informs the frontend about database changes
+/// Fetches [IdentifiedUserInfo] about a [User] from the database
+/// If the user does not exist in the database it is initialized
+/// and the frontend is informed about the changes
 pub fn fetch_userinfo<'a>(
   ident: UserIdentifier<'a>,
   window: &Window,
