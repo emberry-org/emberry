@@ -1,10 +1,12 @@
 import { onItem } from './storage';
-import { createSignal, For } from 'solid-js';
-
-import './statusbar.css';
+import { createSignal, For, Show } from 'solid-js';
 import { Room, RoomState } from '../types/room';
 import { invoke } from '@tauri-apps/api/tauri';
 import { useNavigate } from '@solidjs/router';
+
+import Goto from '@ico/uparrow.svg?component-solid';
+import Received from '@ico/downarrow.svg?component-solid';
+import './statusbar.css';
 
 export default () => {
     const [rooms, setRooms] = createSignal<Room[]>([]);
@@ -51,6 +53,14 @@ export default () => {
                 {(room) =>
                     <button onMouseDown={() => onClick(room)} disabled={room.state != RoomState.Online}>
                         {room.name} <sup>{room.state}</sup>
+                        
+                        {/* Render the recieved or goto icon */}
+                        <Show
+                            when={room.state != RoomState.Pending}
+                            fallback={<Received width="20px" style="margin: 0 -4px 0 8px" />}
+                        >
+                            <Goto width="20px" style={room.state == RoomState.Online ? "margin: 0 -4px 0 8px; color: #ddd" : "margin: 0 -4px 0 8px; color: var(--bg-500)"} />
+                        </Show>
                     </button>
                 }
             </For>

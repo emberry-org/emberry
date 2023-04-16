@@ -1,5 +1,5 @@
 export enum RoomState {
-    /** This room has been requested a connection and is waiting for us to accept it */
+    /** This room has been requested and is waiting for us to accept it */
     Pending = "Pending",
     /** We are waiting for the other user to accept our room request */
     Awaiting = "Awaiting",
