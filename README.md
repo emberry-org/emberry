@@ -40,6 +40,17 @@ $ $Env:RUST_LOG="emberry,smoke,emberry_rs::network::p2p_tunl::p2p_loop=warn"
 
 <br>
 
+## Importing Icons
+```tsx
+import Icon from '@ico/icon.svg?component-solid';
+
+<>
+    <Icon width="24px" />
+</>
+```
+
+<br>
+
 <sub>Build with [Solid JS](https://solidjs.com), [Tauri](https://tauri.app), & [Rust-lang](https://www.rust-lang.org)</sub>
 <h2></h2>
 <div align="right"><sub>© 2023 Devensiv & Max, All rights reserved — <a href="./license.md">GNU GPLv3</a>.</sub></div>

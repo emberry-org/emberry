@@ -5,6 +5,10 @@ import { Component, createSignal } from "solid-js";
 import { setItem, updateItem } from "../lib/storage";
 import { RoomState } from "../types/room";
 
+import Clipboard from '@ico/clipboard.svg?component-solid';
+import Link from '@ico/link.svg?component-solid';
+import './home.css';
+
 interface UserInfo {
     identifier: {
         bs58: string
@@ -78,12 +82,23 @@ const home: Component = () => {
 
     return (
         <div>
-            <h3>Welcome {username} <button onClick={copyKey}>Copy key</button></h3>
-            <button onMouseDown={() => navigate('/room/peer_id:room_id', { replace: true })}>Test Room</button>
-
-            <p>Request Room:</p>
-            <input ref={input} type="search" name="Request Room" />
-            <button onClick={sendRoomRequest} type="submit">Send Request</button>
+            <h3 class="title">
+                <span style="color: #666">Welcome back,</span> {username} 
+                <div style="display: flex">
+                    <button class="btn" onMouseDown={copyKey}>
+                        <Clipboard class="ico" width="16px" height="16px" />
+                        Copy key
+                    </button>
+                    <button class="btn" onMouseDown={() => navigate('/room/peer_id:room_id', { replace: true })}>
+                        <Link class="ico" width="16px" height="16px" />
+                        Test Room
+                    </button>
+                </div>
+            </h3>
+            
+            <h3 class="sub-title">Request Room:</h3>
+            <input ref={input} type="text" placeholder="Enter peer key..." name="Request Room" />
+            <button class="btn-submit" onClick={sendRoomRequest} type="submit">Send Request</button>
         </div>
     );
 };

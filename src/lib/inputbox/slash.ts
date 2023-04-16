@@ -9,7 +9,7 @@ function slashCompletions(context: CompletionContext): CompletionResult {
     return {
         from: word.from,
         options: [
-            { label: "/vlan_accept", type: "function", info: "Accept incoming VLAN tunnel request." },
+            snippetCompletion("/vlan_accept ${1:8080}", { label: "/vlan_accept", detail: "<port>", type: "function", info: "Accept incoming VLAN tunnel request." }),
             { label: "/vlan_kill", type: "function", info: "Kill the existing VLAN tunnel." },
             snippetCompletion("/vlan ${1:8080}", { label: "/vlan", detail: "<port>", type: "function", info: "Request a VLAN tunnel to be opened." })
         ],

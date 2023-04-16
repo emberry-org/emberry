@@ -1,6 +1,8 @@
 @import './css/vars.css';
 @import './css/fonts.css';
 
+@import './css/btn.css';
+
 html, body {
     width: 100vw;
     height: 100vh;
@@ -36,4 +38,33 @@ main.content {
 p.placeholder {
     font-family: var(--font-sans) !important;
     font-size: 16px;
+}
+
+input[type="text"] {
+    font-family: var(--font-sans);
+    font-weight: 400;
+
+    background-color: var(--bg-400);
+    color: #ddd;
+
+    border-radius: 6px;
+    padding: 6px 10px;
+
+    outline: none;
+    border: none;
+}
+
+input[type="text"]::placeholder {
+    color: #888;
+    opacity: 1;
+    user-select: none;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus {
+    border: 2px solid #a3e63588;
+    -webkit-text-fill-color: #ddd;
+    -webkit-box-shadow: 0 0 0px 1000px var(--bg-400) inset;
+    transition: background-color 5000s ease-in-out 0s;
 }

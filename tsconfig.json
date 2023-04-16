@@ -14,6 +14,9 @@
         "noEmit": true,
         "isolatedModules": true,
         "paths": {
+            "@assets/*": [
+                "./assets/*"
+            ],
             "@ico/*": [
                 "./assets/icons/*"
             ]

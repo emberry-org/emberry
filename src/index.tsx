@@ -21,7 +21,7 @@ const Room = lazy(() => import("./tree/room"));
 const App: Component = () => {
     return (
         <>
-            <h1>Emberry</h1>
+            {/* <h1>Emberry</h1> */}
             <main class="content">
                 <Routes>
                     <Route path="/" component={Home} />

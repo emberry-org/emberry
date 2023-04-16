@@ -1,0 +1,38 @@
+button {
+    font-family: var(--font-sans);
+    font-weight: 400;
+
+    background-color: var(--bg-400);
+    color: #ddd;
+
+    border-radius: 6px;
+    padding: 6px 10px;
+
+    outline: none;
+    border: none;
+    user-select: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: var(--bg-600);
+}
+
+button:disabled {
+    background-color: transparent !important;
+    border: 2px solid var(--bg-300);
+    cursor: not-allowed;
+}
+
+.btn {
+    display: flex;
+    align-items: center;
+    margin-right: 8px;
+}
+
+.btn .ico {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 8px;
+}

@@ -1,4 +1,3 @@
-import Telescope from '@ico/telescope.svg?component-solid';
 import { onItem } from './storage';
 import { createSignal, For } from 'solid-js';
 
@@ -44,16 +43,14 @@ export default () => {
             default:
                 break;
         }
-        console.log("clicked room: " + room.name);
     };
 
     return (
         <div class="statusbar">
-            {/* <Telescope width="24px" /> */}
             <For each={rooms()}>
-                {(room, i) =>
-                    <button onMouseDown={() => onClick(room)}>
-                        {i() + 1}: {room.name} <sup>{room.state}</sup>
+                {(room) =>
+                    <button onMouseDown={() => onClick(room)} disabled={room.state != RoomState.Online}>
+                        {room.name} <sup>{room.state}</sup>
                     </button>
                 }
             </For>

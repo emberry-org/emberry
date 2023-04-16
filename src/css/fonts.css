@@ -1,6 +1,13 @@
+@font-face {
+    font-family: 'Rubik';
+    src: url(/assets/Rubik.ttf) format('truetype');
+    font-weight: 100 900;
+    font-style: normal;
+}
+
 :root {
     --font-sans: 
-        Inter, 
+        'Rubik', 
         ui-sans-serif, 
         system-ui, 
         -apple-system, 

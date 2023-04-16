@@ -4,3 +4,13 @@
     background-color: var(--bg-100);
     display: flex;
 }
+
+.statusbar button {
+    margin: 8px;
+    display: flex;
+    align-items: center;
+}
+
+.statusbar button sup {
+    margin: 0 0 8px 4px;
+}
