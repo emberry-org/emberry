@@ -23,10 +23,7 @@ where
   let size = socket.recv(&mut b).await?;
 
   if size == 0 {
-    return Err(Error::new(
-      ErrorKind::UnexpectedEof,
-      "rhizome didn't transmit peer address",
-    ));
+    return Err(Error::new(ErrorKind::UnexpectedEof, "room request aborted"));
   }
 
   // Try parse the recieved peer address.
