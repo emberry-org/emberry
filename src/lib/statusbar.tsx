@@ -24,7 +24,7 @@ export default () => {
     });
 
     {
-        const rooms = JSON.parse(getItem(sessionStorage, "rooms"));
+        const rooms = JSON.parse(getItem(sessionStorage, "rooms")) ?? {};
         const keys = Object.keys(rooms);
         let new_rooms: Room[] = [];
 
