@@ -23,10 +23,10 @@ pub struct Connection {
 
 pub enum RRState {
   /// In this state we (local client) have sent a room request to the other person
-  Requested(Instant), //TODO rename to requested
+  Requested(Instant),
   /// In this state both (locan and peer) have agreed to form a p2p connection
   /// "bool" details whether the local user has initiated the room request (logging)
-  Accepted, //TODO rename to Accepted
+  Accepted,
 }
 
 pub struct Networking {
