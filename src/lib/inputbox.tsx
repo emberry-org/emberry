@@ -27,7 +27,7 @@ const inputBox: Component<{room_id: string}> = (props) => {
             /* Send message on enter */
             key: "Enter", 
             run: () => { 
-                emit(`send_message_${props.room_id}`, { Chat: content().trim() }); // TAURI
+                emit(`send_message_${props.room_id}`, { Message: content().trim() }); // TAURI
 
                 // Insert our message into the messages for the current room.
                 updateItem(sessionStorage, `messages-${props.room_id}`, (chat: { origin: string, content: string }[]) => {

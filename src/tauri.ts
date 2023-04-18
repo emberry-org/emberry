@@ -1,6 +1,6 @@
 import { invoke } from '@tauri-apps/api/tauri';
 import { listen } from "@tauri-apps/api/event";
-import { setItem, updateItem } from './lib/storage';
+import { getItem, setItem, updateItem } from './lib/storage';
 import { Room, RoomState } from './types/room';
 import { User } from './types/user';
 
@@ -60,10 +60,11 @@ const initTauri = () => {
             const type: string = Object.keys(e.payload.message)[0];
             const content: string = e.payload.message[type];
 
-            if (type == "Chat") {
+            if (type == "Message") {
+                const room: Room = JSON.parse(getItem(sessionStorage, "rooms"))[room_id];
                 updateItem(sessionStorage, `messages-${room_id}`, (chat: { origin: string, content: string }[]) => {
                     chat.push({
-                        origin: "Peer",
+                        origin: room.name,
                         content: content,
                     });
                     return chat;

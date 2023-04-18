@@ -51,7 +51,7 @@ export default () => {
         <div class="statusbar">
             <For each={rooms()}>
                 {(room) =>
-                    <button onMouseDown={() => onClick(room)} disabled={room.state != RoomState.Online}>
+                    <button onMouseDown={() => onClick(room)} disabled={room.state == RoomState.Awaiting}>
                         {room.name} <sup>{room.state}</sup>
                         
                         {/* Render the recieved or goto icon */}
