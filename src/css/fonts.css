@@ -1,6 +1,6 @@
 @font-face {
     font-family: 'Rubik';
-    src: url(/assets/Rubik.ttf) format('truetype');
+    src: url(/assets/Rubik.ttf);
     font-weight: 100 900;
     font-style: normal;
 }

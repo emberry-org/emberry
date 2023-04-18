@@ -1,4 +1,4 @@
-import { onItem } from './storage';
+import { getItem, onItem } from './storage';
 import { createSignal, For, Show } from 'solid-js';
 import { Room, RoomState } from '../types/room';
 import { invoke } from '@tauri-apps/api/tauri';
@@ -22,6 +22,18 @@ export default () => {
         // Update the rooms.
         setRooms(new_rooms);
     });
+
+    {
+        const rooms = JSON.parse(getItem(sessionStorage, "rooms"));
+        const keys = Object.keys(rooms);
+        let new_rooms: Room[] = [];
+
+        for (let i = 0; i < keys.length; i++)
+            new_rooms.push(rooms[keys[i]]);
+
+        // Update the rooms.
+        setRooms(new_rooms);
+    }
     
     const navigate = useNavigate();
 

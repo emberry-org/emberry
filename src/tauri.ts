@@ -63,6 +63,7 @@ const initTauri = () => {
             if (type == "Message") {
                 const room: Room = JSON.parse(getItem(sessionStorage, "rooms"))[peer_id];
                 updateItem(sessionStorage, `messages-${room_id}`, (chat: { origin: string, content: string }[]) => {
+                    if (chat == null) chat = [];
                     chat.push({
                         origin: room.name,
                         content: content,
