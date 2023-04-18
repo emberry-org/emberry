@@ -2,6 +2,7 @@ import { invoke } from '@tauri-apps/api/tauri';
 import { listen } from "@tauri-apps/api/event";
 import { setItem, updateItem } from './lib/storage';
 import { Room, RoomState } from './types/room';
+import { User } from './types/user';
 
 /** Event for when a new room is created. */
 interface NewRoomEvent {
@@ -109,6 +110,15 @@ const initTauri = () => {
 
         console.log(`p2p room requested : ${room.identifier.bs58}`);
     }); // TAURI
+
+    // Get the list of known users.
+    // invoke("get_usrs", { limit: -1, offset: 0 }).then((res: any[]) => {
+    //     const users = res.map(u => <User>{
+    //         key: u.identifier.bs58,
+    //         name: u.info.username
+    //     });
+    //     setItem(sessionStorage, "known_users", JSON.stringify(users));
+    // }); // TAURI
 
     // TODO: listen("error", (e: { payload: error }))
 

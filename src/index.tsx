@@ -1,6 +1,6 @@
 /* @refresh reload */
 import { Route, Router, Routes } from '@solidjs/router';
-import { Component, lazy } from 'solid-js';
+import { Component } from 'solid-js';
 import { render } from 'solid-js/web';
 
 import './index.css';
@@ -15,13 +15,14 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
 
 /* --- app root component --- */
 import StatusBar from './lib/statusbar';
-const Home = lazy(() => import("./tree/home"));
-const Room = lazy(() => import("./tree/room"));
+// const Home = lazy(() => import("./tree/home"));
+// const Room = lazy(() => import("./tree/room"));
+import Home from "./tree/home";
+import Room from "./tree/room";
 
 const App: Component = () => {
     return (
         <>
-            {/* <h1>Emberry</h1> */}
             <main class="content">
                 <Routes>
                     <Route path="/" component={Home} />
