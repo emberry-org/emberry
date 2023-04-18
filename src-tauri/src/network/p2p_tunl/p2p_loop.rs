@@ -1,6 +1,6 @@
 use std::{io, time::Duration};
 
-use smoke::messages::hypha;
+use smoke::messages::vlink::Signal as SmokeVlink;
 use smoke::{
   messages::{Drain, Source},
   Signal,
@@ -97,51 +97,63 @@ where
       }
       Some(action) = extract_maybe(opt_bridge.as_mut(), &mut vlink_buf) => {
         next_kap = kap_timeout();
-        let hypha = hypha::Signal::from_vlink(&action);
+        let hypha = SmokeVlink::from_vlink(&action);
         Signal::Vlink(hypha).serialize_to(stream, &mut ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?;
       }
       Some(msg) = msg_rx.recv() => {
         next_kap = kap_timeout();
-        // VLAN HACK ---------
-        if let Signal::Chat(msg) = msg.clone() {
+        // VLINK HACK ---------
+        if let Signal::Message(msg) = msg.clone() {
           if let Some(Ok(port)) = msg // accept hack
-          .strip_prefix("/vlan_accept ")
+          .strip_prefix("/vlink_open ")
           .map(|port_string| port_string.parse::<u16>())
           {
             if opt_bridge.is_some() {
-              error!("got vlan-accept while it was already connected");
+              error!("got vlink_open while it was already open");
               return Ok(());
             }
             opt_bridge = Some(TcpBridge::emit_to(port));
-            let msg = Signal::AcceptVlink(Ok(port));
+            emit_msg(
+              spawn_window,
+              &events.msg_recv,
+              &Signal::Message(format!(
+                "system: YOU OPENED A VLINK WITH NAME: \"default\" AT YOUR PORT \"{port}\"\n\nTYPE: \"/vlink_close\" TO TERMINATE"
+              )),
+            );
             trace!("Sending message: {:?} in {}", msg, emit_identity);
+            let msg = Signal::VlinkOpen("default".into());
             msg.serialize_to(stream, &mut ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?;
             continue;
-          } else if let Some(Ok(port)) = msg // request hack
-          .strip_prefix("/vlan ")
+          }else if msg == "/vlink_close" {
+            if let Some(kill) = opt_bridge.take() {
+              if kill.is_listening() {
+                let msg = Signal::VlinkCut;
+                trace!("Sending message: {:?} in {}", msg, emit_identity);
+                msg.serialize_to(stream, &mut ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?;
+              }
+            }else{
+              warn!("tried to close non existing vlink bridge with command");
+            }
+          }else if let Some(Ok(port)) = msg // accept hack
+          .strip_prefix("/vlink_connect ")
           .map(|port_string| port_string.parse::<u16>())
           {
             if opt_bridge.is_some() {
-              error!("made vlan-req while it was already connected");
+              error!("got vlink_open while it was already open");
               return Ok(());
             }
-            opt_bridge = Some(TcpBridge::accepting_from(port).await.expect("could not bind port")); // TODO nice error for bind err
-            let msg = Signal::RequestVlink(port);
-            trace!("Sending message: {:?} in {}", msg, emit_identity);
-            msg.serialize_to(stream, &mut ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?;
+            opt_bridge = Some(TcpBridge::accepting_from(port).await?); // TODO just print an error that we cannot bind that port instead of terminating
+            emit_msg(
+              spawn_window,
+              &events.msg_recv,
+              &Signal::Message(format!(
+                "system: YOU CONNECTED TO Peer's VLINK.\nIT IS AVAILABLE AT YOUR PORT \"{port}\"\n\nTYPE: \"/vlink_close\" TO TERMINATE"
+              )),
+            );
             continue;
-          }else if msg == "/vlan_kill" {
-            if let Some(kill) = opt_bridge.take() {
-              drop(kill); // drop the sender to signal kill
-              let msg = Signal::KillVlink;
-              trace!("Sending message: {:?} in {}", msg, emit_identity);
-              msg.serialize_to(stream, &mut ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?;
-            }else{
-              warn!("tried to kill non existing vlan with command");
-            }
           }
         }
-        // --------- VLAN HACK
+        // --------- VLINK HACK
         trace!("Sending message: {:?} in {}", msg, emit_identity);
         msg.serialize_to(stream, &mut ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?
       },
@@ -159,3 +171,16 @@ async fn extract_maybe<'a>(
 
   bridge.extract(buf).await
 }
+
+// PART OF VLINK HACK
+#[derive(Clone, serde::Serialize)]
+struct MessageRecievedPayload<'a> {
+  message: &'a Signal,
+}
+#[inline]
+fn emit_msg(window: &Window, event_name: &str, signal: &Signal) {
+  window
+    .emit(event_name, MessageRecievedPayload { message: signal })
+    .expect("Failed to emit event")
+}
+// PART OF VLINK HACK

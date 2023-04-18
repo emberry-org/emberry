@@ -45,11 +45,6 @@ pub async fn handle_signal(
         try_exec(upsert, input)?;
       }
     }
-    Signal::Chat(text) => {
-      emit_msg(spawn_window, &events.msg_recv, signal);
-
-      os_notify(notification().title(&*msg_from).body(text));
-    }
     Signal::Vlink(internal) => {
       let Some(bridge) = opt_bridge else {
         warn!("got vlink package while bridge was not available: {internal:?}");
@@ -58,45 +53,37 @@ pub async fn handle_signal(
 
       bridge.input(internal.as_vlink()).await;
     }
-    Signal::RequestVlink(port) => {
-      trace!("vlan requested, target port: {port}");
+    Signal::VlinkOpen(name) => {
+      trace!("vlink opened by remote, name: {name}");
       spawn_window
-        .emit("vlan-req", port)
-        .expect("failed to emit vlan-req)");
+        .emit("vlink-available", name)
+        .expect("failed to emit vlink-available)");
 
-      // TODO remove vlan hack
+      // TODO remove vlink hack
       emit_msg(
         spawn_window,
         &events.msg_recv,
-        &Signal::Chat(format!(
-          "WANTS TO OPEN A VLAN CONNECTION TO CONNECT TO YOUR \"127.0.0.1:{port}\"\n\nTYPE: \"/vlan_accept {port}\" TO ACCEPT THE REQUEST\nYOU CAN ALWAYS CLOSE THE CONNECTION USING: \"/vlan_kill\""
+        &Signal::Message(format!(
+          "HAS OPENED A VLINK WITH NAME: \"{name}\"\n\nTYPE: \"/vlink_connect {name}\" TO ENABLE THE VLINK ON YOUR LOCAL PORT \"8080\"\nYOU CAN ALWAYS CLOSE THE CONNECTION USING: \"/vlink_close\""
         )),
       );
     }
-    Signal::AcceptVlink(res) => match res {
-      Ok(port) => {
-        trace!("vlan accept, port {port}");
-        emit_msg(spawn_window, &events.msg_recv, &Signal::Chat(format!("ACCEPTED A VLAN CONNECTION, MAPPING (your)\"127.0.0.1:{port}\" -> (their)\"127.0.0.1:{port}\"")))
-      }
-      Err(err) => {
-        trace!("vlan was declined: '{err}'");
-        drop(opt_bridge.take());
-      }
-    },
-    Signal::KillVlink => {
-      let Some(kill) = opt_bridge.take() else {
-        warn!("got vlan_kill while is was not available");
-        return Ok(());
-      };
-      drop(kill); // drop the sender to signal closing
-      trace!("killed vlan");
+    Signal::VlinkCut => {
+      opt_bridge.take();
+      trace!("dropped potential vlink bridge");
       emit_msg(
         spawn_window,
         &events.msg_recv,
-        &Signal::Chat("HAS KILLED THE VLAN".to_string()),
+        &Signal::Message("HAS REVOKED THE VLINK".to_string()),
       );
     }
-    Signal::EOC => todo!(),
+    Signal::ChangeContext(new_peer_context) => todo!("create context/campfire system"),
+    // CONTEXT SENSITIVE SIGNALS
+    Signal::Message(text) => {
+      emit_msg(spawn_window, &events.msg_recv, signal);
+
+      os_notify(notification().title(&*msg_from).body(text));
+    }
   }
 
   Ok(())

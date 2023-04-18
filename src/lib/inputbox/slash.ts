@@ -9,9 +9,9 @@ function slashCompletions(context: CompletionContext): CompletionResult {
     return {
         from: word.from,
         options: [
-            snippetCompletion("/vlan_accept ${1:8080}", { label: "/vlan_accept", detail: "<port>", type: "function", info: "Accept incoming VLAN tunnel request." }),
-            { label: "/vlan_kill", type: "function", info: "Kill the existing VLAN tunnel." },
-            snippetCompletion("/vlan ${1:8080}", { label: "/vlan", detail: "<port>", type: "function", info: "Request a VLAN tunnel to be opened." })
+            snippetCompletion("/vlink_open ${1:8080}", { label: "/vlink_open", type: "function", info: "Open a local port via vlink" }),
+            snippetCompletion("/vlink_connect ${1:8080}", { label: "/vlink_connect", detail: "<port>", type: "function", info: "Connect to an outstanding vlink offering using your local <port>" }),
+            { label: "/vlink_close", type: "function", info: "Kill the existing vlink bridge." }
         ],
     };
 }
