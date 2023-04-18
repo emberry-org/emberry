@@ -9,6 +9,11 @@
     margin: 8px;
     display: flex;
     align-items: center;
+    background-color: var(--bg-300);
+}
+
+.statusbar button:hover {
+    background-color: var(--bg-400);
 }
 
 .statusbar button sup {
