@@ -3,6 +3,18 @@
   windows_subsystem = "windows"
 )]
 
+//! # Tracing spans
+//!
+//! ## room-req
+//! This span captures the entirety of a room request
+//!
+//! format:  ("room_req", source = `user`, target = `user`)
+//!
+//! ## room
+//! This span captures the entirety of a room's lifetime
+//!
+//! format:  ("room", room = `bs58-roomid`)
+
 #[macro_use]
 extern crate dotenv_codegen;
 
