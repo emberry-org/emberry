@@ -17,7 +17,7 @@ use super::{
 pub fn fetch_userinfo<'a>(
   ident: UserIdentifier<'a>,
   window: &Window,
-) -> tauri::Result<IdentifiedUserInfo<'a>> {
+) -> io::Result<IdentifiedUserInfo<'a>> {
   let info = exec(try_get, &ident);
   let ident_info = match info {
     Ok(info) => IdentifiedUserInfo {
@@ -43,10 +43,7 @@ pub fn fetch_userinfo<'a>(
     }
     Err(err) => {
       error!("SQLite access error : '{}'", err);
-      return Err(tauri::Error::Io(io::Error::new(
-        ErrorKind::Other,
-        "SQLite error",
-      )));
+      return Err(io::Error::new(ErrorKind::Other, "SQLite error"));
     }
   };
 
