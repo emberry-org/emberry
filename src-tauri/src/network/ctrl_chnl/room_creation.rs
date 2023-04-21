@@ -20,8 +20,9 @@ use crate::network::RRState;
 use crate::network::UserIdentification;
 use crate::network::{Connection, Networking};
 
-use super::super::holepunch::punch_hole;
-use super::super::p2p_tunl::{p2p_loop, tls_kcp};
+use super::super::p2p_tunl::p2p_loop;
+use super::super::rhizome::punch_hole;
+use super::super::tls_kcp;
 
 /// Default kcp conf as from KcpConfig::default()
 /// default is not const and therefore needs to be inlined manually
