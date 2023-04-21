@@ -46,8 +46,11 @@ run() {
 
 run "git_newline"
 
+run "pnpm audit"
+
 cd src-tauri
 
+run "cargo audit"
 run "cargo fmt --check"
 run "cargo clippy --all-targets --all-features"
 run "cargo test"
