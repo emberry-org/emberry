@@ -39,6 +39,7 @@
             openssl
 
 	    cargo-audit
+	    cargo-tauri
 	    cargo-auditable
 	    tokio-console
           ];
