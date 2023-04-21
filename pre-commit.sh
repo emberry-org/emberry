@@ -6,8 +6,14 @@
 git_newline() {
 	for f in $(git grep --cached -Il '')
 	do
-		tail --bytes=1 $f | read -r _ || (echo "Missing newline: '$f'" && return 1) || return 1
+		tail --bytes=1 $f | read -r _ || (echo "Missing newline: '$f'" && return 1) || FAIL=true
 	done
+
+	if [ -z "$FAIL" ]; then
+		return 0
+	else
+		return 1
+	fi
 }
 
 fail() {
