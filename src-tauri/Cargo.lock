@@ -3053,6 +3053,7 @@ checksum = "a507befe795404456341dfab10cef66ead4c041f62b8b11bbb92bffe5d0953e0"
 [[package]]
 name = "smoke"
 version = "0.3.0"
+source = "git+https://github.com/emberry-org/smoke#f2f0a0ad0faf79d51ef438ffb990fd4704cd9f2c"
 dependencies = [
  "pin-project-lite",
  "postcard",

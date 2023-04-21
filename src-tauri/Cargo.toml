@@ -56,9 +56,6 @@ console-subscriber = { version = "0.1", optional = true }
 [dev-dependencies]
 test-log = { version = "0.2", features = [ "trace" ], default-features = false }
 
-[patch."https://github.com/emberry-org/smoke"]
-smoke = { path = "../../smoke" }
-
 [features]
 # by default Tauri runs in production mode
 # when `tauri dev` runs it is executed with `cargo run --no-default-features` if `devPath` is an URL
