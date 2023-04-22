@@ -56,19 +56,32 @@ const initTauri = () => {
         });
 
         // Listen for incoming message on this room:
-        listen(`message_recieved_${room_id}`, (e: any) => {
-            const type: string = Object.keys(e.payload.message)[0];
+        listen(`user_msg_${room_id}`, (e: any) => {
             const content: string = e.payload;
 
-                const room: Room = JSON.parse(getItem(sessionStorage, "rooms"))[peer_id];
-                updateItem(sessionStorage, `messages-${room_id}`, (chat: { origin: string, content: string }[]) => {
-                    if (chat == null) chat = [];
-                    chat.push({
-                        origin: room.name,
-                        content: content,
-                    });
-                    return chat;
+            const room: Room = JSON.parse(getItem(sessionStorage, "rooms"))[peer_id];
+            updateItem(sessionStorage, `messages-${room_id}`, (chat: { origin: string, content: string }[]) => {
+                if (chat == null) chat = [];
+                chat.push({
+                    origin: room.name,
+                    content: content,
                 });
+                return chat;
+            });
+        }); // TAURI
+
+        // Listen for incoming system message on this room:
+        listen(`sys_msg_{room_id}`, (e: any) => {
+            const content: string = e.payload;
+
+            updateItem(sessionStorage, `messages-${room_id}`, (chat: { origin: string, content: string }[]) => {
+                if (chat == null) chat = [];
+                chat.push({
+                    origin: "[SYSTEM]",
+                    content: content,
+                });
+                return chat;
+            });
         }); // TAURI
 
         console.log(`p2p new room : ${peer_id}:${room_id}`);

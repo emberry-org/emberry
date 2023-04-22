@@ -32,9 +32,11 @@ impl<T> PeerTunnelRuntimeBuilder<T> {
     let usr_name_evnt = format!("usr_name_{}", self.peer_ident.bs58);
     let peer = data::fetch_userinfo(self.peer_ident, &self.window)?;
     Ok(PeerTunnelRuntime {
-      msg_recv_evnt: format!("message_recieved_{}", self.room_id),
+      msg_recv_evnt: format!("user_msg_{}", self.room_id),
+      sys_msg_evnt: format!("sys_msg_{}", self.room_id),
       room_id: self.room_id,
       notify_title: format!("Message from {}", peer.info.username),
+      sys_notify_title: format!("{} - System Notification", peer.info.username),
       peer,
       usr_name_evnt,
       ser_buf: [0u8; smoke::messages::signal::MAX_SIGNAL_BUF_SIZE],
@@ -53,6 +55,8 @@ pub struct PeerTunnelRuntime<T> {
   room_id: String,
   msg_recv_evnt: String,
   notify_title: String,
+  sys_msg_evnt: String,
+  sys_notify_title: String,
   usr_name_evnt: String,
   peer: IdentifiedUserInfo<'static>,
   ser_buf: [u8; smoke::messages::signal::MAX_SIGNAL_BUF_SIZE],
@@ -117,10 +121,9 @@ where
               return Ok(());
             }
             self.opt_bridge = Some(TcpBridge::emit_to(port));
-            // todo system message
-            self.emit_msg(
+            self.sys_msg(
               &format!(
-                "system: YOU OPENED A VLINK WITH NAME: \"default\" AT YOUR PORT \"{port}\"\n\nTYPE: \"/vlink_close\" TO TERMINATE"
+                "YOU OPENED A VLINK WITH NAME: \"default\" AT YOUR PORT \"{port}\"\n\nTYPE: \"/vlink_close\" TO TERMINATE"
               ),
             );
             trace!("Sending message: {:?} in {}", msg, self.room_id);
@@ -146,9 +149,9 @@ where
               return Ok(());
             }
             self.opt_bridge = Some(TcpBridge::accepting_from(port).await?); // TODO just print an error that we cannot bind that port instead of terminating
-            self.emit_msg(
+            self.sys_msg(
               &format!(
-                "system: YOU CONNECTED TO Peer's VLINK.\nIT IS AVAILABLE AT YOUR PORT \"{port}\"\n\nTYPE: \"/vlink_close\" TO TERMINATE"
+                "YOU CONNECTED TO PEER's VLINK.\nIT IS AVAILABLE AT YOUR PORT \"{port}\"\n\nTYPE: \"/vlink_close\" TO TERMINATE"
               ),
             );
             continue;
@@ -196,8 +199,7 @@ where
       Signal::VlinkCut => {
         self.opt_bridge.take();
         trace!("dropped potential vlink bridge");
-        //todo system messsage
-        self.emit_msg("HAS REVOKED THE VLINK");
+        self.sys_msg("PEER HAS REVOKED THE VLINK");
       }
       Signal::ChangeContext(new_peer_context) => todo!("create context/campfire system"),
       // CONTEXT SENSITIVE SIGNALS
@@ -228,6 +230,15 @@ where
     }
 
     Ok(&self.peer.info.username)
+  }
+
+  fn sys_msg(&mut self, message: &str) {
+    self
+      .window
+      .emit(&self.sys_msg_evnt, message)
+      .expect("Failed to emit event");
+
+    os_notify(notification().title(&self.sys_notify_title).body(message));
   }
 
   fn emit_msg(&mut self, message: &str) {
