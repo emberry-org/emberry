@@ -1,0 +1,84 @@
+name: build & release
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  release:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [macos-latest, ubuntu-20.04, windows-latest]
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - name: 💿 Checkout Repository
+        uses: actions/checkout@v3
+
+      # Install [tauri] dependencies
+      - name: 💾 Install Tauri Dependencies (ubuntu only)
+        if: matrix.platform == 'ubuntu-20.04'
+        # We can remove libayatana-appindicator3-dev if you don't use the system tray feature.
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libayatana-appindicator3-dev librsvg2-dev
+
+      # Install & Setup [rust]
+      - name: 💾 Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: 📦️ Cargo Cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+
+      # Install & Setup [pnpm]
+      - name: 💾 Install Pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8.2.0
+          run_install: false
+
+      - name: 📦️ Pnpm Cache
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'lts/*'
+          cache: 'pnpm'
+
+      - name: 💾 Install Frontend Dependencies
+        run: pnpm i --frozen-lockfile
+
+      # Generate a changelog using the commit history
+      - name: 📟 Semantic Changelog
+        # Required for initial run on `main`
+        # (this is done to setup the caches on the main branch)
+        continue-on-error: true
+        id: changelog
+        uses: requarks/changelog-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref_name }}
+          writeToFile: false
+          useGitmojis: false
+
+      # Build the app using [tauri]
+      - name: 🚀 Build the Tauri App
+        uses: tauri-apps/tauri-action@dev
+        env:
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: 'Emberry ${{ github.ref_name }}'
+          releaseBody: |
+            ## Changelog 📜
+            ${{ steps.changelog.outputs.changes }}
+            <br>Happy chatting! *- Emberry DevTeam 😋*
+          releaseDraft: true
+          includeUpdaterJson: true
+          prerelease: false
