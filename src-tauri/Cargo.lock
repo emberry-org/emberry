@@ -3069,7 +3069,7 @@ checksum = "a507befe795404456341dfab10cef66ead4c041f62b8b11bbb92bffe5d0953e0"
 [[package]]
 name = "smoke"
 version = "0.3.0"
-source = "git+https://github.com/emberry-org/smoke#edeb434fb45679c7f5ef99869ab3a38b87798619"
+source = "git+https://github.com/emberry-org/smoke#e4ea288e245459076599d536c4bc195d64e2643b"
 dependencies = [
  "pin-project-lite",
  "postcard",
@@ -4010,9 +4010,9 @@ checksum = "49874b5167b65d7193b8aba1567f5c7d93d001cafc34600cee003eda787e483f"
 
 [[package]]
 name = "vlink"
-version = "0.4.0"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dc5b10edbbd38f862d5db3079a0872b8348f232548a734a05fd9f72049012d6f"
+checksum = "845bbb03449b66895d65be7353fd8883a5c6382872b4107fd5b0d19cc43b49c5"
 dependencies = [
  "document-features",
  "futures",

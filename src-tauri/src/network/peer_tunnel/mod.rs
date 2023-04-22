@@ -1,3 +1,4 @@
+mod addons;
 mod bore;
 mod runtime;
 mod tunnel;

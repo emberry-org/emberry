@@ -10,13 +10,15 @@ use tokio::select;
 use tokio::sync::mpsc::Receiver;
 use tokio::time::Instant;
 use tokio::{io::BufReader, sync::oneshot};
-use tracing::{error, instrument, trace, warn};
+use tracing::{error, info, instrument, trace, warn};
 use vlink::{Action, TcpBridge};
 
 use crate::data::sqlite::try_exec;
 use crate::data::sqlite::user::upsert;
 use crate::data::{self, IdentifiedUserInfo, UserIdentifier};
 use crate::frontend::{notification, os_notify};
+
+use super::addons::{Capture, SlashCommands};
 
 pub struct PeerTunnelRuntimeBuilder<T> {
   pub room_id: String,
@@ -43,6 +45,7 @@ impl<T> PeerTunnelRuntimeBuilder<T> {
       de_buf: Vec::with_capacity(smoke::messages::signal::MAX_SIGNAL_BUF_SIZE),
       vlink_buf: [0u8; smoke::messages::signal::MAX_SIGNAL_BUF_SIZE - 64],
       opt_bridge: None,
+      scheduled: Vec::new(),
       io: self.stream,
       user_input: self.user_input,
       window: self.window,
@@ -62,7 +65,8 @@ pub struct PeerTunnelRuntime<T> {
   ser_buf: [u8; smoke::messages::signal::MAX_SIGNAL_BUF_SIZE],
   de_buf: Vec<u8>,
   vlink_buf: [u8; smoke::messages::signal::MAX_SIGNAL_BUF_SIZE - 64],
-  opt_bridge: Option<TcpBridge>,
+  pub opt_bridge: Option<TcpBridge>,
+  scheduled: Vec<Signal>,
 
   io: BufReader<T>,
 
@@ -82,6 +86,9 @@ where
     let kap_timeout = || Instant::now() + KAP_TIMEOUT;
     let mut next_kap = kap_timeout();
     loop {
+      while let Some(io) = self.scheduled.pop() {
+        self.send_io(&io).await?;
+      }
       select! {
         msg = self.io.read_message_cancelable(&mut self.de_buf) => {
           let msg = msg?;
@@ -109,55 +116,13 @@ where
         Some(msg) = self.user_input.recv() => {
           next_kap = kap_timeout();
 
-        // VLINK HACK ---------
-        if let Signal::Message(msg) = msg.clone() {
-          if let Some(Ok(port)) = msg // accept hack
-          .strip_prefix("/vlink_open ")
-          .map(|port_string| port_string.parse::<u16>())
-          {
-            if self.opt_bridge.is_some() {
-              error!("got vlink_open while it was already open");
-              return Ok(());
+          if let Signal::Message(maybe_command) = &msg {
+            if let Capture = self.try_execute(maybe_command){
+              continue;
             }
-            self.opt_bridge = Some(TcpBridge::emit_to(port));
-            self.sys_msg(
-              &format!(
-                "YOU OPENED A VLINK WITH NAME: \"default\" AT YOUR PORT \"{port}\"\n\nTYPE: \"/vlink_close\" TO TERMINATE"
-              ),
-            );
-            let msg = Signal::VlinkOpen("default".into());
-            self.send_io(&msg).await?;
-            continue;
-          }else if msg == "/vlink_close" {
-            if let Some(kill) = self.opt_bridge.take() {
-              if kill.is_listening() {
-                let msg = Signal::VlinkCut;
-                self.send_io(&msg).await?;
-              }
-            }else{
-              warn!("tried to close non existing vlink bridge with command");
-            }
-          }else if let Some(Ok(port)) = msg // accept hack
-          .strip_prefix("/vlink_connect ")
-          .map(|port_string| port_string.parse::<u16>())
-          {
-            if self.opt_bridge.is_some() {
-              error!("got vlink_open while it was already open");
-              return Ok(());
-            }
-            self.opt_bridge = Some(TcpBridge::accepting_from(port).await?); // TODO just print an error that we cannot bind that port instead of terminating
-            self.sys_msg(
-              &format!(
-                "YOU CONNECTED TO PEER's VLINK.\nIT IS AVAILABLE AT YOUR PORT \"{port}\"\n\nTYPE: \"/vlink_close\" TO TERMINATE"
-              ),
-            );
-            continue;
           }
-        }
-        // --------- VLINK HACK
 
           self.send_io(&msg).await?;
-          msg.serialize_to(&mut self.io, &mut self.ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?
         },
       }
     }
@@ -193,15 +158,20 @@ where
       );
       }
       Signal::VlinkCut => {
-        self.opt_bridge.take();
-        trace!("dropped potential vlink bridge");
-        self.sys_msg("PEER HAS REVOKED THE VLINK");
+        if let Some(mut bridge) = self.opt_bridge.take() {
+          if bridge.is_listening() {
+            bridge.remote_disconnect();
+            info!("peer has closed vlink killed all active connections. Keep listening for new");
+            self.opt_bridge = Some(bridge);
+          } else {
+            info!("peer has closed vlink");
+            self.sys_msg("Vlink has been terminated by peer");
+          }
+        }
       }
       Signal::ChangeContext(new_peer_context) => todo!("create context/campfire system"),
       // CONTEXT SENSITIVE SIGNALS
-      Signal::Message(text) => {
-        self.emit_msg(text);
-      }
+      Signal::Message(text) => self.emit_msg(text),
     }
 
     Ok(())
@@ -228,7 +198,7 @@ where
     Ok(&self.peer.info.username)
   }
 
-  fn sys_msg(&mut self, message: &str) {
+  pub fn sys_msg(&mut self, message: &str) {
     self
       .window
       .emit(&self.sys_msg_evnt, message)
@@ -252,6 +222,10 @@ where
       .serialize_to(&mut self.io, &mut self.ser_buf)
       .map_err(|err| io::Error::new(io::ErrorKind::Other, err))?
       .await
+  }
+
+  pub fn schedule_io(&mut self, signal: Signal) {
+    self.scheduled.push(signal);
   }
 }
 
