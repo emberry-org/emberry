@@ -186,8 +186,7 @@ where
 
         // TODO remove vlink hack
 
-        // TODO system message
-        self.emit_msg(
+        self.sys_msg(
         &format!(
           "HAS OPENED A VLINK WITH NAME: \"{name}\"\n\nTYPE: \"/vlink_connect {name}\" TO ENABLE THE VLINK ON YOUR LOCAL PORT \"8080\"\nYOU CAN ALWAYS CLOSE THE CONNECTION USING: \"/vlink_close\""
         ),
