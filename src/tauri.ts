@@ -58,9 +58,8 @@ const initTauri = () => {
         // Listen for incoming message on this room:
         listen(`message_recieved_${room_id}`, (e: any) => {
             const type: string = Object.keys(e.payload.message)[0];
-            const content: string = e.payload.message[type];
+            const content: string = e.payload;
 
-            if (type == "Message") {
                 const room: Room = JSON.parse(getItem(sessionStorage, "rooms"))[peer_id];
                 updateItem(sessionStorage, `messages-${room_id}`, (chat: { origin: string, content: string }[]) => {
                     if (chat == null) chat = [];
@@ -70,7 +69,6 @@ const initTauri = () => {
                     });
                     return chat;
                 });
-            }
         }); // TAURI
 
         console.log(`p2p new room : ${peer_id}:${room_id}`);

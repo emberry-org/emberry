@@ -34,7 +34,7 @@ impl<T> PeerTunnelRuntimeBuilder<T> {
     Ok(PeerTunnelRuntime {
       msg_recv_evnt: format!("message_recieved_{}", self.room_id),
       room_id: self.room_id,
-      notification_title: format!("Message from {}", peer.info.username),
+      notify_title: format!("Message from {}", peer.info.username),
       peer,
       usr_name_evnt,
       ser_buf: [0u8; smoke::messages::signal::MAX_SIGNAL_BUF_SIZE],
@@ -52,9 +52,9 @@ impl<T> PeerTunnelRuntimeBuilder<T> {
 pub struct PeerTunnelRuntime<T> {
   room_id: String,
   msg_recv_evnt: String,
+  notify_title: String,
   usr_name_evnt: String,
   peer: IdentifiedUserInfo<'static>,
-  notification_title: String,
   ser_buf: [u8; smoke::messages::signal::MAX_SIGNAL_BUF_SIZE],
   de_buf: Vec<u8>,
   vlink_buf: [u8; smoke::messages::signal::MAX_SIGNAL_BUF_SIZE - 64],
@@ -117,12 +117,11 @@ where
               return Ok(());
             }
             self.opt_bridge = Some(TcpBridge::emit_to(port));
-            emit_msg(
-              &self.window,
-              &self.msg_recv_evnt,
-              &Signal::Message(format!(
+            // todo system message
+            self.emit_msg(
+              &format!(
                 "system: YOU OPENED A VLINK WITH NAME: \"default\" AT YOUR PORT \"{port}\"\n\nTYPE: \"/vlink_close\" TO TERMINATE"
-              )),
+              ),
             );
             trace!("Sending message: {:?} in {}", msg, self.room_id);
             let msg = Signal::VlinkOpen("default".into());
@@ -147,12 +146,10 @@ where
               return Ok(());
             }
             self.opt_bridge = Some(TcpBridge::accepting_from(port).await?); // TODO just print an error that we cannot bind that port instead of terminating
-            emit_msg(
-              &self.window,
-              &self.msg_recv_evnt,
-              &Signal::Message(format!(
+            self.emit_msg(
+              &format!(
                 "system: YOU CONNECTED TO Peer's VLINK.\nIT IS AVAILABLE AT YOUR PORT \"{port}\"\n\nTYPE: \"/vlink_close\" TO TERMINATE"
-              )),
+              ),
             );
             continue;
           }
@@ -170,14 +167,7 @@ where
     match signal {
       Signal::Kap => (),
       Signal::Username(name) => {
-        if &self.peer.info.username != name {
-          self.peer.info.username = name.to_string();
-          let input = (&self.peer, |info: &IdentifiedUserInfo| {
-            self.notification_title = format!("Message from {}", self.peer.info.username);
-            emit_username(&self.window, &self.usr_name_evnt, &info.info.username)
-          });
-          try_exec(upsert, input)?;
-        }
+        self.update_peer_name(name.to_string())?;
       }
       Signal::Vlink(internal) => {
         let Some(bridge) = &mut self.opt_bridge else {
@@ -196,33 +186,57 @@ where
 
         // TODO remove vlink hack
 
-        emit_msg(
-        &self.window,
-        &self.msg_recv_evnt,
-        &Signal::Message(format!(
+        // TODO system message
+        self.emit_msg(
+        &format!(
           "HAS OPENED A VLINK WITH NAME: \"{name}\"\n\nTYPE: \"/vlink_connect {name}\" TO ENABLE THE VLINK ON YOUR LOCAL PORT \"8080\"\nYOU CAN ALWAYS CLOSE THE CONNECTION USING: \"/vlink_close\""
-        )),
+        ),
       );
       }
       Signal::VlinkCut => {
         self.opt_bridge.take();
         trace!("dropped potential vlink bridge");
-        emit_msg(
-          &self.window,
-          &self.msg_recv_evnt,
-          &Signal::Message("HAS REVOKED THE VLINK".to_string()),
-        );
+        //todo system messsage
+        self.emit_msg("HAS REVOKED THE VLINK");
       }
       Signal::ChangeContext(new_peer_context) => todo!("create context/campfire system"),
       // CONTEXT SENSITIVE SIGNALS
       Signal::Message(text) => {
-        emit_msg(&self.window, &self.msg_recv_evnt, signal);
-
-        os_notify(notification().title(&self.notification_title).body(text));
+        self.emit_msg(text);
       }
     }
 
     Ok(())
+  }
+}
+
+/// runtime actions
+impl<T> PeerTunnelRuntime<T>
+where
+  T: AsyncRead + AsyncWrite + Unpin,
+{
+  fn update_peer_name(&mut self, new_name: String) -> io::Result<&str> {
+    if self.peer.info.username != new_name {
+      self.peer.info.username = new_name;
+      let input = (&self.peer, |peer: &IdentifiedUserInfo| {
+        self.notify_title = format!("Message from {}", peer.info.username);
+        if let Err(err) = self.window.emit(&self.usr_name_evnt, &peer.info.username) {
+          error!("Failed to emit event: '{}'", err);
+        }
+      });
+      try_exec(upsert, input)?;
+    }
+
+    Ok(&self.peer.info.username)
+  }
+
+  fn emit_msg(&mut self, message: &str) {
+    self
+      .window
+      .emit(&self.msg_recv_evnt, message)
+      .expect("Failed to emit event");
+
+    os_notify(notification().title(&self.notify_title).body(message));
   }
 }
 
@@ -235,28 +249,4 @@ async fn extract_maybe<'a>(
   };
 
   bridge.extract(buf).await
-}
-
-#[derive(Clone, serde::Serialize)]
-struct MessageRecievedPayload<'a> {
-  message: &'a Signal,
-}
-
-#[derive(Clone, serde::Serialize)]
-struct UsernameChangedPayload<'a> {
-  username: &'a str,
-}
-
-#[inline]
-fn emit_username(window: &Window, event_name: &str, name: &str) {
-  if let Err(err) = window.emit(event_name, name) {
-    error!("Failed to emit event: '{}'", err);
-  }
-}
-
-#[inline]
-fn emit_msg(window: &Window, event_name: &str, signal: &Signal) {
-  window
-    .emit(event_name, MessageRecievedPayload { message: signal })
-    .expect("Failed to emit event")
 }
