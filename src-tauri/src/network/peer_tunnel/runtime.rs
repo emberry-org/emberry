@@ -99,13 +99,12 @@ where
         _ = tokio::time::sleep_until(next_kap) => {
           let msg = Signal::Kap;
           next_kap = kap_timeout();
-          trace!("Sending message: {:?} in {}", msg, self.room_id);
-          msg.serialize_to(&mut self.io, &mut self.ser_buf).expect("unable to serialize kap message").await?
+          self.send_io(&msg).await?;
         }
         Some(action) = extract_maybe(self.opt_bridge.as_mut(), &mut self.vlink_buf) => {
           next_kap = kap_timeout();
           let hypha = SmokeVlink::from_vlink(&action);
-          Signal::Vlink(hypha).serialize_to(&mut self.io, &mut self.ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?;
+          self.send_io(&Signal::Vlink(hypha)).await?;
         }
         Some(msg) = self.user_input.recv() => {
           next_kap = kap_timeout();
@@ -126,16 +125,14 @@ where
                 "YOU OPENED A VLINK WITH NAME: \"default\" AT YOUR PORT \"{port}\"\n\nTYPE: \"/vlink_close\" TO TERMINATE"
               ),
             );
-            trace!("Sending message: {:?} in {}", msg, self.room_id);
             let msg = Signal::VlinkOpen("default".into());
-            msg.serialize_to(&mut self.io, &mut self.ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?;
+            self.send_io(&msg).await?;
             continue;
           }else if msg == "/vlink_close" {
             if let Some(kill) = self.opt_bridge.take() {
               if kill.is_listening() {
                 let msg = Signal::VlinkCut;
-                trace!("Sending message: {:?} in {}", msg, self.room_id);
-                msg.serialize_to(&mut self.io, &mut self.ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?;
+                self.send_io(&msg).await?;
               }
             }else{
               warn!("tried to close non existing vlink bridge with command");
@@ -159,7 +156,7 @@ where
         }
         // --------- VLINK HACK
 
-          trace!("Sending message: {:?} in {}", msg, self.room_id);
+          self.send_io(&msg).await?;
           msg.serialize_to(&mut self.io, &mut self.ser_buf).map_err(|err| io::Error::new(io::ErrorKind::Other, err))?.await?
         },
       }
@@ -248,6 +245,14 @@ where
       .expect("Failed to emit event");
 
     os_notify(notification().title(&self.notify_title).body(message));
+  }
+
+  async fn send_io(&mut self, signal: &Signal) -> io::Result<()> {
+    trace!("Sending message: {:?}", signal);
+    signal
+      .serialize_to(&mut self.io, &mut self.ser_buf)
+      .map_err(|err| io::Error::new(io::ErrorKind::Other, err))?
+      .await
   }
 }
 
