@@ -39,16 +39,17 @@ const Room: Component = () => {
 
     return <div class="room">
         <div class="header">
-            <h2>Room</h2>
+            <h2><button onMouseDown={() => navigate("/", { replace: true })}>Return to Home</button> Room</h2>
             <p>Room id: {room_id}</p>
             <p>Peer id: {peer_id}</p>
-            <button onMouseDown={() => navigate("/", { replace: true })}>Return to Home</button>
         </div>
         
         <div class="messages" ref={messagesEl}>
+            <li class="begin">The beginning of a new chat room.</li>
             <Index each={chat()}>{(msg) =>
                 <li>
-                {msg().origin}: {msg().content}
+                    <h3>{msg().origin}</h3>
+                    <div>{msg().content}</div>
                 </li>
             }</Index>
         </div>

@@ -7,24 +7,59 @@
     justify-content: space-between;
 }
 
-.room > p {
-    margin: 0;
+/* room header */
+.room h2 {
+    margin-left: 16px;
+}
+
+.room h2 button {
+    margin-right: 16px;
+}
+
+/* room info */
+.room p {
+    margin: 0 0 0 16px;
     font-size: 14px;
     max-width: 50%;
     text-overflow: ellipsis;
     overflow: hidden;
 }
 
+/* room messages */
 .room .messages {
     overflow: auto;
     flex-grow: 1;
+    font-size: 1rem;
 }
 
 .room .messages::-webkit-scrollbar {
     display: none;
 }
 
+/* text message */
 .room .messages li {
     list-style: none;
     margin-left: 16px;
+}
+
+/* message header */
+.room .messages li h3 {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #ddd;
+    margin: 8px 0 2px 0;
+}
+
+/* message content */
+.room .messages li div {
+    font-size: 1rem;
+    font-weight: 400;
+    color: #ccc;
+}
+
+/* banner message in chat */
+.room .messages .begin {
+    margin: 24px 0px 24px 100px;
+    color: #fff8;
+    user-select: none;
 }

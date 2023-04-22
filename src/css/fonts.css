@@ -5,6 +5,8 @@
     font-style: normal;
 } */
 
+/* TODO: fix the font for webkit! */
+
 @font-face {
     font-family: 'Rubik';
     src: url(/assets/fonts/rubik/Rubik-Regular.ttf);

@@ -1,12 +1,16 @@
 button {
     font-family: var(--font-sans);
     font-weight: 400;
+    font-size: 1rem;
 
     background-color: var(--bg-400);
     color: #ddd;
 
     border-radius: 6px;
     padding: 6px 10px;
+
+    min-height: 38px;
+    min-width: 38px;
 
     outline: none;
     border: none;

@@ -66,7 +66,7 @@ export default () => {
                     <button onMouseDown={() => onClick(room)} disabled={room.state == RoomState.Awaiting}>
                         {room.name} <sup>{room.state}</sup>
                         
-                        {/* Render the recieved or goto icon */}
+                        {/* Render the received or goto icon */}
                         <Show
                             when={room.state != RoomState.Pending}
                             fallback={<Received width="20px" style="margin: 0 -4px 0 8px" />}

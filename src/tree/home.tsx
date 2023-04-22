@@ -4,6 +4,7 @@ import { writeText } from '@tauri-apps/api/clipboard';
 import { Component, createSignal } from "solid-js";
 import { setItem, updateItem } from "../lib/storage";
 import { RoomState } from "../types/room";
+import RhizomeStatus from "../lib/rhizome";
 
 import Clipboard from '@ico/clipboard.svg?component-solid';
 import Link from '@ico/link.svg?component-solid';
@@ -84,15 +85,16 @@ const home: Component = () => {
         <div>
             <h3 class="title">
                 <span style="color: #666">Welcome back,</span> {username} 
-                <div style="display: flex">
+                <div style="display: flex; align-items: center">
                     <button class="btn" onMouseDown={copyKey}>
-                        <Clipboard class="ico" width="16px" height="16px" />
+                        <Clipboard class="ico" width="18px" height="18px" />
                         Copy key
                     </button>
                     <button class="btn" onMouseDown={() => navigate('/room/peer_id:room_id', { replace: true })}>
-                        <Link class="ico" width="16px" height="16px" />
+                        <Link class="ico" width="18px" height="18px" />
                         Test Room
                     </button>
+                    <RhizomeStatus />
                 </div>
             </h3>
             

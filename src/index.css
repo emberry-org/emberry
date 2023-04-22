@@ -37,18 +37,20 @@ main.content {
 /* TODO: remove this / move this */
 p.placeholder {
     font-family: var(--font-sans) !important;
-    font-size: 16px;
+    font-size: 1rem;
 }
 
 input[type="text"] {
     font-family: var(--font-sans);
     font-weight: 400;
+    font-size: 1rem;
 
     background-color: var(--bg-400);
     color: #ddd;
 
     border-radius: 6px;
     padding: 6px 10px;
+    min-height: 26px;
 
     outline: none;
     border: none;
@@ -63,7 +65,6 @@ input[type="text"]::placeholder {
 input:-webkit-autofill,
 input:-webkit-autofill:hover, 
 input:-webkit-autofill:focus {
-    border: 2px solid #a3e63588;
     -webkit-text-fill-color: #ddd;
     -webkit-box-shadow: 0 0 0px 1000px var(--bg-400) inset;
     transition: background-color 5000s ease-in-out 0s;
