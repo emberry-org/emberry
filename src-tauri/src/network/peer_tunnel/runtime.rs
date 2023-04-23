@@ -213,7 +213,8 @@ where
   }
 
   async fn send_io(&mut self, signal: &Signal) -> io::Result<()> {
-    trace!("Sending message: {:?}", signal);
+    let discriminant = std::mem::discriminant(signal);
+    trace!("Sending signal: {:?}", discriminant);
     signal
       .serialize_to(&mut self.io, &mut self.ser_buf)
       .map_err(|err| io::Error::new(io::ErrorKind::Other, err))?
