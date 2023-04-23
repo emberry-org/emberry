@@ -36,7 +36,7 @@ impl<'a> TunnelBore<'a> {
 
     let config = KcpConfig {
       mtu: 4096,
-      nodelay: tokio_kcp::KcpNoDelayConfig::fastest(),
+      nodelay: tokio_kcp::KcpNoDelayConfig::normal(),
       wnd_size: (256, 256),
       session_expire: Duration::from_secs(90),
       flush_write: false,
