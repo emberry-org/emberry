@@ -39,9 +39,9 @@ impl<'a> TunnelBore<'a> {
       nodelay: tokio_kcp::KcpNoDelayConfig::fastest(),
       wnd_size: (256, 256),
       session_expire: Duration::from_secs(90),
-      flush_write: true,
-      flush_acks_input: true,
-      stream: true,
+      flush_write: false,
+      flush_acks_input: false,
+      stream: false,
     };
 
     let stream = KcpStream::connect_with_socket(&config, socket, addr)
