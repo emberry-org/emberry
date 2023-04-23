@@ -142,7 +142,11 @@ where
         return Ok(());
       };
 
-        bridge.input(internal.as_vlink()).await;
+        if let Some(output) = bridge.input(internal.as_vlink()).await {
+          self
+            .send_io(&Signal::Vlink(SmokeVlink::from_vlink(&output)))
+            .await?;
+        }
       }
       Signal::VlinkOpen(name) => {
         trace!("vlink opened by remote, name: {name}");

@@ -34,7 +34,7 @@ bs58 = "0.4"
 smoke = { git = "https://github.com/emberry-org/smoke", features = [ "client" ] }
 
 # vlink
-vlink = "0.5"
+vlink = "0.6"
 
 # reliable udp
 tokio_kcp = "0.9.3"
