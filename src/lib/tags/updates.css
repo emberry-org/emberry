@@ -1,0 +1,40 @@
+.updater-status {
+    display: flex;
+    align-items: center;
+
+    background-color: var(--bg-400);
+    color: #bbb;
+
+    padding: 3px 6px 3px 4px;
+    border-radius: 6px;
+    margin-left: 8px;
+
+    min-width: 26px;
+    height: 26px;
+    min-height: 26px;
+
+    cursor: auto;
+    user-select: text;
+}
+
+.updater-status:hover {
+    background-color: var(--bg-400);
+    color: #bbb;
+}
+
+.updater-status span {
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.updater-status[data-status="UPDATE"] {
+    background-color: #a3e63588;
+    color: #ddd;
+    cursor: pointer;
+}
+
+.updater-status[data-status="UPDATE"]:hover {
+    background-color: #a3e635bb;
+    color: #eee;
+}
+

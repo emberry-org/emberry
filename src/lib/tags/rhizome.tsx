@@ -1,5 +1,5 @@
 import { Component, Show, createSignal } from "solid-js";
-import { setItem, getItem, onItem } from "./storage";
+import { setItem, getItem, onItem } from "../storage";
 import { listen } from "@tauri-apps/api/event";
 
 import Connected from '@ico/rhizome/conn.svg?component-solid';

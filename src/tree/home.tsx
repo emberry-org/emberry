@@ -4,7 +4,8 @@ import { writeText } from '@tauri-apps/api/clipboard';
 import { Component, createSignal } from "solid-js";
 import { setItem, updateItem } from "../lib/storage";
 import { RoomState } from "../types/room";
-import RhizomeStatus from "../lib/rhizome";
+import RhizomeStatus from "../lib/tags/rhizome";
+import UpdaterStatus from "../lib/tags/updates";
 
 import Clipboard from '@ico/clipboard.svg?component-solid';
 import Link from '@ico/link.svg?component-solid';
@@ -95,6 +96,7 @@ const home: Component = () => {
                         Test Room
                     </button>
                     <RhizomeStatus />
+                    <UpdaterStatus />
                 </div>
             </h3>
             
