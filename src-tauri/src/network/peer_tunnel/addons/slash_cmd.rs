@@ -32,8 +32,8 @@ pub trait SlashCommands {
     let mut args = command.split_whitespace();
     match args.next() {
       Some("/vlink_open") => self.vlink_open(args),
-      Some("/vlink_close") => self.vlink_connect(args),
-      Some("/vlink_connect") => self.vlink_close(),
+      Some("/vlink_close") => self.vlink_close(),
+      Some("/vlink_connect") => self.vlink_connect(args),
       None | Some(_) => self.println(HELP),
     }
   }
