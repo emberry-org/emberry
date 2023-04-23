@@ -58,8 +58,11 @@
             "endpoints": [
                 "https://github.com/emberry-org/emberry/releases/latest/download/latest.json"
             ],
-            "dialog": true,
-            "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDMwMjFDMzUyREQ2MkJGRTYKUldUbXYyTGRVc01oTUxpWXQvK0FjZE1BNGpVZXpoWXdQRGRQbjFZTGI2L1JtOGdZWnh6VlV2ZVoK"
+            "dialog": false,
+            "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDMwMjFDMzUyREQ2MkJGRTYKUldUbXYyTGRVc01oTUxpWXQvK0FjZE1BNGpVZXpoWXdQRGRQbjFZTGI2L1JtOGdZWnh6VlV2ZVoK",
+            "windows": {
+                "installMode": "quiet"
+            }
         },
         "windows": [
             {

@@ -1,8 +1,7 @@
 import { invoke } from '@tauri-apps/api/tauri';
 import { listen } from "@tauri-apps/api/event";
-import { getItem, setItem, updateItem } from './lib/storage';
+import { getItem, updateItem } from './lib/storage';
 import { Room, RoomState } from './types/room';
-import { User } from './types/user';
 
 /** Event for when a new room is created. */
 interface NewRoomEvent {
