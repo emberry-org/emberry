@@ -55,6 +55,7 @@ const initTauri = () => {
             return rooms;
         });
 
+        // TODO: this should be re established if the app is refreshed.
         // Listen for incoming message on this room:
         listen(`user_msg_${room_id}`, (e: any) => {
             const content: string = e.payload;
@@ -71,7 +72,7 @@ const initTauri = () => {
         }); // TAURI
 
         // Listen for incoming system message on this room:
-        listen(`sys_msg_{room_id}`, (e: any) => {
+        listen(`sys_msg_${room_id}`, (e: any) => {
             const content: string = e.payload;
 
             updateItem(sessionStorage, `messages-${room_id}`, (chat: { origin: string, content: string }[]) => {
