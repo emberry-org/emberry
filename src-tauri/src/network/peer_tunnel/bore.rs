@@ -57,16 +57,16 @@ impl<'a> TunnelBore<'a> {
       })?;
 
     let peer_cert = Certificate(self.peer.cert_data.clone());
-    let stream = if priority {
-      tls_kcp::wrap_client(stream, &peer_cert, self.identification).await
-    } else {
-      tls_kcp::wrap_server(stream, &peer_cert, self.identification).await
-    };
-
-    let stream = stream.map_err(|err| {
-      error!("Unable to start TLS on KCP stream, Err: '{}'", err);
-      Error::new(ErrorKind::Other, "TLS could not be established")
-    })?;
+    //let stream = if priority {
+      //tls_kcp::wrap_client(stream, &peer_cert, self.identification).await
+    //} else {
+      //tls_kcp::wrap_server(stream, &peer_cert, self.identification).await
+    //};
+//
+    //let stream = stream.map_err(|err| {
+      //error!("Unable to start TLS on KCP stream, Err: '{}'", err);
+      //Error::new(ErrorKind::Other, "TLS could not be established")
+    //})?;
 
     let stream = BufReader::new(stream);
 
