@@ -1,4 +1,4 @@
-import { Component, createSignal, Index, lazy, onMount } from "solid-js";
+import { Component, createSignal, Index, lazy, onMount, Show } from "solid-js";
 import { useNavigate, useParams } from '@solidjs/router';
 import { getItem, onItem } from "../lib/storage";
 const Inputbox = lazy(() => import("../lib/inputbox"));
@@ -43,12 +43,16 @@ const Room: Component = () => {
             <p>Room id: {room_id}</p>
             <p>Peer id: {peer_id}</p>
         </div>
-        
+
         <div class="messages" ref={messagesEl}>
             <li class="begin">The beginning of a new chat room.</li>
-            <Index each={chat()}>{(msg) =>
+            <Index each={chat()}>{(msg, i) =>
                 <li>
-                    <h3>{msg().origin}</h3>
+                    <Show
+                        when={i <= 0 || chat()[i - 1].origin !== msg().origin}
+                    >
+                        <h3>{msg().origin}</h3>
+                    </Show>
                     <div>{msg().content}</div>
                 </li>
             }</Index>

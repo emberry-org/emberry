@@ -39,11 +39,13 @@
             openssl
 
 	    cargo-audit
+	    cargo-tauri
 	    cargo-auditable
 	    tokio-console
           ];
           shellHook = ''
             export WEBKIT_DISABLE_COMPOSITING_MODE=1
+	    export RUST_LOG=emberry_rs
           '';
         };
       in

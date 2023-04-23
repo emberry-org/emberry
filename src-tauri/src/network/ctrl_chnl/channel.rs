@@ -129,14 +129,12 @@ impl<'a> ControlChannel<'a> {
         state::send(self.rc, message).instrument(span).await?;
       }
       AcceptedRoom(id, usr) => {
-        let priority = self.identification.certificate.0 < usr.cert_data;
         if let Err(err) = try_holepunch(
           self.window.clone(),
           self.net.clone(),
           id,
           &usr,
           &self.identification,
-          priority,
         )
         .await
         {

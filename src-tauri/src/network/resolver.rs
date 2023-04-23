@@ -66,7 +66,7 @@ mod tests {
     sync::Arc,
   };
 
-  use crate::network::p2p_tunl::resolver::ClientCertResolver;
+  use super::ClientCertResolver;
 
   use super::PemfileReader;
 
