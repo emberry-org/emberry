@@ -4,7 +4,7 @@ use std::time::Duration;
 use rustls::Certificate;
 use smoke::{messages::RoomId, User};
 use tokio::io::BufReader;
-use tokio_kcp::{KcpConfig, KcpStream};
+use tokio_kcp::{KcpConfig, KcpNoDelayConfig, KcpStream};
 use tracing::error;
 
 use crate::network::rhizome::punch_hole;
@@ -35,13 +35,18 @@ impl<'a> TunnelBore<'a> {
     let addr = socket.peer_addr()?;
 
     let config = KcpConfig {
-      mtu: 4096,
-      nodelay: tokio_kcp::KcpNoDelayConfig::normal(),
-      wnd_size: (256, 256),
+      mtu: 1400,
+      nodelay: KcpNoDelayConfig {
+        nodelay: false,
+        interval: 10,
+        resend: 0,
+        nc: false,
+      },
+      wnd_size: (1024, 1024),
       session_expire: Duration::from_secs(90),
       flush_write: false,
       flush_acks_input: false,
-      stream: false,
+      stream: true,
     };
 
     let stream = KcpStream::connect_with_socket(&config, socket, addr)
