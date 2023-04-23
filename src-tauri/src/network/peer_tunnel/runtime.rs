@@ -93,7 +93,6 @@ where
         msg = self.io.read_message_cancelable(&mut self.de_buf) => {
           let msg = msg?;
           next_kap = kap_timeout();
-          trace!("Received message");
           if let Err(err) = self.handle_signal(&msg) .await
           {
             warn!("failed to handle signal: '{:?}' with error: '{}'", msg, err);
@@ -129,6 +128,9 @@ where
   }
 
   async fn handle_signal(&mut self, signal: &Signal) -> Result<(), io::Error> {
+    let discriminant = std::mem::discriminant(signal);
+    trace!("Received signal {discriminant:?}");
+
     match signal {
       Signal::Kap => (),
       Signal::Username(name) => {
@@ -149,13 +151,7 @@ where
           .emit("vlink-available", name)
           .expect("failed to emit vlink-available)");
 
-        // TODO remove vlink hack
-
-        self.sys_msg(
-        &format!(
-          "HAS OPENED A VLINK WITH NAME: \"{name}\"\n\nTYPE: \"/vlink_connect {name}\" TO ENABLE THE VLINK ON YOUR LOCAL PORT \"8080\"\nYOU CAN ALWAYS CLOSE THE CONNECTION USING: \"/vlink_close\""
-        ),
-      );
+        self.sys_msg(&format!("Your peer has opened a Vlink called '{name}'"));
       }
       Signal::VlinkCut => {
         if let Some(mut bridge) = self.opt_bridge.take() {
