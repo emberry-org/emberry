@@ -86,14 +86,14 @@ where
       return;
     };
 
-    let name = args.next().unwrap_or("default");
-    // todo check if `name` is available to connect to
-
     let Some(Ok(port)) = args.next().map(|port_str| port_str.parse::<u16>()) else {
       self.println("Invalid arguments for `/vlink_connect`");
       self.println(HELP);
       return;
     };
+
+    let name = args.next().unwrap_or("default");
+    // todo check if `name` is available to connect to
 
     let Ok(bridge) = TcpBridge::accepting_from(port) else {
       self.sys_msg(&format!("Cannot create Vlink on port '{port}'.\
