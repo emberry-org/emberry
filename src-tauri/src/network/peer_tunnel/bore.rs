@@ -1,4 +1,5 @@
 use std::io::{self, Error, ErrorKind};
+use std::time::Duration;
 
 use rustls::Certificate;
 use smoke::{messages::RoomId, User};
@@ -33,7 +34,17 @@ impl<'a> TunnelBore<'a> {
     let socket = punch_hole(dotenv!("SERVER_ADDRESS"), &self.room_id.0).await?;
     let addr = socket.peer_addr()?;
 
-    let stream = KcpStream::connect_with_socket(&KcpConfig::default(), socket, addr)
+    let config = KcpConfig {
+      mtu: 4096,
+      nodelay: tokio_kcp::KcpNoDelayConfig::fastest(),
+      wnd_size: (256, 256),
+      session_expire: Duration::from_secs(90),
+      flush_write: true,
+      flush_acks_input: true,
+      stream: true,
+    };
+
+    let stream = KcpStream::connect_with_socket(&config, socket, addr)
       .await
       .map_err(|e| {
         error!("Kcp error: {}", e);
