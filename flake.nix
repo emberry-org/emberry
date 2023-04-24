@@ -30,7 +30,16 @@
 
         # Used in both dev shell and to build the app in nix eventually
         commonArgs = {
-          nativeBuildInputs = with pkgs; [ fenixToolchain nodePackages.pnpm pkg-config ];
+          nativeBuildInputs = with pkgs; [
+	    fenixToolchain 
+	    nodePackages.pnpm 
+	    pkg-config
+	    cargo-audit
+	    cargo-tauri
+	    tokio-console
+
+	    # cargo-auditable
+	  ];
           buildInputs = with pkgs; [
             glib
             pango
@@ -38,10 +47,11 @@
             webkitgtk
             openssl
 
-	    cargo-audit
-	    cargo-tauri
-	    cargo-auditable
-	    tokio-console
+	    # gtk3
+	    # cairo
+	    # gdk-pixbuf
+	    # dbus
+	    # librsvg
           ];
           shellHook = ''
             export WEBKIT_DISABLE_COMPOSITING_MODE=1
