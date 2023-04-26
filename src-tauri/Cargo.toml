@@ -6,7 +6,7 @@ authors = ["devensiv <devensiv@gmail.com>", "max <mx.coppen@gmail.com>"]
 license = "GPL-3.0-only"
 repository = "https://github.com/emberry-org/emberry.git"
 edition = "2021"
-rust-version = "1.67"
+rust-version = "1.56"
 
 [build-dependencies]
 tauri-build = { version = "1.2.1", features = [] }
