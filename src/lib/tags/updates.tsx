@@ -20,7 +20,7 @@ interface Updater {
 }
 
 /** Update the client. */
-async function update() {
+async function updateClient() {
     // Install the update. This will also restart the app on Windows!
     await installUpdate() // TAURI
 
@@ -39,13 +39,13 @@ const updateIndicator: Component = () => {
     onItem("tauri-updater", setStatus);
 
     return (
-        <button class="updater-status" onMouseDown={update} data-status={update().status}>
+        <button class="updater-status" onMouseDown={updateClient} data-status={update().status}>
             <Show
                 when={update().status === "UPDATE"}
             >
                 <Download width="20px" stroke-width="1px" stroke="currentColor" />
             </Show>
-            <span>v0.0.0</span>
+            <span>{ update().manifest?.version ?? "v0.0.0" }</span>
         </button>
     );
 };
