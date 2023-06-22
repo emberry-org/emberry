@@ -15,8 +15,7 @@ use tracing::{error, warn};
 pub static PEM: Lazy<PemfileReader> = Lazy::new(pem_reader);
 /// IdentifiedUserInfo of the current user;
 /// None if [PEM] has no valid cert
-pub static IDI: Lazy<RwLock<Option<IdentifiedUserInfo<'static>>>> =
-  Lazy::new(|| RwLock::new(maybe_info()));
+pub static IDI: Lazy<RwLock<Option<IdentifiedUserInfo>>> = Lazy::new(|| RwLock::new(maybe_info()));
 
 #[deprecated]
 /// cert and key of the local user from .pem file
@@ -36,7 +35,7 @@ fn maybe_pem_data() -> Option<(Certificate, PrivateKey)> {
   }
 }
 
-fn maybe_info<'a>() -> Option<IdentifiedUserInfo<'a>> {
+fn maybe_info() -> Option<IdentifiedUserInfo> {
   let id = maybe_identifier()?;
   let info = match try_exec(try_get, &id) {
     Ok(info) => info,
@@ -52,7 +51,7 @@ fn maybe_info<'a>() -> Option<IdentifiedUserInfo<'a>> {
   })
 }
 
-fn maybe_identifier<'a>() -> Option<UserIdentifier<'a>> {
+fn maybe_identifier() -> Option<UserIdentifier> {
   if !PEM.filepath.exists() {
     warn!(
       "User identity PEM file does not exist: '{}'",

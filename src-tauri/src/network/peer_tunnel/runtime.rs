@@ -22,7 +22,7 @@ use super::addons::{Capture, SlashCommands};
 
 pub struct PeerTunnelRuntimeBuilder<T> {
   pub room_id: String,
-  pub peer_ident: UserIdentifier<'static>,
+  pub peer_ident: UserIdentifier,
   pub window: Window,
   pub stream: BufReader<T>,
   pub cancellation: oneshot::Receiver<()>,
@@ -61,7 +61,7 @@ pub struct PeerTunnelRuntime<T> {
   sys_msg_evnt: String,
   sys_notify_title: String,
   usr_name_evnt: String,
-  peer: IdentifiedUserInfo<'static>,
+  peer: IdentifiedUserInfo,
   ser_buf: [u8; smoke::messages::signal::MAX_SIGNAL_BUF_SIZE],
   de_buf: Vec<u8>,
   vlink_buf: [u8; smoke::messages::signal::MAX_SIGNAL_BUF_SIZE - 64],

@@ -6,10 +6,7 @@ use crate::{
 use super::{state, RhizomeConnection};
 use smoke::messages::EmbMessage;
 use smoke::User;
-use std::{
-  borrow::Cow,
-  io::{Error, ErrorKind},
-};
+use std::io::{Error, ErrorKind};
 use tauri::Result;
 use tracing::{trace, trace_span, warn, Instrument};
 
@@ -31,9 +28,7 @@ pub async fn accept_room(
     )));
   };
 
-  let ident = UserIdentifier {
-    bs58: Cow::Borrowed(&bs58cert),
-  };
+  let ident = UserIdentifier { bs58: bs58cert };
   let usr: User = (&ident).try_into()?;
   let err = || {
     Err(tauri::Error::Io(Error::new(

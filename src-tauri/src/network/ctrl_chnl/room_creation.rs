@@ -71,7 +71,7 @@ pub async fn try_holepunch(
         "new-room",
         NewRoomPayload {
           room_id: bs58::encode(&room_id.0).into_string(),
-          peer_id: UserIdentifier::from(usr).bs58.into_owned(),
+          peer_id: UserIdentifier::from(usr).bs58,
         },
       )
       .expect("Failed to emit WantsRoom event");

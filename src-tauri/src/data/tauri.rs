@@ -1,5 +1,3 @@
-use std::borrow::Cow;
-
 use tauri::Window;
 use tracing::{error, warn};
 
@@ -10,23 +8,18 @@ use super::sqlite::{exec, try_exec, user::*};
 
 #[tauri::command]
 pub fn get_usr_info(bs58cert: String) -> UserInfo {
-  let user = UserIdentifier {
-    bs58: Cow::Borrowed(&bs58cert),
-  };
+  let user = UserIdentifier { bs58: bs58cert };
 
   exec(get, &user)
 }
 
 #[tauri::command]
-pub fn get_usrs<'a>(
-  limit: i64,
-  offset: usize,
-) -> Result<Vec<IdentifiedUserInfo<'a>>, tauri::Error> {
+pub fn get_usrs(limit: i64, offset: usize) -> Result<Vec<IdentifiedUserInfo>, tauri::Error> {
   try_exec(get_limit_offset, (limit, offset)).map_err(tauri::Error::Io)
 }
 
 #[tauri::command]
-pub fn get_local<'a>() -> Option<IdentifiedUserInfo<'a>> {
+pub fn get_local() -> Option<IdentifiedUserInfo> {
   let lock = config::IDI.read().unwrap();
   lock.clone()
 }

@@ -64,7 +64,7 @@ pub fn upsert<'a, C>(
   input: (&'a IdentifiedUserInfo, C),
 ) -> Result<(), rusqlite::Error>
 where
-  C: FnOnce(&'a IdentifiedUserInfo<'a>),
+  C: FnOnce(&'a IdentifiedUserInfo),
 {
   let (ident_info, callback) = input;
   trace!("upserting entry for: '{}'", ident_info.identifier.bs58);
@@ -87,15 +87,13 @@ SET username = excluded.username, relation = excluded.relation"#,
 
 #[cfg(test)]
 mod tests {
-  use std::borrow::Cow;
-
   use super::*;
   use crate::data::sqlite::schema;
   use rusqlite::Connection;
 
-  fn sample_user_ident() -> UserIdentifier<'static> {
+  fn sample_user_ident() -> UserIdentifier {
     UserIdentifier {
-      bs58: Cow::Owned("bs58 certificate string".to_string()),
+      bs58: "bs58 certificate string".to_string(),
     }
   }
 
@@ -147,7 +145,7 @@ mod tests {
 
     let exprected = UserInfo {
       relation: UserRelation::Stranger,
-      username: ident.bs58.into_owned(),
+      username: ident.bs58,
     };
     assert_eq!(
       result, exprected,

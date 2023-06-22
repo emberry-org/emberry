@@ -1,4 +1,3 @@
-use std::borrow::Cow;
 use std::time::Instant;
 
 use smoke::{messages::EmbMessage, User};
@@ -18,9 +17,7 @@ pub async fn request_room(
   net: tauri::State<'_, Networking>,
   rc: tauri::State<'_, RhizomeConnection>,
 ) -> tauri::Result<()> {
-  let ident = UserIdentifier {
-    bs58: Cow::Borrowed(&bs58cert),
-  };
+  let ident = UserIdentifier { bs58: bs58cert };
   let usr: User = (&ident).try_into()?;
 
   let span;

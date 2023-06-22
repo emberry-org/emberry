@@ -14,10 +14,7 @@ use super::{
 /// Fetches [IdentifiedUserInfo] about a [User] from the database
 /// If the user does not exist in the database it is initialized
 /// and the frontend is informed about the changes
-pub fn fetch_userinfo<'a>(
-  ident: UserIdentifier<'a>,
-  window: &Window,
-) -> io::Result<IdentifiedUserInfo<'a>> {
+pub fn fetch_userinfo(ident: UserIdentifier, window: &Window) -> io::Result<IdentifiedUserInfo> {
   let info = exec(try_get, &ident);
   let ident_info = match info {
     Ok(info) => IdentifiedUserInfo {
