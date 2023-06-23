@@ -10,8 +10,9 @@ pub fn notification() -> Notification {
   Notification::new(&*APPID)
 }
 
-/// Tries to show the given notification when the window is out of
-/// focus
+/// Tries to produce the given notification.
+///
+/// Fails silently when the application window is in focus.
 pub fn os_notify(notify: Notification) {
   /* Create a new notification for the message */
   if !crate::FOCUS.load(Ordering::SeqCst) {
