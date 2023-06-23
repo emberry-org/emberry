@@ -128,6 +128,7 @@ Please make sure you have sufficient permissions and the port is not currently u
         bs58: string.into(),
       })
       .collect();
+    users.push(self.me().clone());
     users.sort_by(|one, two| one.bs58.cmp(&two.bs58));
 
     let mut participants_list = users
@@ -148,6 +149,9 @@ Please make sure you have sufficient permissions and the port is not currently u
       let mutex_guard = networking.chats.lock().expect("poisoned mutex");
 
       for user in users.iter() {
+        if user == self.me() {
+          continue;
+        }
         let Some(tunnel) = mutex_guard.values().find(|&room| room.peer_id() == user) else{
             tracing::warn!("campfire cannot send msg: not connected to peer: {user:?}");
             continue;
@@ -164,6 +168,7 @@ Please make sure you have sufficient permissions and the port is not currently u
     }
 
     let window = self.window().clone();
+    let me = self.me().clone();
     let handler = self
       .window()
       .listen(format!("send_message_{id}"), move |e| {
@@ -188,6 +193,10 @@ Please make sure you have sufficient permissions and the port is not currently u
         let mutex_guard = networking.chats.lock().expect("poisoned mutex");
 
         for user in users.iter() {
+          if *user == me {
+            continue;
+          }
+
           let Some(tunnel) = mutex_guard.values().find(|&room| room.peer_id() == user) else{
             tracing::warn!("campfire cannot send msg: not connected to peer: {user:?}");
             continue;

@@ -24,6 +24,9 @@ impl<'a> TunnelBore<'a> {
   pub async fn drill(self) -> io::Result<PeerTunnel> {
     let priority = self.identification.certificate.0 < self.peer.cert_data;
     let identity = bs58::encode(&self.room_id.0).into_string();
+    let me = User {
+      cert_data: self.identification.certificate.0.clone(),
+    };
 
     self
       .window
@@ -75,6 +78,7 @@ impl<'a> TunnelBore<'a> {
       room_id: identity,
       peer: self.peer.clone(),
       stream,
+      me,
     }
     .build()
   }

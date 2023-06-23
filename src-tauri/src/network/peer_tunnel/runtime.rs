@@ -24,6 +24,7 @@ use super::addons::{Capture, SlashCommands};
 pub struct PeerTunnelRuntimeBuilder<T> {
   pub room_id: String,
   pub peer_ident: UserIdentifier,
+  pub me_id: UserIdentifier,
   pub window: Window,
   pub stream: BufReader<T>,
   pub cancellation: oneshot::Receiver<()>,
@@ -41,6 +42,7 @@ impl<T> PeerTunnelRuntimeBuilder<T> {
       notify_title: format!("Message from {}", peer.info.username),
       sys_notify_title: format!("{} - System Notification", peer.info.username),
       peer,
+      me_id: self.me_id,
       usr_name_evnt,
       ser_buf: [0u8; smoke::messages::signal::MAX_SIGNAL_BUF_SIZE],
       de_buf: Vec::with_capacity(smoke::messages::signal::MAX_SIGNAL_BUF_SIZE),
@@ -63,6 +65,7 @@ pub struct PeerTunnelRuntime<T> {
   sys_notify_title: String,
   usr_name_evnt: String,
   peer: IdentifiedUserInfo,
+  me_id: UserIdentifier,
   ser_buf: [u8; smoke::messages::signal::MAX_SIGNAL_BUF_SIZE],
   de_buf: Vec<u8>,
   vlink_buf: [u8; smoke::messages::signal::MAX_SIGNAL_BUF_SIZE - 64],
@@ -238,6 +241,10 @@ where
 
   pub fn peer(&self) -> &IdentifiedUserInfo {
     &self.peer
+  }
+
+  pub fn me(&self) -> &UserIdentifier {
+    &self.me_id
   }
 
   /// part of proto/campfire DO NOT USE OTHERWISE

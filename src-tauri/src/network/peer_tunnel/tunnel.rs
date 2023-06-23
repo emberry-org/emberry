@@ -17,6 +17,7 @@ pub struct PeerTunnelBuilder<T> {
   pub room_id: String,
   pub peer: User,
   pub stream: BufReader<T>,
+  pub me: User,
 }
 
 impl<T> PeerTunnelBuilder<T>
@@ -50,6 +51,7 @@ where
       stream: self.stream,
       cancellation,
       user_input,
+      me_id: (&self.me).into(),
     }
     .build()?;
 

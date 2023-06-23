@@ -97,6 +97,7 @@ where
 
     let window = self.window().clone();
     let id = campfire_id.to_string();
+    let me = self.me().clone();
     let handler = self
       .window()
       .listen(format!("send_message_{id}"), move |e| {
@@ -121,6 +122,10 @@ where
         let mutex_guard = networking.chats.lock().expect("poisoned mutex");
 
         for user in users.iter() {
+          if *user == me {
+            continue;
+          }
+
           let Some(tunnel) = mutex_guard.values().find(|&room| room.peer_id() == user) else{
             tracing::warn!("campfire cannot send msg: not connected to peer: {user:?}");
             continue;
