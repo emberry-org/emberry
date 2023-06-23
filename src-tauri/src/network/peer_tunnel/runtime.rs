@@ -17,6 +17,7 @@ use crate::data::sqlite::try_exec;
 use crate::data::sqlite::user::upsert;
 use crate::data::{self, IdentifiedUserInfo, UserIdentifier};
 use crate::frontend::{notification, os_notify};
+use crate::network::peer_tunnel::addons::CampfireMessage;
 
 use super::addons::{Capture, SlashCommands};
 
@@ -169,9 +170,15 @@ where
           }
         }
       }
-      Signal::ChangeContext(new_peer_context) => todo!("create context/campfire system"),
+      Signal::ChangeContext(_new_peer_context) => todo!("create context/campfire system"),
       // CONTEXT SENSITIVE SIGNALS
-      Signal::Message(text) => self.emit_msg(text),
+      Signal::Message(text) => {
+        if let Capture = self.try_campfire(text) {
+          return Ok(());
+        }
+
+        self.emit_msg(text)
+      }
     }
 
     Ok(())
@@ -227,6 +234,15 @@ where
 
   pub fn schedule_io(&mut self, signal: Signal) {
     self.scheduled.push(signal);
+  }
+
+  pub fn peer(&self) -> &IdentifiedUserInfo {
+    &self.peer
+  }
+
+  /// part of proto/campfire DO NOT USE OTHERWISE
+  pub fn window(&self) -> &Window {
+    &self.window
   }
 }
 

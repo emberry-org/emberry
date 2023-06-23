@@ -11,8 +11,15 @@ interface NewRoomEvent {
     }
 }
 
+/** Event for when a new campfire is created. */
+interface NewCampfireEvent {
+    payload: {
+        id: string,
+    }
+}
+
 /** Event for when a new room request is received. */
-interface WantsRoomEvent {
+interface IdentifiedUserInfo {
     identifier: {
         bs58: string,
     },
@@ -87,9 +94,45 @@ const initTauri = () => {
         console.log(`p2p new room : ${peer_id}:${room_id}`);
     }); // TAURI
 
+    // Listen for campfire rooms:
+    listen("new-campfire", (e: NewCampfireEvent) => {
+        const room_id = e.payload.id;
+        const peer_id = e.payload.id;
+
+        // Update the rooms array:
+        updateItem(sessionStorage, "rooms", (rooms: any) => {
+            if (!rooms) rooms = {};
+            // Update the new room.
+            rooms[peer_id] = <Room>{
+                ...rooms[peer_id],
+                roomId: room_id,
+                state: RoomState.Online
+            };
+            return rooms;
+        });
+
+        // TODO: this should be re established if the app is refreshed.
+        // Listen for incoming message on this room:
+        listen(`user_msg_${room_id}`, (e: any) => {
+            const content: string = e.payload.msg;
+            const sender = e.payload.sender as IdentifiedUserInfo;
+
+            const room: Room = JSON.parse(getItem(sessionStorage, "rooms"))[peer_id];
+            updateItem(sessionStorage, `messages-${room_id}`, (chat: { origin: string, content: string }[]) => {
+                if (chat == null) chat = [];
+                chat.push({
+                    origin: sender.info.username,
+                    content: content,
+                });
+                return chat;
+            });
+        }); // TAURI
+
+        console.log(`p2p new room : ${peer_id}:${room_id}`);
+    }); // TAURI
     // Listen for new room requests:
     listen("wants-room", (e: any) => {
-        const room = e.payload as WantsRoomEvent;
+        const room = e.payload as IdentifiedUserInfo;
 
         // Update the rooms array:
         updateItem(sessionStorage, "rooms", (rooms: any) => {

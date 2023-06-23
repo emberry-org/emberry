@@ -3,6 +3,9 @@ use std::sync::atomic::Ordering;
 use tauri::api::notification::Notification;
 use tracing::{trace, warn};
 
+mod chat_msg;
+pub use chat_msg::Message;
+
 use crate::APPID;
 
 /// Creates a new [Notification] with the apps identifier

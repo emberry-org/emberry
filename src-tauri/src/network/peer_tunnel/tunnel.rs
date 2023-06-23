@@ -26,11 +26,12 @@ where
   pub fn build(self) -> io::Result<PeerTunnel> {
     /* Setup the send event for the frontend */
     let (sender, user_input) = mpsc::channel::<Signal>(5);
+    let sender_clone = sender.clone();
     let user_input_handle =
       self
         .window
         .listen(format!("send_message_{}", self.room_id), move |e| {
-          let sender = sender.clone();
+          let sender = sender_clone.clone();
           let msg = serde_json::from_str::<Signal>(
             e.payload()
               .expect("Invalid payload in send_message_<id> event"),
@@ -52,12 +53,16 @@ where
     }
     .build()?;
 
+    let peer_id = runtime.peer().identifier.clone();
+
     tokio::spawn(runtime.execute());
 
     Ok(PeerTunnel {
       canceller: Some(canceller),
       user_input_handle,
       window: self.window,
+      sender,
+      peer_id,
     })
   }
 }
@@ -66,6 +71,18 @@ pub struct PeerTunnel {
   canceller: Option<oneshot::Sender<()>>,
   user_input_handle: EventHandler,
   window: Window,
+  sender: mpsc::Sender<Signal>,
+  peer_id: UserIdentifier,
+}
+
+impl PeerTunnel {
+  pub fn sender(&self) -> &mpsc::Sender<Signal> {
+    &self.sender
+  }
+
+  pub fn peer_id(&self) -> &UserIdentifier {
+    &self.peer_id
+  }
 }
 
 impl Drop for PeerTunnel {
