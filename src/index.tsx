@@ -14,16 +14,18 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
 }
 
 /* --- app root component --- */
-import StatusBar from './lib/statusbar';
+import StatusBar from "./lib/statusbar";
+import FriendsList from "./lib/panels/friends";
 // const Home = lazy(() => import("./tree/home"));
 // const Room = lazy(() => import("./tree/room"));
-import Home from "./tree/home";
-import Room from "./tree/room";
+import Home from "./pages/home";
+import Room from "./pages/room";
 
 const App: Component = () => {
     return (
         <>
             <main class="content">
+                <FriendsList />
                 <Routes>
                     <Route path="/" component={Home} />
                     <Route path="/room/:id" component={Room} />

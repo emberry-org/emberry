@@ -1,0 +1,4 @@
+.panel.friends {
+    max-width: 40ch;
+    justify-self: flex-start;
+}
