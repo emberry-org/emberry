@@ -84,7 +84,7 @@ where
       .split_once(':')
       .expect("invalid campfire_id2")
       .1
-      .split(',')
+      .split('-')
       .map(|string| UserIdentifier {
         bs58: string.into(),
       })

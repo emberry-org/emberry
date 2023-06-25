@@ -133,7 +133,7 @@ Please make sure you have sufficient permissions and the port is not currently u
 
     let mut participants_list = users
       .iter()
-      .fold(String::new(), |string, user| string + &user.bs58 + ",");
+      .fold(String::new(), |string, user| string + &user.bs58 + "-");
     participants_list.pop();
     let id = format!("campfire:campfire:{participants_list}");
 
