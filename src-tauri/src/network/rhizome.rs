@@ -3,7 +3,7 @@ use std::{
   net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr},
 };
 use tokio::net::UdpSocket;
-use tracing::{error, trace};
+use tracing::{error, trace, warn};
 
 /** Create a new socket and holepunch it! */
 pub async fn punch_hole<A>(server_addr: A, ident: &[u8]) -> Result<UdpSocket, Error>
@@ -29,35 +29,50 @@ where
   // Try parse the recieved peer address.
   let addr = parse_addr(&b, size)?;
 
-  trace!("connecting to peer: {}", &addr);
+  trace!("connecting to peer: {}", addr);
 
-  // Swap the connection from the server to the peer.
-  socket.connect(addr).await?;
-
-  if let Err(err) = ping_pong_peng(&socket).await {
+  if let Err(err) = ping_pong_peng(&socket, addr).await {
     error!("P3 failure: {}", err);
     return Err(Error::new(ErrorKind::Other, "P3 failure"));
   }
 
+  // Swap the connection from the server to the peer.
+  socket.connect(addr).await?;
+
   Ok(socket)
 }
 
-async fn ping_pong_peng(socket: &UdpSocket) -> io::Result<()> {
+async fn ping_pong_peng(socket: &UdpSocket, target: SocketAddr) -> io::Result<()> {
   trace!("initiating PingPongPeng (P3) manouver");
   let mut buf = [0u8; 4];
-  socket.send(b"PING").await?;
+  socket.send_to(b"PING", target).await?;
+  trace!("sent PING");
   let mut ping = false;
-  for i in 0..2 {
-    socket.recv(&mut buf).await?;
-    trace!("{}: got {}", i, String::from_utf8_lossy(&buf));
+  loop {
+    match socket.recv_from(&mut buf).await {
+      Ok((len, remote)) => {
+        if remote != target {
+          warn!("got udp packet from {remote} instead of the expected {target}. dropping");
+          continue;
+        }
+        assert_eq!(len, 4, "P3 udp socket received invalid data");
+      }
+      Err(err) => {
+        tracing::error!("error reading from udp socket: {err}");
+        return Err(err);
+      }
+    }
+    trace!("got {}", String::from_utf8_lossy(&buf));
     match &buf {
       b"PING" => {
         ping = true;
-        socket.send(b"PONG").await?;
+        socket.send_to(b"PONG", target).await?;
+        trace!("sent PONG");
       }
       b"PONG" => {
         if !ping {
-          socket.send(b"PENG").await?;
+          socket.send_to(b"PENG", target).await?;
+          trace!("sent PENG");
         }
         return Ok(());
       }
@@ -72,8 +87,6 @@ async fn ping_pong_peng(socket: &UdpSocket) -> io::Result<()> {
       }
     }
   }
-
-  Err(Error::new(io::ErrorKind::Other, "got multiple PING"))
 }
 
 /** Parse a collection of bytes to a valid IP address. */
