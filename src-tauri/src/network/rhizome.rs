@@ -31,13 +31,13 @@ where
 
   trace!("connecting to peer: {}", addr);
 
+  // Swap the connection from the server to the peer.
+  socket.connect(addr).await?;
+
   if let Err(err) = ping_pong_peng(&socket, addr).await {
     error!("P3 failure: {}", err);
     return Err(Error::new(ErrorKind::Other, "P3 failure"));
   }
-
-  // Swap the connection from the server to the peer.
-  socket.connect(addr).await?;
 
   Ok(socket)
 }
