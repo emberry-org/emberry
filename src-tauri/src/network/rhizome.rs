@@ -3,24 +3,27 @@ use std::{
   net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr},
 };
 use tokio::net::UdpSocket;
-use tracing::{error, trace};
+use tracing::{error, trace, warn};
 
 /** Create a new socket and holepunch it! */
-pub async fn punch_hole<A>(server_addr: A, ident: &[u8]) -> Result<UdpSocket, Error>
-where
-  A: tokio::net::ToSocketAddrs,
-{
+pub async fn punch_hole(server_addr: SocketAddr, ident: &[u8]) -> Result<UdpSocket, Error> {
   trace!("initiating ip exchange");
   // Create, bind, and connect the socket:
   let socket = UdpSocket::bind("0.0.0.0:0").await?;
-  socket.connect(server_addr).await?;
 
   // Send the server our identity (Used to match us with a peer)
-  socket.send(ident).await?;
+  socket.send_to(ident, server_addr).await?;
 
   // Wait for the server to send us a peer:
   let mut b = [0u8; 512];
-  let size = socket.recv(&mut b).await?;
+  let size = loop {
+    let (size, addr) = socket.recv_from(&mut b).await?;
+    if addr == server_addr {
+      break size;
+    } else {
+      warn!("udp socket got data from {addr} instead of from rhizome ({server_addr})");
+    }
+  };
 
   if size == 0 {
     return Err(Error::new(ErrorKind::UnexpectedEof, "room request aborted"));
@@ -29,35 +32,49 @@ where
   // Try parse the recieved peer address.
   let addr = parse_addr(&b, size)?;
 
-  trace!("connecting to peer: {}", &addr);
-
-  // Swap the connection from the server to the peer.
-  socket.connect(addr).await?;
-
-  if let Err(err) = ping_pong_peng(&socket).await {
+  if let Err(err) = ping_pong_peng(&socket, addr).await {
     error!("P3 failure: {}", err);
     return Err(Error::new(ErrorKind::Other, "P3 failure"));
   }
 
+  // finally connect to the peer
+  socket.connect(addr).await?;
+  trace!("connected to peer: {}", addr);
+
   Ok(socket)
 }
 
-async fn ping_pong_peng(socket: &UdpSocket) -> io::Result<()> {
-  trace!("initiating PingPongPeng (P3) manouver");
+async fn ping_pong_peng(socket: &UdpSocket, target: SocketAddr) -> io::Result<()> {
+  trace!("initiating PingPongPeng (P3) manouver with {target}");
   let mut buf = [0u8; 4];
-  socket.send(b"PING").await?;
+  socket.send_to(b"PING", target).await?;
+  trace!("sent PING");
   let mut ping = false;
-  for i in 0..2 {
-    socket.recv(&mut buf).await?;
-    trace!("{}: got {}", i, String::from_utf8_lossy(&buf));
+  loop {
+    match socket.recv_from(&mut buf).await {
+      Ok((len, remote)) => {
+        if remote != target {
+          warn!("got udp packet from {remote} instead of the expected {target}. dropping");
+          continue;
+        }
+        assert_eq!(len, 4, "P3 udp socket received invalid data");
+      }
+      Err(err) => {
+        tracing::error!("error reading from udp socket: {err}");
+        return Err(err);
+      }
+    }
+    trace!("got {}", String::from_utf8_lossy(&buf));
     match &buf {
       b"PING" => {
         ping = true;
-        socket.send(b"PONG").await?;
+        socket.send_to(b"PONG", target).await?;
+        trace!("sent PONG");
       }
       b"PONG" => {
         if !ping {
-          socket.send(b"PENG").await?;
+          socket.send_to(b"PENG", target).await?;
+          trace!("sent PENG");
         }
         return Ok(());
       }
@@ -72,8 +89,6 @@ async fn ping_pong_peng(socket: &UdpSocket) -> io::Result<()> {
       }
     }
   }
-
-  Err(Error::new(io::ErrorKind::Other, "got multiple PING"))
 }
 
 /** Parse a collection of bytes to a valid IP address. */

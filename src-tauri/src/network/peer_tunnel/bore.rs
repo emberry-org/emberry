@@ -1,4 +1,5 @@
 use std::io::{self, Error, ErrorKind};
+use std::net::SocketAddr;
 use std::time::Duration;
 
 use rustls::Certificate;
@@ -31,7 +32,10 @@ impl<'a> TunnelBore<'a> {
       .expect("Failed to emit punching event");
 
     /* Holepunch using rhizome */
-    let socket = punch_hole(dotenv!("SERVER_ADDRESS"), &self.room_id.0).await?;
+    let server_addr = dotenv!("SERVER_ADDRESS")
+      .parse()
+      .map_err(|err| io::Error::new(ErrorKind::Other, err))?;
+    let socket = punch_hole(server_addr, &self.room_id.0).await?;
     let addr = socket.peer_addr()?;
 
     let config = KcpConfig {
