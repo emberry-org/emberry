@@ -15,6 +15,7 @@ dist-ssr
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
+!.vscode/launch.json
 .idea
 .DS_Store
 *.suo
@@ -31,3 +32,6 @@ dist-ssr
 !.env.example
 
 .solid
+
+# cargo build dir
+/target/
