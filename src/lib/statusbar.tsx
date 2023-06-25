@@ -50,7 +50,7 @@ export default () => {
 
             case RoomState.Online:
                 if (room.roomId) {
-                    navigate(`/room/${room.peerId}:${room.roomId}`, { replace: true });
+                    navigate(`/room/${room.peerId}~${room.roomId}`, { replace: true });
                 }
                 break;
         

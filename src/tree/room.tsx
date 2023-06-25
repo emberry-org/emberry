@@ -13,8 +13,9 @@ interface Msg {
 const Room: Component = () => {
     // Get the IDs from the route parameters:
     const { id } = useParams<{ id: string }>();
-    const room_id = id.split(':')[1];
-    const peer_id = id.split(':')[0];
+    const params = id.split('~');
+    const room_id = params[1];
+    const peer_id = params[0];
 
     let messagesEl: HTMLDivElement;
 
