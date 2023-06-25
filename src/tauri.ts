@@ -106,6 +106,7 @@ const initTauri = () => {
             rooms[peer_id] = <Room>{
                 ...rooms[peer_id],
                 roomId: room_id,
+                peerId: peer_id,
                 state: RoomState.Online
             };
             return rooms;
@@ -117,7 +118,6 @@ const initTauri = () => {
             const content: string = e.payload.msg;
             const sender = e.payload.sender as IdentifiedUserInfo;
 
-            const room: Room = JSON.parse(getItem(sessionStorage, "rooms"))[peer_id];
             updateItem(sessionStorage, `messages-${room_id}`, (chat: { origin: string, content: string }[]) => {
                 if (chat == null) chat = [];
                 chat.push({
