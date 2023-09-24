@@ -1,6 +1,6 @@
-use log::debug;
 use once_cell::sync::Lazy;
 use std::{env::args, path::PathBuf};
+use tracing::debug;
 
 pub static DATA: Lazy<PathBuf> = Lazy::new(data_dir);
 #[allow(dead_code)]

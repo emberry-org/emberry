@@ -16,7 +16,6 @@ use crate::data::config;
 
 use self::channel::ControlChannel;
 pub use self::state::RwOption;
-use log::error;
 pub use messages::EmberryMessage;
 use rustls::{ClientConfig, RootCertStore, ServerName};
 pub use state::RhizomeConnection;
@@ -27,8 +26,9 @@ use tokio::{
   sync::mpsc,
 };
 use tokio_rustls::TlsConnector;
+use tracing::error;
 
-use super::{Networking, RRState};
+use super::{Networking, UserIdentification};
 
 #[tauri::command(async)]
 pub async fn connect(
@@ -47,8 +47,11 @@ pub async fn connect(
 
   let server_cert = certs::craft();
   let client_cert = config::PEM.parse();
-  let (client_cert, _) = match client_cert {
-    Ok(data) => data,
+  let identification = match client_cert {
+    Ok((certificate, private_key)) => UserIdentification {
+      certificate,
+      private_key,
+    },
     Err(err) => {
       return Err(tauri::Error::Io(io::Error::new(
         io::ErrorKind::Unsupported,
@@ -85,7 +88,7 @@ pub async fn connect(
     .emit("rz-con", start.elapsed().as_millis() as u64)
     .expect("Failed to emit event");
 
-  let cobs_cert = match postcard::to_vec_cobs::<Vec<u8>, 1024>(&client_cert.0) {
+  let cobs_cert = match postcard::to_vec_cobs::<Vec<u8>, 1024>(&identification.certificate.0) {
     Ok(cobs) => cobs,
     Err(err) => {
       error!("Error serializing USER_CERT in 1024 bytes: {}", err);
@@ -109,7 +112,7 @@ pub async fn connect(
     tls,
     net,
     rc: &rc,
-    identity: client_cert,
+    identification,
   };
 
   let res = chnl.spin().await;

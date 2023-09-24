@@ -1,0 +1,21 @@
+.statusbar {
+    height: 52px;
+
+    background-color: var(--bg-100);
+    display: flex;
+}
+
+.statusbar button {
+    margin: 8px;
+    display: flex;
+    align-items: center;
+    background-color: var(--bg-300);
+}
+
+.statusbar button:hover {
+    background-color: var(--bg-400);
+}
+
+.statusbar button sup {
+    margin: 0 0 8px 4px;
+}

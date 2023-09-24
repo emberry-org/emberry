@@ -1,5 +1,5 @@
-use log::warn;
 use rusqlite::{params, Connection, Error::QueryReturnedNoRows};
+use tracing::{debug, trace, warn};
 
 use crate::data::{IdentifiedUserInfo, UserIdentifier, UserInfo, UserRelation};
 
@@ -30,7 +30,7 @@ pub fn try_get(db: &mut Connection, data: &UserIdentifier) -> Result<UserInfo, r
       relation,
     })
   } else {
-    log::debug!("no database entry for '{}'", &data.bs58);
+    debug!("no database entry for '{}'", &data.bs58);
     Err(QueryReturnedNoRows)
   }
 }
@@ -44,7 +44,7 @@ pub fn get(db: &mut Connection, data: &UserIdentifier) -> UserInfo {
   match try_get(db, data) {
     Ok(data) => data,
     Err(err) => {
-      log::debug!("no database entry for '{}', SQL err: '{}'", &data.bs58, err);
+      debug!("no database entry for '{}', SQL err: '{}'", &data.bs58, err);
       UserInfo {
         username: data.bs58.to_string(),
         relation: UserRelation::Stranger,
@@ -64,10 +64,10 @@ pub fn upsert<'a, C>(
   input: (&'a IdentifiedUserInfo, C),
 ) -> Result<(), rusqlite::Error>
 where
-  C: FnOnce(&'a IdentifiedUserInfo<'a>),
+  C: FnOnce(&'a IdentifiedUserInfo),
 {
   let (ident_info, callback) = input;
-  log::trace!("upserting entry for: '{}'", ident_info.identifier.bs58);
+  trace!("upserting entry for: '{}'", ident_info.identifier.bs58);
 
   callback(ident_info);
 
@@ -87,19 +87,13 @@ SET username = excluded.username, relation = excluded.relation"#,
 
 #[cfg(test)]
 mod tests {
-  use std::borrow::Cow;
-
   use super::*;
   use crate::data::sqlite::schema;
   use rusqlite::Connection;
 
-  fn init() {
-    let _ = env_logger::builder().is_test(true).try_init();
-  }
-
-  fn sample_user_ident() -> UserIdentifier<'static> {
+  fn sample_user_ident() -> UserIdentifier {
     UserIdentifier {
-      bs58: Cow::Owned("bs58 certificate string".to_string()),
+      bs58: "bs58 certificate string".to_string(),
     }
   }
 
@@ -140,9 +134,8 @@ mod tests {
   }
 
   /// Tests if get returns sensible data for a non match
-  #[test]
+  #[test_log::test]
   fn get_non_existing_user() {
-    init();
     let mut db = Connection::open_in_memory().unwrap();
     schema::validate(&mut db);
 
@@ -152,7 +145,7 @@ mod tests {
 
     let exprected = UserInfo {
       relation: UserRelation::Stranger,
-      username: ident.bs58.into_owned(),
+      username: ident.bs58,
     };
     assert_eq!(
       result, exprected,
@@ -161,9 +154,8 @@ mod tests {
   }
 
   /// Tests if the upsert command can insert a user without errors
-  #[test]
+  #[test_log::test]
   fn insert_user() {
-    init();
     let mut db = Connection::open_in_memory().unwrap();
     schema::validate(&mut db);
 
@@ -173,9 +165,8 @@ mod tests {
   }
 
   /// Tests if the upsert command can run without errors twice on the same id
-  #[test]
+  #[test_log::test]
   fn insert_update_user() {
-    init();
     let mut db = Connection::open_in_memory().unwrap();
     schema::validate(&mut db);
 
@@ -191,9 +182,8 @@ mod tests {
   }
 
   /// Tests if a get after an upsert returns the correct data
-  #[test]
+  #[test_log::test]
   fn get_inserted_user() {
-    init();
     let mut db = Connection::open_in_memory().unwrap();
     schema::validate(&mut db);
 
@@ -212,9 +202,8 @@ mod tests {
   }
 
   /// Tests if a get after an updating upsert returns the correct data
-  #[test]
+  #[test_log::test]
   fn get_updated_user() {
-    init();
     let mut db = Connection::open_in_memory().unwrap();
     schema::validate(&mut db);
 

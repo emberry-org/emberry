@@ -1,4 +1,4 @@
-use std::{borrow::Cow, path::PathBuf};
+use std::path::PathBuf;
 
 use crate::data::UserIdentifier;
 
@@ -61,10 +61,10 @@ impl PemfileReader {
 /// This function will return:</br>
 /// Any [std::io::Error] from opening/reading the file</br>
 /// [ErrorKind::InvalidData] when the items are malformed or out of order
-impl<'a> TryInto<UserIdentifier<'a>> for &PemfileReader {
+impl TryInto<UserIdentifier> for &PemfileReader {
   type Error = std::io::Error;
 
-  fn try_into(self) -> Result<UserIdentifier<'a>, Self::Error> {
+  fn try_into(self) -> Result<UserIdentifier, Self::Error> {
     let certfile = std::fs::OpenOptions::new()
       .read(true)
       .open(&self.filepath)?;
@@ -83,7 +83,7 @@ impl<'a> TryInto<UserIdentifier<'a>> for &PemfileReader {
     };
 
     Ok(UserIdentifier {
-      bs58: Cow::Owned(bs58::encode(cert.0).into_string()),
+      bs58: bs58::encode(cert.0).into_string(),
     })
   }
 }

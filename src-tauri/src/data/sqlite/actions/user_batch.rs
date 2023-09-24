@@ -1,5 +1,3 @@
-use std::borrow::Cow;
-
 use rusqlite::{params, Connection};
 
 use crate::data::{IdentifiedUserInfo, UserIdentifier, UserInfo, UserRelation};
@@ -12,10 +10,10 @@ use crate::data::{IdentifiedUserInfo, UserIdentifier, UserInfo, UserRelation};
 /// # Errors
 /// This function will return:</br>
 /// The first error returned by executing the underlying SQLite query on `db`
-pub fn get_limit_offset<'a>(
+pub fn get_limit_offset(
   db: &mut Connection,
   range: (i64, usize),
-) -> Result<Vec<IdentifiedUserInfo<'a>>, rusqlite::Error> {
+) -> Result<Vec<IdentifiedUserInfo>, rusqlite::Error> {
   let (limit, offset) = range;
   let mut statement = db.prepare(
     "SELECT tls_cert, username, relation FROM users WHERE relation < 255 LIMIT (?1) OFFSET (?2)",
@@ -25,9 +23,7 @@ pub fn get_limit_offset<'a>(
     let username: String = row.get(1)?;
     let relation = UserRelation::from(row.get::<usize, u8>(2)?);
     let ident_info = IdentifiedUserInfo {
-      identifier: UserIdentifier {
-        bs58: Cow::Owned(cert),
-      },
+      identifier: UserIdentifier { bs58: cert },
       info: UserInfo { username, relation },
     };
     Ok(ident_info)
@@ -44,22 +40,17 @@ pub fn get_limit_offset<'a>(
 
 #[cfg(test)]
 mod tests {
-  use std::borrow::Cow;
 
   use super::*;
   use crate::data::sqlite::{schema, user::upsert};
   use rusqlite::Connection;
 
-  fn init() {
-    let _ = env_logger::builder().is_test(true).try_init();
-  }
-
-  fn sample_users() -> Vec<IdentifiedUserInfo<'static>> {
+  fn sample_users() -> Vec<IdentifiedUserInfo> {
     let mut all = vec![];
     for i in 0..10 {
       all.push(IdentifiedUserInfo {
         identifier: UserIdentifier {
-          bs58: Cow::Owned(format!("user{}", i)),
+          bs58: format!("user{}", i),
         },
         info: UserInfo {
           username: format!("generic_username{}", i),
@@ -79,17 +70,16 @@ mod tests {
     Ok(())
   }
 
-  fn get_limit<'a>(
+  fn get_limit(
     db: &mut Connection,
     limit: i64,
-  ) -> Result<Vec<IdentifiedUserInfo<'a>>, rusqlite::Error> {
+  ) -> Result<Vec<IdentifiedUserInfo>, rusqlite::Error> {
     get_limit_offset(db, (limit, 0))
   }
 
   /// Tests if get_limit actually return at most `limit` entries
-  #[test]
+  #[test_log::test]
   fn get_exhausted_limit() {
-    init();
     let mut db = Connection::open_in_memory().unwrap();
     schema::validate(&mut db);
 
@@ -116,9 +106,8 @@ mod tests {
   }
 
   /// Tests if get_limit actually return at most `limit` entries and if `offset` works
-  #[test]
+  #[test_log::test]
   fn get_exhausted_limit_offset() {
-    init();
     let mut db = Connection::open_in_memory().unwrap();
     schema::validate(&mut db);
 
@@ -145,9 +134,8 @@ mod tests {
   }
 
   /// Tests if get_limit return less then `limit` if there are no more in db
-  #[test]
+  #[test_log::test]
   fn get_overshoot_limit() {
-    init();
     let mut db = Connection::open_in_memory().unwrap();
     schema::validate(&mut db);
 
@@ -175,9 +163,8 @@ mod tests {
 
   /// Tests if get_limit return less then `limit` if there are no more in db
   /// and if offset works with that
-  #[test]
+  #[test_log::test]
   fn get_overshoot_limit_offset() {
-    init();
     let mut db = Connection::open_in_memory().unwrap();
     schema::validate(&mut db);
 
@@ -205,9 +192,8 @@ mod tests {
 
   /// Tests if get_limit return all if `limit = -1`
   /// and if offset works with that
-  #[test]
+  #[test_log::test]
   fn get_all_offset() {
-    init();
     let mut db = Connection::open_in_memory().unwrap();
     schema::validate(&mut db);
 
@@ -234,9 +220,8 @@ mod tests {
   }
 
   /// Tests if get_limit return all if `limit = -1`
-  #[test]
+  #[test_log::test]
   fn get_all() {
-    init();
     let mut db = Connection::open_in_memory().unwrap();
     schema::validate(&mut db);
 
@@ -263,16 +248,15 @@ mod tests {
   }
 
   /// Tests if get_limit return all if `limit = -1`
-  #[test]
+  #[test_log::test]
   fn get_all_exclude_local() {
-    init();
     let mut db = Connection::open_in_memory().unwrap();
     schema::validate(&mut db);
 
     // local user
     let user = IdentifiedUserInfo {
       identifier: UserIdentifier {
-        bs58: Cow::Owned("user_local".into()),
+        bs58: "user_local".into(),
       },
       info: UserInfo {
         username: "local_user_username".into(),

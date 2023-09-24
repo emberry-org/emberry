@@ -1,0 +1,17 @@
+.rhizome-status {
+    display: flex;
+    align-items: center;
+
+    background-color: #e6354f88;
+    color: #ddda;
+
+    padding: 3px;
+    border-radius: 6px;
+
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.rhizome-status[data-status="connected"] {
+    background-color: #a3e63588;
+    color: #ddd;
+}

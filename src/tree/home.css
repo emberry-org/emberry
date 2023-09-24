@@ -1,0 +1,13 @@
+.title {
+    font-size: 3.6rem;
+    font-weight: 700;
+}
+
+.sub-title {
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.btn-submit {
+    margin-left: 8px;
+}
